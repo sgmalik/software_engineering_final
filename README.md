@@ -1,1 +1,3 @@
-# software_engineering_final
+# General Thoughts
+
+# Pygame Implementation
