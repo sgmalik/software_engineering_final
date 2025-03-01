@@ -39,7 +39,6 @@ class ConsolePlayer(BasePokerPlayer):
         action = input("Enter action to declare >> ")
         if action == 'fold': 
             amount = 0
-        #calling does not work 
         if action == 'call':  
             amount = valid_actions[1]['amount']
         if action == 'raise':  
