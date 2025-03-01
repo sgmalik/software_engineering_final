@@ -1,0 +1,19 @@
+from Card import Card
+import random
+
+class Deck:
+    SUITS = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
+    RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+
+    def __init__(self):
+        self.deck: list[Card] = [Card(suit, card_rank) for suit in Deck.SUITS for card_rank in Deck.RANKS]
+        Deck.shuffle(self.deck)
+
+    def draw(self):
+        return self.deck.pop()
+    
+    def shuffle(self):
+       random.shuffle(self.deck)
+
+    def restore(self):
+        self.deck = Deck()
