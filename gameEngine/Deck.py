@@ -9,8 +9,11 @@ class Deck:
         self.deck: list[Card] = [Card(suit, card_rank) for suit in Deck.SUITS for card_rank in Deck.RANKS]
         Deck.shuffle(self.deck)
 
-    def draw(self):
+    def draw_card(self):
         return self.deck.pop()
+    
+    def draw_cards(self, num_cards):
+        return [self.deck.pop() for _ in range(num_cards)]
     
     def shuffle(self):
        random.shuffle(self.deck)

@@ -2,7 +2,7 @@ from Deck import Deck
 
 class Player:
     def __init__(self, initial_stack):
-        self.hole_card = []
+        self.hole_cards = []
         self.stack = initial_stack
 
 
