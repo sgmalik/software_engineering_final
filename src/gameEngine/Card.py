@@ -27,7 +27,7 @@ class Card:
         return self.CARD_RANK_MAP[self.card_val]
 
     def __str__(self):
-        return f"{self.value} of {self.suit}"
+        return f"{self.card_val} of {self.suit}"
 
     def __repr__(self):
-        return f"{self.value} of {self.suit}"
+        return f"{self.card_val} of {self.suit}"

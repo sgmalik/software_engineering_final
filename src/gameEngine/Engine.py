@@ -1,6 +1,11 @@
 from Player import Player
 from Deck import Deck
 
+"""
+This is what we will call in the GUI to update it.
+It needs to 
+"""
+
 class Engine():
     def __init__(self, num_players, blind, initial_stack):
         self.num_players = num_players
