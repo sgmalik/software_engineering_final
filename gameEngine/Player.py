@@ -8,15 +8,20 @@ class Player:
         self.hole_cards = []
         self.stack = initial_stack
         self.state = PlayerState.ACTIVE
-
-    def player_action(self, action, amount):
-        if action == Action.FOLD:
-            self.state = PlayerState.FOLDED
-        elif action == Action.CALL:
-            self.stack -= amount
-        elif action == Action.RAISE:
-            self.stack -= amount
+        self.contribuition = 0
 
     def clear_hole_cards(self):
         self.hole_cards = []
+
+    def fold(self):
+        self.state = PlayerState.FOLDED
+    
+    def add_to_stack(self, amount):
+        self.stack += amount
+
+    def bet(self, amount):
+        self.stack -= amount
+        self.contribuition += amount
+
+    
     

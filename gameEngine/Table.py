@@ -7,7 +7,7 @@ class Table:
         self.community_cards = []
         self.pot = 0
 
-        #Going to player 1v1 for now
+        #Going to play 1v1 for now
         self.num_players = 2
 
         self.deck: Deck = Deck()
@@ -25,12 +25,10 @@ class Table:
     def start_next_round(self):
         pass
     
-    #round = preflop, flop, turn, river
+    #round = preflop, flop, turn, river (use enum)
     def round(self):
         pass
 
-    
-    #action needs to be passed from the GUI 
     # define helper functions as needed, function that calls declare action preflop, flop, turn, river
     def preflop(params):
         pass
@@ -42,10 +40,14 @@ class Table:
     # function that calls declare action on turn
     def turn(params):
         pass
-    
+
     # function that calls declare action on river
     def river(params):
         pass
 
     def reset_table(self):
         pass
+
+    def set_current_player(self):
+        pass
+    
