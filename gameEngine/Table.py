@@ -2,15 +2,25 @@ from Player import Player
 from Deck import Deck
 
 class Table: 
-    def __init__(self):
+    def __init__(self, num_players, blind, initial_stack):
         self.blind_pos = None
         self.community_cards = []
         self.pot = 0
 
+        #Going to player 1v1 for now
+        self.num_players = 2
+        
         self.deck: Deck = Deck()
         self.players: list[Player] = [Player(initial_stack) for _ in range(num_players)]
-       
+
+    def deal_hole_cards(self):
+        for player in self.players:
+            player.hole_cards = self.deck.draw_cards(2)
     
+    def deal_community_cards(self, num_cards):
+        self.community_cards += self.deck.draw_cards(num_cards)
+    
+    #action needs to be passed from the GUI 
     # define helper functions as needed, function that calls declare action preflop, flop, turn, river
     def preflop(params):
         pass

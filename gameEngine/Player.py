@@ -1,10 +1,14 @@
 from Deck import Deck
+from enum import Enum
+from Constants import Action
+from Constants import PlayerState
 
 class Player:
     def __init__(self, initial_stack):
         self.hole_cards = []
         self.stack = initial_stack
+        self.state = PlayerState.ACTIVE
+    
+    
 
-
-    def draw_card(self, deck: Deck):
-        self.hole_card.append(deck.draw())
+    

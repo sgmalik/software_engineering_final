@@ -1,8 +1,3 @@
-from pypokerengine.players import BasePokerPlayer
-from pypokerengine.api.game import setup_config, start_poker
-from FishPlayer import FishPlayer 
-from GUIPlayer import GUIPlayer
-
 from Player import Player
 from Deck import Deck
 
