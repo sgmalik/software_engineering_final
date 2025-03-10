@@ -22,7 +22,7 @@ class Table:
     def deal_community_cards(self, num_cards):
         self.community_cards += self.deck.draw_cards(num_cards)
     
-    def start_next_round(self):
+    def start_next_street(self):
         pass
     
     #round = preflop, flop, turn, river (use enum)

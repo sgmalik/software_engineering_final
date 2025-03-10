@@ -25,6 +25,8 @@ class Card:
     def get_card_rank(self) -> int:
         assert(self.card_val in self.CARD_RANK_MAP.values())
         return self.CARD_RANK_MAP[self.card_val]
+    
+    
 
     def __str__(self):
         return f"{self.card_val} of {self.suit}"

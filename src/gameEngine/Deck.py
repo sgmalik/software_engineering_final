@@ -15,8 +15,14 @@ class Deck:
     def draw_cards(self, num_cards):
         return [self.deck.pop() for _ in range(num_cards)]
     
+    @staticmethod
+    def sort_cards_by_rank(cards: list[Card]):
+         return sorted(cards, key=lambda card: card.get_card_rank())
+        
     def shuffle(self):
        random.shuffle(self.deck)
 
     def restore(self):
         self.deck = Deck()
+
+   
