@@ -1,6 +1,38 @@
-#python -m pytest
+from ..Deck import Deck
+from ..Card import Card
+from Hand_Evaluator import HandEvaluator
+
+# python -m pytest
+
+
 class Test_HandEval():
-    #test when both players have high cards
+    # test when hand is high card
     def test_highcard(self):
-        x = 1
-        assert(x == 2)
+        
+        hole_cards = [
+            Card('H', '2'),
+            Card('D', '5'),
+        ]
+
+        community_cards = [
+            Card('S', '9'),
+            Card('C', 'J'),
+            Card('H', 'Q'),
+            Card('S', '3'),
+            Card('D', '7'),
+        ]
+        
+        expected_info = {
+            "strength": {
+                "hand_rank": 1,
+                "primary_cards_rank": [12, 10, 9, 7, 5]
+            },
+            "kickers": []
+        }
+
+        hand_info = HandEvaluator.hand_eval(hole_cards, community_cards)
+
+        assert(hand_info == expected_info)
+
+
+

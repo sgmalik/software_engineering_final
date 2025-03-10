@@ -1,4 +1,5 @@
 from Card import Card
+from Deck import Deck
 
 
 """
@@ -13,6 +14,7 @@ class HandEvaluator():
 
     _primary_cards = []
 
+    #can make this an enum 
     STRENGTH_MAP = {
         "royal_flush": 10,
         "straight_flush": 9 ,
@@ -57,7 +59,7 @@ class HandEvaluator():
             },
             "kickers": []
         }
-
+        sorted_cards = Deck.sort_by_rank([hole_cards + community_cards])
         hand_rank: str = ""
 
         if self._is_royal_flush(self, hole_cards, community_cards):
@@ -80,10 +82,10 @@ class HandEvaluator():
             pass
         else: 
             #highcard 
-            self._highest_five(self,hole_cards, community_cards)
+            self._highest_five(self, sorted_cards)
             hand_rank = self.STRENGTH_MAP["high_card"]
         
-        self._kickers = self._get_kickers()
+        self._get_kickers()
 
         hand_info["strength"]["hand_rank"] = self.STRENGTH_MAP[hand_rank]
         hand_info["kickers"] = self._kickers
@@ -97,9 +99,14 @@ class HandEvaluator():
     
     #returns cards that are in best hand, but not used in hand rank
     @classmethod
-    def _get_kickers(self):
-        # set diff of 
-        pass
+    def _set_kickers(self, hole_cards, community_cards):
+        assert(len(self._strength_cards) > 0)
+
+        cards = hole_cards + community_cards
+
+        kickers = [card for card in cards if card not in self._strength_cards]
+
+        return kickers[0:len(self._strength_cards)]
     
     #strength of hand (calliing _is_)
     @classmethod
@@ -149,8 +156,10 @@ class HandEvaluator():
         pass
 
     @classmethod 
-    def _highest_five(self, hole_cards, community_cards):
-        pass
+    def _highest_five(self, sorted_cards):
+        self._strength_cards = sorted_cards[0:4]
+        
+
 
     
 
