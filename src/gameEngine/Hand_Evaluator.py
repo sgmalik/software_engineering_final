@@ -3,20 +3,28 @@ from Deck import Deck
 
 
 """
-HandEvaluator will provide information about the strength of a players hand
+    Evalute hand returns the strength of the hand and the kickers
+    (Kickers will be used for tie breaking in GameEvaluator)
+
+    Its input could be the cards: 
+        hole_cards = "3S, 7H"
+        community_cards = "5C, 5D, 6D, 3S, 2S"
+
+    its output will look like this:
+    {
+        "strength": {
+            "hand_rank": TWO_PAIR (which would be strength = 3),
+            "primary_cards_rank": [5, 3]
+        },
+        "kickers": [7]
+    }
+
+    NOTE: primary_cards are the cards that make up the hand rank (in this case, the pairs)
+    
 """
-
-
 class HandEvaluator():
-    # these are the cards that make up the strength Ex. two pair = ["3S", "3C", "4S", "4D"]
-    _strength_cards = []
+   
 
-    # these are the highest cards (in a 5 card hand) that aren't used to make up the strength
-    _kicker_cards = []
-
-    _primary_cards = []
-
-    # can make this an enum
     STRENGTH_MAP = {
         "royal_flush": 10,
         "straight_flush": 9,
@@ -30,35 +38,27 @@ class HandEvaluator():
         "high_card": 1,
     }
 
-    """
-    Evalute hand returns the strength of the hand and the kickers
-    (Kickers will be used for tie breaking in GameEvaluator)
+    def __init__(self):
+        # these are the cards that make up the strength Ex. two pair = ["3S", "3C", "4S", "4D"]
+        # this is used for finding the kickers 
+        self._strength_cards = []
 
-    Its input could be the cards: 
-        hole_cards = "3S, 7H"
-        community_cards = "5C, 5D, 6D, 3S, 2S"
+        # these are the highest cards (in a 5 card hand) that aren't used to make up the strength (need for tie breaking)
+        self._kicker_cards = []
 
-    its output will look like this:
-    {
-        "strength": {
-            "hand_rank": TWO_PAIR,
-            "primary_cards_rank": [5, 3]
-        },
-        "kickers": [7]
-    }
-
-    NOTE: primary_cards are the cards that make up the hand rank (in this case, the pairs)
-    
-    """
+        #cards that are used for tie breaking similar strength hands
+        #Ex. two pair = ["3S","4S"]
+        self._primary_cards = []
 
     @classmethod
     def hand_eval(self, hole_cards, community_cards):
 
         
-
+        #sort the cards in ascending order
         sorted_cards = Deck.sort_cards_by_rank(hole_cards + community_cards)
         hand_rank: str = ""
 
+        #check and update strength 
         if self._is_royal_flush(sorted_cards):
             pass
         elif self._is_straight_flush(sorted_cards):
@@ -89,15 +89,8 @@ class HandEvaluator():
                 "hand_rank": hand_rank,
                 "primary_cards_rank": self._primary_cards
             },
-            "kickers": self._kickers
+            "kickers": self._kicker_cards
         }
-
-        
-
-    # get best 5 card hand
-    @classmethod
-    def _best_hand(self, hole_cards, community_cards):
-        pass
 
     
     #gets the kickers based on the cards used to make up hand rank
@@ -111,15 +104,7 @@ class HandEvaluator():
         kickers_amount: int = 5 - len(self._strength_cards)
         self._kicker_cards = kickers[0:kickers_amount]  
 
-    # strength of hand (calliing _is_)
-    @classmethod
-    def _calc_hand_strength(self, sorted_cards):
-        pass
-
-    # functions to check for hand rank (used in _calc_hand_strength)
-    # return cards that make, empty array is falsy
-    # these will update strength_cards
-
+    # these will update _strength_cards, and _primary_cards
     @classmethod
     def _is_royal_flush(self, sorted_cards):
         pass

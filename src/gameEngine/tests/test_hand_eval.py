@@ -6,6 +6,7 @@ from Hand_Evaluator import HandEvaluator
 
 
 class Test_HandEval():
+
     # test when hand is high card
     def test_highcard(self):
         hole_cards = [
