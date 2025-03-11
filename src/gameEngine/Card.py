@@ -21,18 +21,34 @@ class Card:
         self.suit = suit
         self.card_val = card_val
 
+
+    #overloading operators
     def __eq__(self, otherCard):
         if isinstance(otherCard, Card):
              return self.suit == otherCard.suit and self.card_val == otherCard.card_val
         return False
+    
+    def __lt__(self, otherCard):
+        pass
 
+    def __gt__(self, otherCard):
+        pass
 
+    def __ge__(self, otherCard):
+        pass
+
+    def __le__(self, otherCard):
+        pass
+    
+    #debug prints
     def __str__(self):
         return f"{self.card_val} of {self.suit}"
 
     def __repr__(self):
         return f"{self.card_val} of {self.suit}"
     
+
+    #methods
     def get_card_rank(self) -> int:
         assert (self.card_val in self.CARD_RANK_MAP)
         return self.CARD_RANK_MAP[self.card_val]

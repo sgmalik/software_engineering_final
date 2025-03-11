@@ -12,7 +12,7 @@ class HandEvaluator():
     _strength_cards = []
 
     # these are the highest cards (in a 5 card hand) that aren't used to make up the strength
-    _kickers = []
+    _kicker_cards = []
 
     _primary_cards = []
 
@@ -99,15 +99,17 @@ class HandEvaluator():
     def _best_hand(self, hole_cards, community_cards):
         pass
 
-    # returns cards that are in best hand, but not used in hand rank
+    
+    #gets the kickers based on the cards used to make up hand rank
     @classmethod
     def _set_kickers(self, sorted_cards):
         assert (len(self._strength_cards) > 0)
 
         kickers = [
             card for card in sorted_cards if card not in self._strength_cards]
-
-        return kickers[0:len(self._strength_cards)]
+        
+        kickers_amount: int = 5 - len(self._strength_cards)
+        self._kicker_cards = kickers[0:kickers_amount]  
 
     # strength of hand (calliing _is_)
     @classmethod
