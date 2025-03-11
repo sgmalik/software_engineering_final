@@ -25,14 +25,14 @@ class Card:
         if isinstance(otherCard, Card):
              return self.suit == otherCard.suit and self.card_val == otherCard.card_val
         return False
-    
 
-    def get_card_rank(self) -> int:
-        assert (self.card_val in self.CARD_RANK_MAP)
-        return self.CARD_RANK_MAP[self.card_val]
 
     def __str__(self):
         return f"{self.card_val} of {self.suit}"
 
     def __repr__(self):
         return f"{self.card_val} of {self.suit}"
+    
+    def get_card_rank(self) -> int:
+        assert (self.card_val in self.CARD_RANK_MAP)
+        return self.CARD_RANK_MAP[self.card_val]

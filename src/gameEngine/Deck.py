@@ -24,7 +24,7 @@ class Deck:
 
     #descending order 
     @staticmethod
-    def sort_cards_by_rank(cards: list[Card]):
+    def sort_cards_by_rank(cards: list[Card]) -> list[Card]:
          return sorted(cards, key=lambda card: card.get_card_rank(), reverse=True)
 
    
