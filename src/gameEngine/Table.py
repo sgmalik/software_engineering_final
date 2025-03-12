@@ -24,7 +24,7 @@ class Table:
     def deal_community_cards(self, num_cards):
         self.community_cards += self.deck.draw_cards(num_cards)
     
-    def start_next_street(self):
+    def next_street(self):
         pass
 
     #use current player to do an action ["bet", "raise", "fold"]

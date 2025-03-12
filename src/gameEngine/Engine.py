@@ -3,7 +3,14 @@ from Deck import Deck
 
 """
 This is what we will call in the GUI to update it.
-It needs to 
+
+It needs to return information that the GUI needs
+    the GUI needs:
+        all players stacks
+        the human player's hole cards  
+        community cards 
+        each player's state (if they folded or not)
+        pot 
 """
 
 class Engine():
@@ -20,7 +27,7 @@ class Engine():
     def current_state_of_player(player):
         pass
 
-    # function that returns the current state of the game
+    
     def current_state_of_game(params):
         pass
 
