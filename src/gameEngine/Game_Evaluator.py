@@ -1,3 +1,5 @@
+
+from Table import Table
 """
 Game Evaluator will:
      decide who the winners are 
@@ -10,8 +12,16 @@ class GameEvaluator():
     #uses hand evaluator on each hand to determine winnners
     @classmethod
     def determine_winners(self, table):
+        #first check compare rank of hand ("pair", "two-pair", etc)
+
+        #if this is a tie check primary_cards
+
+        #if primary cards are a tie check kickers 
+
         #return list of winners
-        pass
+
+        #for testing purposes I am returning the 1st player always wins
+        return [table.players[0]]
 
     #distribute money to winners
     @classmethod

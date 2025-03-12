@@ -1,6 +1,7 @@
 from Player import Player
 from Deck import Deck
 from Constants import Street
+from Constants import Action 
 class Table: 
     def __init__(self, num_players, blind, initial_stack):
         self.blind_pos = None
@@ -14,6 +15,7 @@ class Table:
         self.players: list[Player] = [Player(initial_stack) for _ in range(num_players)]
         self.current_player: Player = self.players[0]
         self.current_street: Street = Street.PREFLOP
+        self.current_bet = 2
 
     def deal_hole_cards(self):
         for player in self.players:
@@ -24,10 +26,37 @@ class Table:
     
     def start_next_street(self):
         pass
+
+    #use current player to do an action ["bet", "raise", "fold"]
+    def declare_action(self, action: Action):
+        if action == Action.CALL:
+            pass
+        elif action == Action.RAISE:
+            pass
+        elif action == Action.FOLD:
+            pass
+        elif action == Action.BIG_BLIND:
+            pass
+        elif action == Action.SMALL_BLIND:
+            pass
+
+        pass
     
     #round = preflop, flop, turn, river (use enum)
-    def round(self):
-        pass
+    def start_round(self):
+        if self.current_street == Street.PREFLOP:
+            self.preflop()
+        elif self.current_street == Street.FLOP:
+            self.flop()
+        elif self.current_street == Street.TURN:
+            self.turn()
+        elif self.current_street == Street.RIVER:
+            self.turn()
+        elif self.current_street == Street.SHOWDOWN:
+            self.showdown()
+        elif self.current_street == Street.FINISHED:
+            self.finished()
+        
 
     # define helper functions as needed, function that calls declare action preflop, flop, turn, river
     def preflop(params):
@@ -45,9 +74,16 @@ class Table:
     def river(params):
         pass
 
+    def showdown():
+        pass
+
+    def finished():
+        pass
+
     def reset_table(self):
         pass
 
+    #set this to whos turn it is 
     def set_current_player(self):
         pass
     
