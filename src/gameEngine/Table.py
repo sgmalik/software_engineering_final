@@ -30,7 +30,7 @@ class Table:
     #use current player to do an action ["bet", "raise", "fold"]
     def declare_action(self, action: Action):
         if action == Action.CALL:
-            pass
+            self.current_player.bet(self.current_bet)
         elif action == Action.RAISE:
             pass
         elif action == Action.FOLD:
@@ -39,7 +39,6 @@ class Table:
             pass
         elif action == Action.SMALL_BLIND:
             pass
-
         pass
     
     #round = preflop, flop, turn, river (use enum)
@@ -60,20 +59,26 @@ class Table:
 
     # define helper functions as needed, function that calls declare action preflop, flop, turn, river
     def preflop(params):
+        #TODO: blinds 
+
+        
         pass
     
     # function that calls declare action on flop
-    def flop(params):
-        pass
+    def flop(self):
+        self.deal_community_cards(3)
+        self.start_next_street()
     
     # function that calls declare action on turn
-    def turn(params):
-        pass
+    def turn(self):
+        self.deal_community_cards(1)
+        self.start_next_street()
 
     # function that calls declare action on river
     def river(params):
         pass
 
+    #call game_evaluator here 
     def showdown():
         pass
 
@@ -86,4 +91,11 @@ class Table:
     #set this to whos turn it is 
     def set_current_player(self):
         pass
+    
+    #TODO: don't let player raise over stack amount
+    def raise_bet(self, amount):
+        self.current_player.bet(amount)
+        self.current_bet += amount
+        
+
     

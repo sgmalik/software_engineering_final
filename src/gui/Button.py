@@ -23,6 +23,9 @@ class Button:
 
         # Define the two sprites (unpressed and pressed)
         self.set_sprites(button_type)
+        
+        #button action 
+        self.action = button_type
 
         # Current sprite (default to unpressed)
         self.current_sprite = self.unpressed_sprite
@@ -91,6 +94,7 @@ class Button:
                 # IF BUTTON IS CLICKED, DO WHATEVER WE NEED TO DO HERE
                 self.current_sprite = self.pressed_sprite
                 print("BUTTON CLICKED")
+                print("this is event", self.action)
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             self.current_sprite = self.unpressed_sprite
 
