@@ -7,7 +7,7 @@ This is what we will call in the GUI to update it.
 It needs to return information that the GUI needs
     the GUI needs:
         all players stacks
-        the human player's hole cards  
+        all  players hole cards
         community cards 
         each player's state (if they folded or not)
         pot 
@@ -20,6 +20,8 @@ class Engine():
         self.initial_stack = initial_stack
 
 
+
+    #starting state: blind, initial stack, etc. something to implement later
     def starting_state(params):
         pass
 

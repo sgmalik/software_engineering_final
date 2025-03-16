@@ -24,6 +24,7 @@ class Table:
     def deal_community_cards(self, num_cards):
         self.community_cards += self.deck.draw_cards(num_cards)
     
+    #function that changes the current street to the next street
     def next_street(self):
         pass
 
@@ -67,12 +68,12 @@ class Table:
     # function that calls declare action on flop
     def flop(self):
         self.deal_community_cards(3)
-        self.start_next_street()
+        self.next_street()
     
     # function that calls declare action on turn
     def turn(self):
         self.deal_community_cards(1)
-        self.start_next_street()
+        self.next_street()
 
     # function that calls declare action on river
     def river(params):
