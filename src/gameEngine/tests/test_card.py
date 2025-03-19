@@ -1,2 +1,8 @@
-class Test_Card():
-    pass
+"""
+Test the Card class
+"""
+class TestCard():
+    """
+    tests
+    """
+    

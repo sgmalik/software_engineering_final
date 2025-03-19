@@ -1,14 +1,20 @@
-from ..Deck import Deck
-from ..Card import Card
-from Hand_Evaluator import HandEvaluator
+"""
+tests for hand_evaluator module
+"""
+from ..card import Card
+from ..hand_evaluator import HandEvaluator
 
-# python -m pytest
 
+class TestHandEval():
 
-class Test_HandEval():
+    """
+    will test each hand strength
+    """
 
-    # test when hand is high card
     def test_highcard(self):
+        """
+        simple high card test
+        """
         hole_cards = [
             Card('H', '2'),
             Card('D', '5'),
@@ -29,7 +35,7 @@ class Test_HandEval():
             Card('D', '7'),
             Card('D', '5'),
         ]
-        
+
         expected_info = {
             "strength": {
                 "hand_rank": 1,
@@ -39,9 +45,5 @@ class Test_HandEval():
         }
 
         hand_info = HandEvaluator.hand_eval(hole_cards, community_cards)
-        
 
-        assert(hand_info == expected_info)
-
-
-
+        assert hand_info == expected_info

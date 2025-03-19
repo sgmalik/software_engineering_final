@@ -1,9 +1,14 @@
-from Deck import Deck
-from enum import Enum
-from Constants import Action
-from Constants import PlayerState
+"""
+This module contains the Player class
+"""
+from .constants import PlayerState
+
 
 class Player:
+    """
+    represents a player in the game
+    """
+
     def __init__(self, initial_stack):
         self.hole_cards = []
         self.stack = initial_stack
@@ -11,17 +16,26 @@ class Player:
         self.contribuition = 0
 
     def clear_hole_cards(self):
+        """
+        clears the hole cards of the player
+        """
         self.hole_cards = []
 
     def fold(self):
+        """
+        changes playerState to folded
+        """
         self.state = PlayerState.FOLDED
-    
+
     def add_to_stack(self, amount):
+        """
+        add amount to player's stack
+        """
         self.stack += amount
 
     def bet(self, amount):
+        """
+        bet amount from player's stack
+        """
         self.stack -= amount
         self.contribuition += amount
-
-    
-    

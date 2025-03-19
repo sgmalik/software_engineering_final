@@ -1,4 +1,12 @@
+"""
+Card class
+"""
+
 class Card:
+    """
+    represents a card with suit and value
+    has overloaded operators to compare cards in game_evaluator, and hand_evaluator
+    """
     CARD_RANK_MAP = {
         '2': 2,
         '3': 3,
@@ -16,39 +24,43 @@ class Card:
     }
 
     def __init__(self, suit: str, card_val: str):
-        assert (len(suit) == 1)
+        assert len(suit) == 1
 
         self.suit = suit
         self.card_val = card_val
 
+    # overloading operators
 
-    #overloading operators
-    def __eq__(self, otherCard):
-        if isinstance(otherCard, Card):
-             return self.suit == otherCard.suit and self.card_val == otherCard.card_val
+    def __eq__(self, other_card):
+        if isinstance(other_card, Card):
+            return self.suit == other_card.suit and self.card_val == other_card.card_val
         return False
-    
-    def __lt__(self, otherCard):
+
+    def __lt__(self, other_card):
         pass
 
-    def __gt__(self, otherCard):
+    def __gt__(self, other_card):
         pass
 
-    def __ge__(self, otherCard):
+    def __ge__(self, other_card):
         pass
 
-    def __le__(self, otherCard):
+    def __le__(self, other_card):
         pass
-    
-    #debug prints
+
+    # debug prints
+
     def __str__(self):
         return f"{self.card_val} of {self.suit}"
 
     def __repr__(self):
         return f"{self.card_val} of {self.suit}"
-    
 
-    #methods
+    # methods
+
     def get_card_rank(self) -> int:
-        assert (self.card_val in self.CARD_RANK_MAP)
+        """
+        returns the rank of the card based on rank map
+        """
+        assert self.card_val in self.CARD_RANK_MAP
         return self.CARD_RANK_MAP[self.card_val]
