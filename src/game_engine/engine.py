@@ -1,7 +1,10 @@
-from dealer import Dealer
+
 """
 Poker Engine
 """
+
+from .dealer import Dealer
+from .constants import Action
 
 class Engine():
     """
@@ -28,22 +31,40 @@ It needs to return information that the GUI needs
         """
         function that will be called when starting up the GUI
         """
-
         #initialize players
         self.dealer.table.init_players(self.initial_stack, self.num_players)
 
-        #start preflop street 
+        #start preflop street
         self.dealer.start_street()
+
 
     def current_state_of_player(self):
         """
-        takes player, and returns current state of player to ensure still in hand
+        takes player, and returns current state of player to ensure still in hand.
+        This will be useful in the GUI to gray out player buttons when
+            1. player has folded
+            2. player is all in
+            3. player has already bet
+            4. its not the players turn
         """
 
     def current_state_of_game(self):
         """
         create a data structure so that the GUI can display the current state of the game
         """
+    
+    def player_action(self, action: str):
+        """
+        function that will be called when its the players turn
+        and they are active in the hand
+
+        this receives the btn string from the GUI 
+        """
+
+        #convert string to Action enum
+        action = Action(action)
+
+        self.dealer.apply_player_action(action)
 
     def winners(self):
         """
