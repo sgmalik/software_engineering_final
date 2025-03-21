@@ -44,7 +44,7 @@ class Table:
         set current player to the next player
         """
         #if end of players list, go back to first player
-        if self.current_player == self.num_players:
+        if self.current_player == self.players[-1]:
             self.current_player = self.players[0]
         else:
             self.current_player  = self.players[self.current_player + 1]

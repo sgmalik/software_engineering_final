@@ -50,7 +50,6 @@ It needs to return information that the GUI needs
         use game_eval to determine winners
         """
 
-
     def pot_size(self):
         """
         gets the pot size to display in GUI
