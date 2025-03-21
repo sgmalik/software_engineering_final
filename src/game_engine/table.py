@@ -44,15 +44,12 @@ class Table:
         """
         set current player to the next player
         """
-        if self.current_player == self.num_players:
-            self.current_player = 0
-        else:
-            self.current_player += 1
-
         #if end of players list, go back to first player
-        
+        if self.current_player == self.num_players:
+            self.current_player = self.players[0]
+        else:
+            self.current_player  = self.players[self.current_player + 1]
 
-    
     def deal_hole_cards(self):
         """
         deal 2 cards to each player

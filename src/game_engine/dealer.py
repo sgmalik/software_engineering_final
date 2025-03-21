@@ -3,15 +3,16 @@ from .constants import Street
 from .table import Table
 from .constants import Action
 
-class Dealer: 
+
+class Dealer:
     def __init__(self, blind, initial_stack):
-        
+
         self.current_street = Street.PREFLOP
         self.current_bet = 2
         self.blind = blind
         self.initial_stack = initial_stack
         self.pot = 0
-        #setting num_players to 2 for now 
+        # setting num_players to 2 for now
         self.table = Table(num_players=2)
 
      # street = preflop, flop, turn, river (use enum)
@@ -20,69 +21,72 @@ class Dealer:
         start the round by calling street functions
         """
         if self.current_street == Street.PREFLOP:
-            self.preflop()
+            self._preflop()
         elif self.current_street == Street.FLOP:
-            self.flop()
+            self._flop()
         elif self.current_street == Street.TURN:
-            self.turn()
+            self._turn()
         elif self.current_street == Street.RIVER:
-            self.river()
+            self._river()
         elif self.current_street == Street.SHOWDOWN:
-            self.showdown()
+            self._showdown()
         elif self.current_street == Street.FINISHED:
-            self.finished()
+            self._finished()
 
     # define helper functions as needed, function that calls declare action preflop,
     # flop, turn, river
 
-    def preflop(self):
+    def _preflop(self):
         """
-        do preflop actions
+        do preflop actions 
         """
         self.table.deal_hole_cards()
-        self.take_player_action(Action.SMALL_BLIND)
 
+        # blinds
+        self.take_player_action(Action.SMALL_BLIND)
         self.table.next_player()
-       
+        self.take_player_action(Action.BIG_BLIND)
+        self.table.next_player()
+
     # function that calls declare action on flop
-    def flop(self):
+    def _flop(self):
         """
         do flop actions
         """
         self.table.deal_community_cards(3)
-        
+
     # function that calls declare action on turn
-    def turn(self):
+    def _turn(self):
         """
         do turn actions
         """
         self.table.deal_community_cards(1)
-        
 
     # function that calls declare action on river
-    def river(self):
+
+    def _river(self):
         """
         do river actions
         """
         self.table.deal_community_cards(1)
 
     # call game_evaluator here
-    def showdown(self):
+    def _showdown(self):
         """
         use game_eval to determine winners
         """
 
-    def finished(self):
+    def _finished(self):
         """
         call when round is over to reset what we need to
         """
 
-    def next_street(self):
+    def _next_street(self):
         """
         changes the current street to the next street
         """
 
-    def raise_bet(self, amount):
+    def _raise_bet(self, amount):
         """
         raise the bet by the amount
         """
@@ -93,13 +97,15 @@ class Dealer:
         """
         declare action for the current player
         """
+        #TODO: check if player has folded
+        #TODO: check if player has enough stack to call or raise
         if action == Action.CALL:
             self.table.current_player.bet(self.current_bet)
         elif action == Action.RAISE:
-             pass
+            pass
         elif action == Action.FOLD:
-             pass
+            pass
         elif action == Action.BIG_BLIND:
-             pass
+            self.table.current_player.bet(self.blind*2)
         elif action == Action.SMALL_BLIND:
-             pass
+            self.table.current_player.bet(self.blind)
