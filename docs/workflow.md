@@ -1,5 +1,5 @@
 # Git Workflow 
-the goal of this document is to provide a suggested workflow for contribuiting to the project. 
+### the goal of this document is to provide a suggested workflow for contribuiting to the project. 
 
 1. **Create a feature branch**:
 Start from main, and create a new branch named with the feature you're working on. 
