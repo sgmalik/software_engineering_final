@@ -1,19 +1,21 @@
 from .deck import Deck
 from .constants import Street
 from .table import Table
+from .constants import Action
 
 class Dealer: 
     def __init__(self, blind, initial_stack):
-        self.pot = 0
+        
         self.current_street = Street.PREFLOP
         self.current_bet = 2
         self.blind = blind
         self.initial_stack = initial_stack
+        self.pot = 0
         #setting num_players to 2 for now 
-        self.table = Table(2)
+        self.table = Table(num_players=2)
 
-     # round = preflop, flop, turn, river (use enum)
-    def start_round(self):
+     # street = preflop, flop, turn, river (use enum)
+    def start_street(self):
         """
         start the round by calling street functions
         """
@@ -37,6 +39,10 @@ class Dealer:
         """
         do preflop actions
         """
+        self.table.deal_hole_cards()
+        self.take_player_action(Action.SMALL_BLIND)
+
+        self.table.next_player()
        
     # function that calls declare action on flop
     def flop(self):
@@ -58,6 +64,7 @@ class Dealer:
         """
         do river actions
         """
+        self.table.deal_community_cards(1)
 
     # call game_evaluator here
     def showdown(self):
@@ -69,8 +76,30 @@ class Dealer:
         """
         call when round is over to reset what we need to
         """
-        
+
     def next_street(self):
         """
         changes the current street to the next street
         """
+
+    def raise_bet(self, amount):
+        """
+        raise the bet by the amount
+        """
+        self.table.current_player.bet(amount)
+        self.current_bet += amount
+
+    def take_player_action(self, action: Action):
+        """
+        declare action for the current player
+        """
+        if action == Action.CALL:
+            self.table.current_player.bet(self.current_bet)
+        elif action == Action.RAISE:
+             pass
+        elif action == Action.FOLD:
+             pass
+        elif action == Action.BIG_BLIND:
+             pass
+        elif action == Action.SMALL_BLIND:
+             pass

@@ -16,7 +16,7 @@ class Table:
     def __init__(self, num_players):
         self.blind_pos = None
         self.community_cards = []
-
+        
         self.deck: Deck = Deck()
 
         # Going to play 1v1 for now
@@ -32,20 +32,7 @@ class Table:
         self.players = [Player(initial_stack) for _ in range(self.num_players)]
 
     # use current player to do an action ["bet", "raise", "fold"]
-    # def declare_action(self, action: Action):
-        """
-        declare action for the current player
-        """
-        # if action == Action.CALL:
-        # self.current_player.bet(self.current_bet)
-       # elif action == Action.RAISE:
-        # pass
-       # elif action == Action.FOLD:
-        # pass
-       # elif action == Action.BIG_BLIND:
-        # pass
-        # elif action == Action.SMALL_BLIND:
-        # pass
+    
 
     def reset_table(self):
         """
@@ -53,18 +40,19 @@ class Table:
         """
 
     # set this to whos turn it is
-    # def set_current_player(self):
+    def next_player(self):
         """
         set current player to the next player
         """
+        if self.current_player == self.num_players:
+            self.current_player = 0
+        else:
+            self.current_player += 1
 
-    # def raise_bet(self, amount):
-        """
-        raise the bet by the amount
-        """
-       # self.current_player.bet(amount)
-       # self.current_bet += amount
+        #if end of players list, go back to first player
+        
 
+    
     def deal_hole_cards(self):
         """
         deal 2 cards to each player
