@@ -28,11 +28,12 @@ It needs to return information that the GUI needs
         """
         function that will be called when starting up the GUI
         """
-        #create the dealer
-        self.dealer.start_street()
 
         #initialize players
         self.dealer.table.init_players(self.initial_stack, self.num_players)
+
+        #start preflop street 
+        self.dealer.start_street()
 
     def current_state_of_player(self):
         """
