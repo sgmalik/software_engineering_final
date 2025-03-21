@@ -43,9 +43,9 @@ class Dealer:
         self.table.deal_hole_cards()
 
         # blinds
-        self.take_player_action(Action.SMALL_BLIND)
+        self.apply_player_action(Action.SMALL_BLIND)
         self.table.next_player()
-        self.take_player_action(Action.BIG_BLIND)
+        self.apply_player_action(Action.BIG_BLIND)
         self.table.next_player()
 
     # function that calls declare action on flop
@@ -93,7 +93,7 @@ class Dealer:
         self.table.current_player.bet(amount)
         self.current_bet += amount
 
-    def take_player_action(self, action: Action):
+    def apply_player_action(self, action: Action):
         """
         declare action for the current player
         """

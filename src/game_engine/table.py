@@ -13,23 +13,22 @@ class Table:
     dealing community cards 
     """
 
-    def __init__(self, num_players):
+    def __init__(self):
         self.blind_pos = None
         self.community_cards = []
         
         self.deck: Deck = Deck()
 
         # Going to play 1v1 for now
-        self.num_players = num_players
 
         self.players: list[Player] = []
         self.current_player: Player = self.players[0]
 
-    def init_players(self, initial_stack):
+    def init_players(self, initial_stack, num_players):
         """
         initialize players with initial stack
         """
-        self.players = [Player(initial_stack) for _ in range(self.num_players)]
+        self.players = [Player(initial_stack) for _ in range(num_players)]
 
     # use current player to do an action ["bet", "raise", "fold"]
     

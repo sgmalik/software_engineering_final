@@ -1,3 +1,4 @@
+from dealer import Dealer
 """
 Poker Engine
 """
@@ -15,16 +16,23 @@ It needs to return information that the GUI needs
         pot 
 """
 
+    #pass a settings config when creating class to set up game
     def __init__(self, num_players, blind, initial_stack):
         self.num_players = num_players
         self.blind = blind
         self.initial_stack = initial_stack
-        
+        self.dealer = Dealer(self.blind, self.initial_stack)
+    
+    
+    def start_game(self):
+        """
+        function that will be called when starting up the GUI
+        """
+        #create the dealer
+        self.dealer.start_street()
 
-    def starting_state(self):
-        """
-        starting state: blind, initial stack, etc. something to implement later
-        """
+        #initialize players
+        self.dealer.table.init_players(self.initial_stack, self.num_players)
 
     def current_state_of_player(self):
         """
