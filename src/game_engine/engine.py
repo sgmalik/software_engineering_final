@@ -19,6 +19,7 @@ It needs to return information that the GUI needs
         self.num_players = num_players
         self.blind = blind
         self.initial_stack = initial_stack
+        
 
     def starting_state(self):
         """

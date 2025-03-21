@@ -16,7 +16,6 @@ class Table:
         current_street: current street of the game
         current_bet: current bet amount
         blind_pos: position of the blind
-
     """
 
     def __init__(self, num_players, blind, initial_stack):
@@ -54,9 +53,6 @@ class Table:
 
     # use current player to do an action ["bet", "raise", "fold"]
     def declare_action(self, action: Action):
-        """
-        declare action for the current player
-        """
         if action == Action.CALL:
             self.current_player.bet(self.current_bet)
         elif action == Action.RAISE:

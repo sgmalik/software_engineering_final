@@ -1,5 +1,6 @@
 import pygame
 
+
 class Button:
     def __init__(self, spritesheet_path, position, scale, sprite_width, sprite_height, button_type):
         """
@@ -23,16 +24,16 @@ class Button:
 
         # Define the two sprites (unpressed and pressed)
         self.set_sprites(button_type)
-        
-        #button action 
+
+        # button action
         self.action = button_type
 
         # Current sprite (default to unpressed)
         self.current_sprite = self.unpressed_sprite
 
         # Rect for collision detection
-        self.rect = pygame.Rect(position[0], position[1], self.scaled_width, self.scaled_height)
-
+        self.rect = pygame.Rect(
+            position[0], position[1], self.scaled_width, self.scaled_height)
 
     def set_sprites(self, button_type):
         match button_type:
@@ -69,7 +70,6 @@ class Button:
                 self.pressed_sprite = self.get_sprite(161, 67)
                 pass
 
-
     def get_sprite(self, x, y):
         """
         Extract a sprite from the spritesheet at the given coordinates.
@@ -78,10 +78,11 @@ class Button:
         :param y: Y coordinate in the spritesheet.
         :return: A scaled pygame.Surface representing the sprite.
         """
-        sprite = pygame.Surface((self.sprite_width, self.sprite_height), pygame.SRCALPHA)
-        sprite.blit(self.spritesheet, (0, 0), (x, y, self.sprite_width, self.sprite_height))
+        sprite = pygame.Surface(
+            (self.sprite_width, self.sprite_height), pygame.SRCALPHA)
+        sprite.blit(self.spritesheet, (0, 0),
+                    (x, y, self.sprite_width, self.sprite_height))
         return pygame.transform.scale(sprite, (self.scaled_width, self.scaled_height))
-
 
     def handle_event(self, event):
         """
@@ -98,7 +99,6 @@ class Button:
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             self.current_sprite = self.unpressed_sprite
 
-
     def draw(self, screen):
         """
         Draw the button on the screen.
@@ -106,4 +106,3 @@ class Button:
         :param screen: The Pygame surface to draw the button on.
         """
         screen.blit(self.current_sprite, self.position)
-
