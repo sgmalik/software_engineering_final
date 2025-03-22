@@ -3,6 +3,7 @@ from Deck import Deck
 from enum import Enum
 from Constants import Action
 from Constants import PlayerState
+from collections import Counter
 
 # assuming that round_state is a dictionary with the following structure:
 
@@ -46,6 +47,7 @@ from Constants import PlayerState
 
 class baselineCPU(BasePokerPlayer):
     def __init__(self, initial_stack):
+        super().__init__()
         self.hole_cards = []
         self.stack = initial_stack
         self.state = PlayerState.ACTIVE
