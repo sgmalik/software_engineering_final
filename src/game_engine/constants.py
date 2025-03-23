@@ -1,6 +1,12 @@
+"""
+enums to be used in the game engine 
+"""
 from enum import Enum
 
 class Action(Enum):
+    """
+    represents the actions a player can take
+    """
     FOLD  = 0
     CALL  = 1
     RAISE = 2
@@ -9,6 +15,9 @@ class Action(Enum):
     ANTE = 5
 
 class Street(Enum):
+    """
+    current poker street
+    """
     PREFLOP = 0
     FLOP = 1
     TURN = 2
@@ -17,6 +26,9 @@ class Street(Enum):
     FINISHED = 5
 
 class PlayerState(Enum): 
+    """
+    whether the player is active, folded, allin, waiting, or winner
+    """
     ACTIVE = 0
     FOLDED = 1
     ALLIN = 2

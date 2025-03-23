@@ -1,7 +1,6 @@
 """
 This module contains the Player class
 """
-
 from .constants import PlayerState
 
 
