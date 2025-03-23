@@ -146,11 +146,13 @@ class equityCPU(BasePokerPlayer):
 
         # need to look into valid_actions and what that holds
         if equity > 50:
-            return Action.RAISE
+            return "raise", valid_actions[2]["amount"][
+                "min"
+            ]  # min raise for now will test or add some other heuristic like bluffing
         elif equity > 25:
-            return Action.CALL
+            return "call", valid_actions[1]["amount"]
         else:
-            return Action.FOLD
+            return "fold", 0
 
     def receive_game_start_message(self, game_info):
         pass
