@@ -53,6 +53,8 @@ It needs to return information that the GUI needs
         create a data structure so that the GUI can display the current state of the game
         """
         #get the players stacks and cards
+        street = self.dealer.current_street
+        community_cards = self.dealer.table.community_cards
         players = [
         {
                 "name": player.name,
@@ -60,11 +62,13 @@ It needs to return information that the GUI needs
                 "hole_cards": player.hole_cards,
                 "state": player.state
         } for player in self.dealer.table.players]
+
+        return {
+            street: street,
+            community_cards: community_cards,
+            players: players
+        }
             
-
-
-        
-
 
     def start_next_street(self):
         """
