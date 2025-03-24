@@ -9,11 +9,12 @@ class Player:
     represents a player in the game
     """
 
-    def __init__(self, initial_stack):
+    def __init__(self, initial_stack, name):
         self.hole_cards = []
         self.stack = initial_stack
         self.state = PlayerState.ACTIVE
         self.contribuition = 0
+        self.name = name
 
     def clear_hole_cards(self):
         """

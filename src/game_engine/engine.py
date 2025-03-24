@@ -52,6 +52,29 @@ It needs to return information that the GUI needs
         """
         create a data structure so that the GUI can display the current state of the game
         """
+        #get the players stacks and cards
+        players = [
+        {
+                "name": player.name,
+                "stack": player.stack,
+                "hole_cards": player.hole_cards,
+                "state": player.state
+        } for player in self.dealer.table.players]
+            
+
+
+        
+
+
+    def start_next_street(self):
+        """
+        function that will be called when the street is over
+        """
+
+    def start_next_round(self):
+        """
+        function that will be called when the round is over
+        """
     
     def player_action(self, action: str):
         """
@@ -65,6 +88,7 @@ It needs to return information that the GUI needs
         action = Action(action)
 
         self.dealer.apply_player_action(action)
+        
 
     def winners(self):
         """

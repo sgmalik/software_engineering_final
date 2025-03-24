@@ -13,7 +13,7 @@ class Dealer:
         self.initial_stack = initial_stack
         self.pot = 0
         # setting num_players to 2 for now
-        self.table = Table(num_players=2)
+        self.table = Table()
 
      # street = preflop, flop, turn, river (use enum)
     def start_street(self):

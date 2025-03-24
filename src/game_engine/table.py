@@ -28,7 +28,15 @@ class Table:
         """
         initialize players with initial stack
         """
-        self.players = [Player(initial_stack) for _ in range(num_players)]
+        
+        #if not pc, cpu1, cpu2, etc
+        for i in num_players:
+            self.players.append(Player(initial_stack, f"cpu{i + 1}"))
+
+        # name gui player pc
+        self.players[0].name = "pc"
+        
+
 
     # use current player to do an action ["bet", "raise", "fold"]
     
