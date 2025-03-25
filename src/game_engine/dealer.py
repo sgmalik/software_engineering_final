@@ -28,13 +28,10 @@ class Dealer:
             self._turn()
         elif self.current_street == Street.RIVER:
             self._river()
-        elif self.current_street == Street.SHOWDOWN:
-            self._showdown()
-        elif self.current_street == Street.FINISHED:
-            self._finished()
+      
 
     
-    #these street functions will do what needs to be done at the start of a street
+    #these street functions will do what needs to be done at the start of a street to set up the betting round
         #dealer cards, blinds, etc
     def _preflop(self):
         """
@@ -66,14 +63,12 @@ class Dealer:
         self.table.deal_community_cards(1)
 
     # function that calls declare action on river
-
     def _river(self):
         """
         do river actions
         """
         self.table.deal_community_cards(1)
-
-    # call game_evaluator here
+    
     def _showdown(self):
         """
         use game_eval to determine winners
@@ -94,7 +89,7 @@ class Dealer:
         raise the bet by the amount
         """
         current_player = self.table.players[self.table.current_player_index]
-        
+
         current_player.bet(amount)
         self.current_bet += amount
 

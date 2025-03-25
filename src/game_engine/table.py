@@ -5,6 +5,7 @@ from .player import Player
 from .deck import Deck
 from .constants import Street
 from .constants import Action
+from .constants import PlayerState
 
 
 class Table:
@@ -71,3 +72,9 @@ class Table:
         deal num_cards to the community cards
         """
         self.community_cards += self.deck.draw_cards(num_cards)
+    
+    def active_players(self):
+        """
+        return list of active players
+        """
+        return [player for player in self.players if player.state == PlayerState.ACTIVE]
