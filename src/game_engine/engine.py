@@ -5,6 +5,7 @@ Poker Engine
 
 from .dealer import Dealer
 from .constants import Action
+from typing import Optional
 
 class Engine():
     """
@@ -63,7 +64,7 @@ It needs to return information that the GUI needs
                 "state": player.state
         } for player in self.dealer.table.players]
 
-       
+       #TODO: add surya's action history
 
         return {
             "street": street,
@@ -90,7 +91,7 @@ It needs to return information that the GUI needs
 
 
     
-    def player_action(self, action: str):
+    def player_action(self, action: str, raise_amount: Optional[int] = None):
         """
         function that will be called when its the players turn
         and they are active in the hand
@@ -101,7 +102,7 @@ It needs to return information that the GUI needs
         #convert string to Action enum
         action = Action(action)
 
-        self.dealer.apply_player_action(action)
+        self.dealer.apply_player_action(action, raise_amount)
     
     def cpu_action(self):
         """

@@ -3,6 +3,7 @@ from .constants import Street
 from .table import Table
 from .constants import Action
 from .constants import PlayerState
+from typing import Optional
 
 
 class Dealer:
@@ -29,8 +30,7 @@ class Dealer:
             self._turn()
         elif self.current_street == Street.RIVER:
             self._river()
-      
-
+    
     
     #these street functions will do what needs to be done at the start of a street to set up the betting round
         #dealer cards, blinds, etc
@@ -94,7 +94,7 @@ class Dealer:
         current_player.bet(amount)
         self.current_bet += amount
 
-    def apply_player_action(self, action: Action):
+    def apply_player_action(self, action: Action, raise_amount: Optional[int] = None):
         """
         declare action for the current player
         """
@@ -105,7 +105,7 @@ class Dealer:
         if action == Action.CALL:
             current_player.bet(self.current_bet)
         elif action == Action.RAISE:
-            pass
+            self._raise_bet(amount)
         elif action == Action.FOLD:
             pass
         elif action == Action.BIG_BLIND:

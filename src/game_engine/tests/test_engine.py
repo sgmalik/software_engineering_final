@@ -30,5 +30,8 @@ class TestEngine:
 
         assert len(pc_hole_cards) == 2
         assert len(cpu1_hole_cards) == 2
+    
+    def test_current_state_of_game(self):
+        
         
        
