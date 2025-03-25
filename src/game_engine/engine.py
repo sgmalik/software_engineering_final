@@ -67,6 +67,7 @@ It needs to return information that the GUI needs
 
         return {
             "street": street,
+            "players_turn": self.dealer.is_players_turn(),
             "community_cards": community_cards,
             "players": players
         }

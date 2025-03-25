@@ -115,7 +115,7 @@ class Dealer:
 
     def is_players_turn(self) -> bool:
         """
-        check if it is the players turn
+        check if it is the players turn, this is a helper function so we don't have to do this in GUI code
         """
         player = self.table.players[self.table.current_player_index]
         return player.name == "pc" and self.table.players[self.table.current_player_index].state == PlayerState.ACTIVE
