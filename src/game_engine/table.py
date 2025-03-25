@@ -28,10 +28,9 @@ class Table:
         """
         initialize players with initial stack
         """
-        
         #if not pc, cpu1, cpu2, etc
         for i in num_players:
-            self.players.append(Player(initial_stack, f"cpu{i + 1}"))
+            self.players.append(Player(initial_stack, f"cpu{i}"))
 
         # name gui player pc
         self.players[0].name = "pc"
@@ -45,6 +44,8 @@ class Table:
         """
         set up table for next round
         """
+        #clear dealer community cards
+        #clear player's hole_cards
 
     # set this to whos turn it is
     def next_player(self):

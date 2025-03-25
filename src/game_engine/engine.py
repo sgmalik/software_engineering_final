@@ -74,11 +74,18 @@ It needs to return information that the GUI needs
         """
         function that will be called when the street is over
         """
+        self.dealer.start_street()
+        
 
     def start_next_round(self):
         """
         function that will be called when the round is over
         """
+        
+        self.dealer.table.reset_table()
+        self.dealer.start_street()
+
+
     
     def player_action(self, action: str):
         """
