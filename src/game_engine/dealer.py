@@ -105,7 +105,7 @@ class Dealer:
         if action == Action.CALL:
             current_player.bet(self.current_bet)
         elif action == Action.RAISE:
-            self._raise_bet(amount)
+            self._raise_bet(raise_amount)
         elif action == Action.FOLD:
             pass
         elif action == Action.BIG_BLIND:
