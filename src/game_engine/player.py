@@ -16,7 +16,9 @@ class Player:
         self.hole_cards = []
         self.stack = initial_stack
         self.state = PlayerState.ACTIVE
-        self.round_action_histories = lambda: [None for _ in range(4)]
+        self.round_action_histories: List[Union[None, List[dict]]] = [
+            None for _ in range(4)
+        ]
         # 4 == len(["preflop", "flop", "turn", "river"])
         self.contribuition = 0
         self.action_histories = []
@@ -120,9 +122,10 @@ class Player:
 
     def save_round_action_histories(self, street: Street):
         self.round_action_histories[street.value] = self.action_histories
+        self.action_histories = []
 
     def clear_action_histories(self):
-        self.round_action_histories = lambda: [None for _ in range(4)]
+        self.round_action_histories = [None for _ in range(4)]
         self.action_histories = []
 
     def bet(self, amount):
