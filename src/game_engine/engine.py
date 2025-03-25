@@ -63,10 +63,11 @@ It needs to return information that the GUI needs
                 "state": player.state
         } for player in self.dealer.table.players]
 
+
         return {
-            street: street,
-            community_cards: community_cards,
-            players: players
+            "street": street,
+            "community_cards": community_cards,
+            "players": players
         }
             
 
