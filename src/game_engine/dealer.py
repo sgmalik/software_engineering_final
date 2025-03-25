@@ -87,10 +87,11 @@ class Dealer:
 
     def _raise_bet(self, amount):
         """
-        raise the bet by the amount
+        raise the current bet by the amount (this is so we can keep track of the current bet)
         """
         current_player = self.table.players[self.table.current_player_index]
 
+        #take amount from player's stack
         current_player.bet(amount)
         self.current_bet += amount
 
@@ -107,7 +108,8 @@ class Dealer:
         elif action == Action.RAISE:
             self._raise_bet(raise_amount)
         elif action == Action.FOLD:
-            pass
+            #TODO: replace this with player fold function 
+            current_player.state = PlayerState.FOLDED
         elif action == Action.BIG_BLIND:
             current_player.bet(self.blind*2)
         elif action == Action.SMALL_BLIND:
