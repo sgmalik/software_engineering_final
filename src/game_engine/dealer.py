@@ -2,6 +2,7 @@ from .deck import Deck
 from .constants import Street
 from .table import Table
 from .constants import Action
+from .constants import PlayerState
 
 
 class Dealer:
@@ -111,3 +112,10 @@ class Dealer:
             current_player.bet(self.blind*2)
         elif action == Action.SMALL_BLIND:
             current_player.bet(self.blind)
+
+    def is_players_turn(self) -> bool:
+        """
+        check if it is the players turn
+        """
+        player = self.table.players[self.table.current_player_index]
+        return player.name == "pc" and self.table.players[self.table.current_player_index].state == PlayerState.ACTIVE
