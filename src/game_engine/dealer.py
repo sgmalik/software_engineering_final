@@ -93,7 +93,9 @@ class Dealer:
         """
         raise the bet by the amount
         """
-        self.table.current_player.bet(amount)
+        current_player = self.table.players[self.table.current_player_index]
+        
+        current_player.bet(amount)
         self.current_bet += amount
 
     def apply_player_action(self, action: Action):
@@ -102,13 +104,15 @@ class Dealer:
         """
         #TODO: check if player has folded
         #TODO: check if player has enough stack to call or raise
+        current_player = self.table.players[self.table.current_player_index]
+
         if action == Action.CALL:
-            self.table.current_player.bet(self.current_bet)
+            current_player.bet(self.current_bet)
         elif action == Action.RAISE:
             pass
         elif action == Action.FOLD:
             pass
         elif action == Action.BIG_BLIND:
-            self.table.current_player.bet(self.blind*2)
+            current_player.bet(self.blind*2)
         elif action == Action.SMALL_BLIND:
-            self.table.current_player.bet(self.blind)
+            current_player.bet(self.blind)

@@ -22,18 +22,19 @@ class Table:
         # Going to play 1v1 for now
 
         self.players: list[Player] = []
-        self.current_player: Player = self.players[0]
+        self.current_player_index: int = 0
 
     def init_players(self, initial_stack, num_players):
         """
         initialize players with initial stack
         """
         #if not pc, cpu1, cpu2, etc
-        for i in num_players:
+        for i in range(num_players):
             self.players.append(Player(initial_stack, f"cpu{i}"))
 
         # name gui player pc
         self.players[0].name = "pc"
+        
         
 
 
@@ -53,10 +54,10 @@ class Table:
         set current player to the next player
         """
         #if end of players list, go back to first player
-        if self.current_player == self.players[-1]:
-            self.current_player = self.players[0]
+        if self.players[self.current_player_index] == self.players[-1]:
+            self.current_player_index = 0
         else:
-            self.current_player  = self.players[self.current_player + 1]
+            self.current_player_index  += 1
 
     def deal_hole_cards(self):
         """
