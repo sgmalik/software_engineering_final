@@ -54,8 +54,7 @@ It needs to return information that the GUI needs
         create a data structure so that the GUI can display the current state of the game
         """
         #get the players stacks and cards
-        street = self.dealer.current_street
-        community_cards = self.dealer.table.community_cards 
+        community_cards = self.dealer.table.community_cards
 
         #TODO: players shouldn't be card class, should be string representation
         #TODO: none of the classes in the engine should be returned to the GUI
@@ -70,7 +69,6 @@ It needs to return information that the GUI needs
        #TODO: add surya's action history
 
         return {
-            "street": street,
             "players_turn": self.dealer.is_players_turn(),
             "community_cards": community_cards,
             "players": players
@@ -79,20 +77,20 @@ It needs to return information that the GUI needs
 
     def start_next_street(self):
         """
-        function that will be called when the street is over
+        function that will be called when the street is over.
         """
         self.dealer.start_street()
+        #TODO: check if round is over, if so, call start_next_round
         
 
     def start_next_round(self):
         """
         function that will be called when the round is over
+        (so call this when river is done)
         """
         
         self.dealer.table.reset_table()
         self.dealer.start_street()
-
-
     
     def player_action(self, action: str, raise_amount: Optional[int] = None):
         """
@@ -124,3 +122,10 @@ It needs to return information that the GUI needs
         """
         gets the pot size to display in GUI
         """
+
+    def is_betting_over(self) -> bool:
+        """
+        check if the betting round is over
+        """
+        #if all players have bet the same amount
+        return True

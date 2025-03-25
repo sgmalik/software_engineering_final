@@ -45,9 +45,6 @@ class Dealer:
         self.table.next_player()
         self.apply_player_action(Action.BIG_BLIND)
         self.table.next_player()
-        
-        #deal hole cards
-        self.table.deal_hole_cards()
 
     # function that calls declare action on flop
     def _flop(self):
@@ -69,21 +66,20 @@ class Dealer:
         do river actions
         """
         self.table.deal_community_cards(1)
-    
-    def _showdown(self):
-        """
-        use game_eval to determine winners
-        """
-
-    def _finished(self):
-        """
-        call when round is over to reset what we need to
-        """
 
     def _next_street(self):
         """
-        changes the current street to the next street
+        changes the current street to the next street,
+        this should be called when street is over/ betting 
+        has concluded .
         """
+        if self.current_street == Street.PREFLOP:
+            self.current_street = Street.FLOP
+        elif self.current_street == Street.FLOP:
+            self.current_street = Street.TURN
+        elif self.current_street == Street.TURN:
+            self.current_street = Street.RIVER
+        
 
     def _raise_bet(self, amount):
         """
@@ -123,3 +119,6 @@ class Dealer:
         player = self.table.players[self.table.current_player_index]
         #TODO: replace with is active player func
         return player.name == "pc" and self.table.players[self.table.current_player_index].state == PlayerState.ACTIVE
+    
+   
+    
