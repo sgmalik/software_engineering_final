@@ -99,6 +99,7 @@ class Dealer:
         """
         declare action for the current player
         """
+        #NOTE: 
         #TODO: check if player has folded
         #TODO: check if player has enough stack to call or raise
         current_player = self.table.players[self.table.current_player_index]
@@ -120,4 +121,5 @@ class Dealer:
         check if it is the players turn, this is a helper function so we don't have to do this in GUI code
         """
         player = self.table.players[self.table.current_player_index]
+        #TODO: replace with is active player func
         return player.name == "pc" and self.table.players[self.table.current_player_index].state == PlayerState.ACTIVE

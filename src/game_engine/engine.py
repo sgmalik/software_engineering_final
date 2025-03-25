@@ -56,6 +56,9 @@ It needs to return information that the GUI needs
         #get the players stacks and cards
         street = self.dealer.current_street
         community_cards = self.dealer.table.community_cards 
+
+        #TODO: players shouldn't be card class, should be string representation
+        #TODO: none of the classes in the engine should be returned to the GUI
         players = [
         {
                 "name": player.name,
