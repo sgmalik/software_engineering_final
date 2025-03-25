@@ -90,6 +90,11 @@ class Dealer:
         #take amount from player's stack
         current_player.bet(amount)
         self.current_bet += amount
+        
+        #add amount to pot
+        self.pot += amount
+
+
 
     def apply_player_action(self, action: Action, raise_amount: Optional[int] = None):
         """
@@ -102,15 +107,20 @@ class Dealer:
 
         if action == Action.CALL:
             current_player.bet(self.current_bet)
+            self._add_to_pot(self.blind)
         elif action == Action.RAISE:
             self._raise_bet(raise_amount)
         elif action == Action.FOLD:
             #TODO: replace this with player fold function 
             current_player.state = PlayerState.FOLDED
         elif action == Action.BIG_BLIND:
-            current_player.bet(self.blind*2)
+            amount = self.blind*2
+            current_player.bet(amount)
+            self._add_to_pot(amount)
         elif action == Action.SMALL_BLIND:
             current_player.bet(self.blind)
+            self._add_to_pot(self.blind)
+            
 
     def is_players_turn(self) -> bool:
         """
@@ -121,4 +131,8 @@ class Dealer:
         return player.name == "pc" and self.table.players[self.table.current_player_index].state == PlayerState.ACTIVE
     
    
-    
+    def _add_to_pot(self, amount):
+        """
+        add amount to pot
+        """
+        self.pot += amount
