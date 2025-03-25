@@ -54,7 +54,7 @@ It needs to return information that the GUI needs
         """
         #get the players stacks and cards
         street = self.dealer.current_street
-        community_cards = self.dealer.table.community_cards
+        community_cards = self.dealer.table.community_cards 
         players = [
         {
                 "name": player.name,
@@ -63,6 +63,7 @@ It needs to return information that the GUI needs
                 "state": player.state
         } for player in self.dealer.table.players]
 
+       
 
         return {
             "street": street,
@@ -100,7 +101,14 @@ It needs to return information that the GUI needs
         action = Action(action)
 
         self.dealer.apply_player_action(action)
-        
+    
+    def cpu_action(self):
+        """
+        function that will be called when its the cpu's turn
+        """
+
+        #CPU is just going to call for now 
+        self.dealer.apply_player_action(Action.CALL)
 
     def winners(self):
         """
