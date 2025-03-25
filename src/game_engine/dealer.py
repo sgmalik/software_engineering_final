@@ -33,9 +33,9 @@ class Dealer:
         elif self.current_street == Street.FINISHED:
             self._finished()
 
-    # define helper functions as needed, function that calls declare action preflop,
-    # flop, turn, river
-
+    
+    #these street functions will do what needs to be done at the start of a street
+        #dealer cards, blinds, etc
     def _preflop(self):
         """
         do preflop actions 
@@ -47,6 +47,9 @@ class Dealer:
         self.table.next_player()
         self.apply_player_action(Action.BIG_BLIND)
         self.table.next_player()
+        
+        #deal hole cards
+        self.table.deal_hole_cards()
 
     # function that calls declare action on flop
     def _flop(self):
