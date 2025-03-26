@@ -16,6 +16,12 @@ class Player:
         self.contribuition = 0
         self.name = name
 
+    #eq's for removing from pending_betters, assuming names are unique
+    def __eq__(self, other_player):
+        if isinstance(other_player, Player):
+            return self.name == other_player.name
+        return False
+
     def clear_hole_cards(self):
         """
         clears the hole cards of the player

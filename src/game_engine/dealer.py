@@ -6,7 +6,7 @@ from .constants import Action
 from .constants import PlayerState
 from .player import Player
 
-
+#TODO: need to track contribuitions for raises to be correct
 class Dealer:
     def __init__(self, small_blind, initial_stack):
 
@@ -38,7 +38,7 @@ class Dealer:
 
         # add all active players to pending_betters, at start of street
         # all active players are pending betters
-        self.table.active_players = self.pending_betters
+        self.pending_betters = self.table.active_players()
 
     # these street functions will do what needs to be done at the start of a street to set up the betting round
         # dealer cards, blinds, etc
