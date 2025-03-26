@@ -103,7 +103,10 @@ It needs to return information that the GUI needs
         #convert string to Action enum
         action = Action(action)
 
+        #apply player action
         self.dealer.apply_player_action(action, raise_amount)
+        #go to next player 
+        self.dealer.table.next_player()
     
     def cpu_action(self):
         """

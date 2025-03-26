@@ -113,6 +113,11 @@ class Dealer:
             self._add_to_pot(self.current_bet)
             self._remove_better(current_player)
         elif action == Action.RAISE:
+            #we need to pay the current bet before we can raise
+            current_player.bet(self.current_bet)
+            self._add_to_pot(self.current_bet)
+
+            #do the raise action
             self._raise_bet(raise_amount)
             current_player.bet(raise_amount)
             self._add_to_pot(raise_amount)
