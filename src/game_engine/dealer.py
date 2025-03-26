@@ -149,13 +149,14 @@ class Dealer:
         #so going to have pending actions array. players that are still active will go in the array
         #so if they check they aren't in the array anymore
         #if they raise, they are in the array, and all the other players are in the array as well
+        return len(self.pending_betters) == 0
 
     def _remove_better(self, current_player):
         """
         remove current player from current_betters
         """
         self.pending_betters.remove(current_player)
-        pass
+        
 
     def _add_betters(self, current_player):
         """
