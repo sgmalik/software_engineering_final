@@ -8,11 +8,11 @@ from .player import Player
 
 
 class Dealer:
-    def __init__(self, blind, initial_stack):
+    def __init__(self, small_blind, initial_stack):
 
         self.current_street = Street.PREFLOP
-        self.current_bet = 2
-        self.blind = blind
+        self.current_bet = 0
+        self.blind = small_blind
         self.initial_stack = initial_stack
         self.pot = 0
         # setting num_players to 2 for now
@@ -36,6 +36,10 @@ class Dealer:
         elif self.current_street == Street.RIVER:
             self._river()
 
+        # add all active players to pending_betters, at start of street
+        # all active players are pending betters
+        self.table.active_players = self.pending_betters
+
     # these street functions will do what needs to be done at the start of a street to set up the betting round
         # dealer cards, blinds, etc
 
@@ -51,12 +55,15 @@ class Dealer:
         self.apply_player_action(Action.BIG_BLIND)
         self.table.next_player()
 
+        
+
     # function that calls declare action on flop
     def _flop(self):
         """
         do flop actions
         """
         self.table.deal_community_cards(3)
+        self._reset_current_bet()
 
     # function that calls declare action on turn
     def _turn(self):
@@ -64,6 +71,7 @@ class Dealer:
         do turn actions
         """
         self.table.deal_community_cards(1)
+        self._reset_current_bet()
 
     # function that calls declare action on river
     def _river(self):
@@ -71,6 +79,7 @@ class Dealer:
         do river actions
         """
         self.table.deal_community_cards(1)
+        self._reset_current_bet()
 
     def _next_street(self):
         """
@@ -119,6 +128,8 @@ class Dealer:
             amount = self.blind*2
             current_player.bet(amount)
             self._add_to_pot(amount)
+            self._raise_bet(amount)
+           
 
     def is_players_turn(self) -> bool:
         """
@@ -160,3 +171,11 @@ class Dealer:
         for player in self.table.active_players():
             if player != current_player:
                 self.pending_betters.append(player)
+
+    def _reset_current_bet(self):
+        """
+        reset current bet to 0
+        """
+        self.current_bet = 0
+
+    
