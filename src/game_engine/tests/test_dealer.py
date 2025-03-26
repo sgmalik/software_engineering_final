@@ -29,7 +29,7 @@ class TestDealer:
         assert dealer.current_bet == 0
         dealer.apply_player_action(Action.RAISE, 10)
         assert dealer.current_bet == 10
-        dealer.table.next_player()
+    
 
         #make next player does its job
         assert table.current_player.name == "cpu1"
@@ -60,7 +60,7 @@ class TestDealer:
         assert dealer.current_bet == 2
         assert dealer.pending_betters == table.active_players()
 
-
+        
         dealer.apply_player_action(Action.CALL)
         
     

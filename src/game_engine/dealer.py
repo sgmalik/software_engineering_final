@@ -51,9 +51,8 @@ class Dealer:
 
         # blinds
         self.apply_player_action(Action.SMALL_BLIND)
-        self.table.next_player()
         self.apply_player_action(Action.BIG_BLIND)
-        self.table.next_player()
+        
 
         
 
@@ -134,6 +133,7 @@ class Dealer:
             current_player.bet(amount)
             self._add_to_pot(amount)
             self._raise_bet(amount)
+        self.table.next_player()
            
 
     def is_players_turn(self) -> bool:
