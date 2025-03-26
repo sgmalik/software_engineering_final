@@ -75,8 +75,33 @@ class TestDealer:
         assert table.players[1].stack == 996
         assert dealer.pot == 7
 
-    def test_start_street(self):
+    
+    def test_contribution(self):
+        """
+        test raising when a player has already raised 
+        in the current betting round (meaning they shouldn't pay
+        all of current_bet) based on contribuition on the current street
+        """
+        dealer = Dealer(small_blind=1, initial_stack=1000)
+        table = dealer.table
+
+
+        table.init_players(initial_stack=1000, num_players=2)
+
+        dealer.apply_player_action(Action.RAISE, 10)
+        dealer.apply_player_action(Action.RAISE, 20)
+        dealer.apply_player_action(Action.CALL)
+
+
+    def test_is_betting_over(self):
         pass
+
+    def test_is_betting_over_folds(self):
+        pass
+
+    
+
+        
 
     
 
