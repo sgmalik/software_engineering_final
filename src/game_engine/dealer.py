@@ -90,14 +90,8 @@ class Dealer:
         """
         raise the current bet by the amount (this is so we can keep track of the current bet)
         """
-        current_player = self.table.current_player
-
-        
         self.current_bet += amount
-        current_player.bet(self.current_bet)
-
-        #add amount to pot
-        self.pot += self.current_bet
+        
 
     def apply_player_action(self, action: Action, raise_amount: Optional[int] = None):
         """
@@ -109,10 +103,12 @@ class Dealer:
 
         if action == Action.CALL:
             current_player.bet(self.current_bet)
+            self._add_to_pot(self.current_bet)
             self._remove_better(current_player)
-            self._add_to_pot(self.blind)
         elif action == Action.RAISE:
+            current_player.bet(self.current_bet)
             self._raise_bet(raise_amount)
+            self._add_to_pot(self.current_bet)
             self._add_betters(current_player)
         elif action == Action.FOLD:
             #TODO: replace this with player fold function 
