@@ -4,6 +4,7 @@ from .table import Table
 from .constants import Action
 from .constants import PlayerState
 from typing import Optional
+from player import Player
 
 
 class Dealer:
@@ -16,6 +17,10 @@ class Dealer:
         self.pot = 0
         # setting num_players to 2 for now
         self.table = Table()
+
+        # this array represents active 
+        # players who haven't responded to a raise yet
+        self.pending_betters = []
 
      # street = preflop, flop, turn, river (use enum)
     def start_street(self):
@@ -104,19 +109,22 @@ class Dealer:
 
         if action == Action.CALL:
             current_player.bet(self.current_bet)
+            self._remove_better(current_player)
             self._add_to_pot(self.blind)
         elif action == Action.RAISE:
             self._raise_bet(raise_amount)
+            self._add_betters(current_player)
         elif action == Action.FOLD:
             #TODO: replace this with player fold function 
             current_player.state = PlayerState.FOLDED
+            self._remove_better(current_player)
+        elif action == Action.SMALL_BLIND:
+            current_player.bet(self.blind)
+            self._add_to_pot(self.blind)
         elif action == Action.BIG_BLIND:
             amount = self.blind*2
             current_player.bet(amount)
             self._add_to_pot(amount)
-        elif action == Action.SMALL_BLIND:
-            current_player.bet(self.blind)
-            self._add_to_pot(self.blind)
             
 
     def is_players_turn(self) -> bool:
@@ -142,8 +150,19 @@ class Dealer:
         #so if they check they aren't in the array anymore
         #if they raise, they are in the array, and all the other players are in the array as well
 
-    def remove_player_from_current_betters(self, player):
+    def _remove_better(self, current_player):
         """
-        remove player from pending actions
+        remove current player from current_betters
         """
+        self.pending_betters.remove(current_player)
         pass
+
+    def _add_betters(self, current_player):
+        """
+        add all other active players to current betters
+        this will be called when a player raises the bet
+        """
+        for player in self.table.active_players():
+            if player != current_player:
+                self.pending_betters.append(player)
+        
