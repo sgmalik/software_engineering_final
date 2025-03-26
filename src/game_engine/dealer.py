@@ -18,7 +18,7 @@ class Dealer:
         # setting num_players to 2 for now
         self.table = Table()
 
-        # this array represents active 
+        # this array represents active
         # players who haven't responded to a raise yet
         self.pending_betters = []
 
@@ -35,10 +35,10 @@ class Dealer:
             self._turn()
         elif self.current_street == Street.RIVER:
             self._river()
-    
-    
-    #these street functions will do what needs to be done at the start of a street to set up the betting round
-        #dealer cards, blinds, etc
+
+    # these street functions will do what needs to be done at the start of a street to set up the betting round
+        # dealer cards, blinds, etc
+
     def _preflop(self):
         """
         do preflop actions 
@@ -84,21 +84,19 @@ class Dealer:
             self.current_street = Street.TURN
         elif self.current_street == Street.TURN:
             self.current_street = Street.RIVER
-        
 
     def _raise_bet(self, amount):
         """
         raise the current bet by the amount (this is so we can keep track of the current bet)
         """
         self.current_bet += amount
-        
 
     def apply_player_action(self, action: Action, raise_amount: Optional[int] = None):
         """
         declare action for the current player
         """
-        #TODO: check if player has folded
-        #TODO: check if player has enough stack to call or raise
+        # TODO: check if player has folded
+        # TODO: check if player has enough stack to call or raise
         current_player = self.table.current_player
 
         if action == Action.CALL:
@@ -106,12 +104,12 @@ class Dealer:
             self._add_to_pot(self.current_bet)
             self._remove_better(current_player)
         elif action == Action.RAISE:
-            current_player.bet(self.current_bet)
             self._raise_bet(raise_amount)
-            self._add_to_pot(self.current_bet)
+            current_player.bet(raise_amount)
+            self._add_to_pot(raise_amount)
             self._add_betters(current_player)
         elif action == Action.FOLD:
-            #TODO: replace this with player fold function 
+            # TODO: replace this with player fold function
             current_player.state = PlayerState.FOLDED
             self._remove_better(current_player)
         elif action == Action.SMALL_BLIND:
@@ -121,17 +119,15 @@ class Dealer:
             amount = self.blind*2
             current_player.bet(amount)
             self._add_to_pot(amount)
-            
 
     def is_players_turn(self) -> bool:
         """
         check if it is the players turn, this is a helper function so we don't have to do this in GUI code
         """
         player = self.table.current_player
-        #TODO: replace with is active player func
+        # TODO: replace with is active player func
         return player.name == "pc" and player.state == PlayerState.ACTIVE
-    
-   
+
     def _add_to_pot(self, amount):
         """
         add amount to pot
@@ -143,10 +139,10 @@ class Dealer:
         check if betting is over (to be used in game_engine),
         if betting is over than the street is over 
         """
-        #so going to have pending actions array. players that are still active will go in the array
-        #so if they check they aren't in the array anymore
-        #if they raise all the other players are in the array as well
-        #if betting is over need to set current bet to 0 (in game_engine )
+        # so going to have pending actions array. players that are still active will go in the array
+        # so if they check they aren't in the array anymore
+        # if they raise all the other players are in the array as well
+        # if betting is over need to set current bet to 0 (in game_engine )
         return len(self.pending_betters) == 0
 
     def _remove_better(self, current_player):
@@ -154,7 +150,6 @@ class Dealer:
         remove current player from current_betters
         """
         self.pending_betters.remove(current_player)
-        
 
     def _add_betters(self, current_player):
         """
@@ -165,4 +160,3 @@ class Dealer:
         for player in self.table.active_players():
             if player != current_player:
                 self.pending_betters.append(player)
-        
