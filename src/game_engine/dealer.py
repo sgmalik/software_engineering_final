@@ -90,17 +90,14 @@ class Dealer:
         #take amount from player's stack
         current_player.bet(amount)
         self.current_bet += amount
-        
+
         #add amount to pot
         self.pot += amount
-
-
 
     def apply_player_action(self, action: Action, raise_amount: Optional[int] = None):
         """
         declare action for the current player
         """
-        #NOTE: 
         #TODO: check if player has folded
         #TODO: check if player has enough stack to call or raise
         current_player = self.table.players[self.table.current_player_index]
@@ -136,3 +133,17 @@ class Dealer:
         add amount to pot
         """
         self.pot += amount
+
+    def is_betting_over(self) -> bool:
+        """
+        check if betting is over (to be used in game_engine)
+        """
+        #so going to have pending actions array. players that are still active will go in the array
+        #so if they check they aren't in the array anymore
+        #if they raise, they are in the array, and all the other players are in the array as well
+
+    def remove_player_from_current_betters(self, player):
+        """
+        remove player from pending actions
+        """
+        pass

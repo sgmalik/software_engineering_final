@@ -40,7 +40,6 @@ class Table:
 
 
     # use current player to do an action ["bet", "raise", "fold"]
-    
 
     def reset_table(self):
         """

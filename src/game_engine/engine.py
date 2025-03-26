@@ -122,10 +122,3 @@ It needs to return information that the GUI needs
         """
         gets the pot size to display in GUI
         """
-
-    def is_betting_over(self) -> bool:
-        """
-        check if the betting round is over
-        """
-        #if all players have bet the same amount
-        return True
