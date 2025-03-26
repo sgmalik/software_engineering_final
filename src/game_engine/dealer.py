@@ -90,7 +90,7 @@ class Dealer:
         """
         raise the current bet by the amount (this is so we can keep track of the current bet)
         """
-        current_player = self.table.players[self.table.current_player_index]
+        current_player = self.table.current_player
 
         #take amount from player's stack
         current_player.bet(amount)
@@ -105,7 +105,7 @@ class Dealer:
         """
         #TODO: check if player has folded
         #TODO: check if player has enough stack to call or raise
-        current_player = self.table.players[self.table.current_player_index]
+        current_player = self.table.current_player
 
         if action == Action.CALL:
             current_player.bet(self.current_bet)
@@ -131,9 +131,9 @@ class Dealer:
         """
         check if it is the players turn, this is a helper function so we don't have to do this in GUI code
         """
-        player = self.table.players[self.table.current_player_index]
+        player = self.table.current_player
         #TODO: replace with is active player func
-        return player.name == "pc" and self.table.players[self.table.current_player_index].state == PlayerState.ACTIVE
+        return player.name == "pc" and player.state == PlayerState.ACTIVE
     
    
     def _add_to_pot(self, amount):
