@@ -92,12 +92,12 @@ class Dealer:
         """
         current_player = self.table.current_player
 
-        #take amount from player's stack
-        current_player.bet(amount)
+        
         self.current_bet += amount
+        current_player.bet(self.current_bet)
 
         #add amount to pot
-        self.pot += amount
+        self.pot += self.current_bet
 
     def apply_player_action(self, action: Action, raise_amount: Optional[int] = None):
         """
@@ -150,6 +150,7 @@ class Dealer:
         #so going to have pending actions array. players that are still active will go in the array
         #so if they check they aren't in the array anymore
         #if they raise all the other players are in the array as well
+        #if betting is over need to set current bet to 0 (in game_engine )
         return len(self.pending_betters) == 0
 
     def _remove_better(self, current_player):
