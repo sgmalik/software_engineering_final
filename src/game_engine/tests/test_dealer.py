@@ -55,22 +55,25 @@ class TestDealer:
 
 
         table.init_players(initial_stack=1000, num_players=2)
+
+        #start preflop 
         dealer.start_street()
         #after blinds current_bet should be 2
         assert dealer.current_bet == 2
         assert dealer.pending_betters == table.active_players()
 
-        
-        dealer.apply_player_action(Action.CALL)
-        
-    
+        #after blinds its pc's turn
         assert dealer.table.current_player.name == "pc"
+
+        dealer.apply_player_action(Action.CALL)
         dealer.apply_player_action(Action.CALL)
 
         
-        assert table.players[0].stack == 999
-        assert table.players[1].stack == 998
-        assert dealer.pot == 3
+        #stacks and pot are after two blinds (blind_pos starts with p1)
+        # so p1 pays 1, p2 pays 2, they both call 2
+        assert table.players[0].stack == 997
+        assert table.players[1].stack == 996
+        assert dealer.pot == 7
 
     def test_start_street(self):
         pass

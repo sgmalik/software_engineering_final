@@ -54,8 +54,6 @@ class Dealer:
         self.apply_player_action(Action.BIG_BLIND)
         
 
-        
-
     # function that calls declare action on flop
     def _flop(self):
         """
