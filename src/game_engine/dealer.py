@@ -1,10 +1,10 @@
+from typing import Optional
 from .deck import Deck
 from .constants import Street
 from .table import Table
 from .constants import Action
 from .constants import PlayerState
-from typing import Optional
-from player import Player
+from .player import Player
 
 
 class Dealer:
@@ -144,11 +144,12 @@ class Dealer:
 
     def is_betting_over(self) -> bool:
         """
-        check if betting is over (to be used in game_engine)
+        check if betting is over (to be used in game_engine),
+        if betting is over than the street is over 
         """
         #so going to have pending actions array. players that are still active will go in the array
         #so if they check they aren't in the array anymore
-        #if they raise, they are in the array, and all the other players are in the array as well
+        #if they raise all the other players are in the array as well
         return len(self.pending_betters) == 0
 
     def _remove_better(self, current_player):
@@ -163,6 +164,7 @@ class Dealer:
         add all other active players to current betters
         this will be called when a player raises the bet
         """
+        self.pending_betters = []
         for player in self.table.active_players():
             if player != current_player:
                 self.pending_betters.append(player)

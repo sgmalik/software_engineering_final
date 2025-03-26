@@ -15,12 +15,11 @@ class Table:
     """
 
     def __init__(self):
-        self.blind_pos = None
+        #left of button is small blind, left of small blinder, big blinder
+        self.blind_pos = 0
         self.community_cards = []
         
         self.deck: Deck = Deck()
-
-        # Going to play 1v1 for now
 
         self.players: list[Player] = []
         self.current_player_index: int = 0
@@ -36,8 +35,6 @@ class Table:
         # name gui player pc
         self.players[0].name = "pc"
         
-        
-
 
     # use current player to do an action ["bet", "raise", "fold"]
 
@@ -54,6 +51,7 @@ class Table:
         set current player to the next player
         """
         #if end of players list, go back to first player
+        #this needs to be based on only active players
         if self.players[self.current_player_index] == self.players[-1]:
             self.current_player_index = 0
         else:
@@ -65,6 +63,18 @@ class Table:
         """
         for player in self.players:
             player.hole_cards = self.deck.draw_cards(2)
+
+    def set_blind_pos(self):
+        """
+        start of the round set the small blind pos,
+        since we are playing heads up, for now just swapping between
+        2 players
+        """
+        if self.blind_pos == 0:
+            self.blind_pos = 1
+        else:
+            self.blind_pos = 0
+        
 
     def deal_community_cards(self, num_cards):
         """
