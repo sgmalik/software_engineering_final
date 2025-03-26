@@ -15,14 +15,14 @@ class Table:
     """
 
     def __init__(self):
-        #left of button is small blind, left of small blinder, big blinder
+        
         self.blind_pos = 0
         self.community_cards = []
         
         self.deck: Deck = Deck()
 
         self.players: list[Player] = []
-        self.current_player_index: int = 0
+        self.current_player = None
 
     def init_players(self, initial_stack, num_players):
         """
@@ -35,8 +35,9 @@ class Table:
         # name gui player pc
         self.players[0].name = "pc"
         
-
-    # use current player to do an action ["bet", "raise", "fold"]
+        # init current player to first player
+        self.current_player = self.players[0]
+        
 
     def reset_table(self):
         """
@@ -50,12 +51,13 @@ class Table:
         """
         set current player to the next player
         """
-        #if end of players list, go back to first player
-        #this needs to be based on only active players
-        if self.players[self.current_player_index] == self.players[-1]:
-            self.current_player_index = 0
+        #For heads up, don't need to change this
+        #more players needs to be based on active players
+        if self.current_player == self.players[-1]:
+            self.current_player = self.players[0]
         else:
-            self.current_player_index  += 1
+            index = self.players.index(self.current_player)
+            self.current_player = self.players[index + 1]
 
     def deal_hole_cards(self):
         """
