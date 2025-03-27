@@ -111,15 +111,63 @@ class TestDealer:
 
         assert pc.contribuition == 30
         assert cpu1.contribuition == 30
+        assert dealer.pot == 60
 
     def test_is_betting_over(self):
-        pass
+        dealer = Dealer(small_blind=1, initial_stack=1000)
+        table = dealer.table
+        table.init_players(initial_stack=1000, num_players=2)
+
+
+
+        dealer.start_street()
+        assert dealer.is_betting_over() is False
+
+        #if player 1 raises, and then p2 calls then betting for the street is over
+        dealer.apply_player_action(Action.RAISE, 100)
+        dealer.apply_player_action(Action.CALL)
+        assert dealer.is_betting_over() is True
+
+        #go to next street betting should begin
+        dealer.start_street()
+        assert dealer.is_betting_over() is False
+
+        dealer.apply_player_action(Action.CALL)
+        dealer.apply_player_action(Action.CALL)
+        assert dealer.is_betting_over() is True
+
+        #if both players raise betting should not be over
+        dealer.start_street()
+        dealer.apply_player_action(Action.RAISE, 10)
+        dealer.apply_player_action(Action.RAISE, 10)
+        assert dealer.is_betting_over() is False
+
+        #if player raise's again we are still betting
+        dealer.apply_player_action(Action.RAISE, 30)
+        assert dealer.is_betting_over() is False
+
+        #if player calls after the raise we are done betting
+        dealer.apply_player_action(Action.CALL)
+        assert dealer.is_betting_over() is True
 
     def test_is_betting_over_folds(self):
         """
-        
+        this fails but I think I dont want is_betting_over
+        to check if all but one has folded, that will be something 
+        like is_round_over
         """
-        pass
+
+        dealer = Dealer(small_blind=1, initial_stack=1000)
+        table = dealer.table
+
+        table.init_players(initial_stack=1000, num_players=2)
+        dealer.start_street()
+        #if one player folds betting is over 
+        
+        dealer.apply_player_action(Action.FOLD)
+        assert dealer.is_betting_over() is True
+
+        
 
 
 

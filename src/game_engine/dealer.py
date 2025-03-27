@@ -166,7 +166,9 @@ class Dealer:
         # so going to have pending actions array. players that are still active will go in the array
         # so if they check they aren't in the array anymore
         # if they raise all the other players are in the array as well
-        # if betting is over need to set current bet to 0 (in game_engine )
+        # if betting is over need to set current bet to 0 (in game_engine)
+
+        #should this check if every other player is folded. 
         return len(self.pending_betters) == 0
 
     def _remove_better(self, current_player):
@@ -191,11 +193,20 @@ class Dealer:
         """
         self.current_bet = 0
 
+    #TODO: should probably be table function 
     def _reset_contribuiton(self):
         """
         after every street we need to reset the contribuition of every player
         """
         for player in self.table.players:
             player.contribuition = 0
+
+    def _is_round_over(self):
+        """
+        the round is over when betting is over on the
+        river street 
+        """
+
+
 
     
