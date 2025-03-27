@@ -6,7 +6,9 @@ from .constants import Action
 from .constants import PlayerState
 from .player import Player
 
-#TODO: need to track contribuitions for raises to be correct
+# TODO: need to track contribuitions for raises to be correct
+
+
 class Dealer:
     def __init__(self, small_blind, initial_stack):
 
@@ -22,65 +24,6 @@ class Dealer:
         # players who haven't responded to a bet yet
         self.pending_betters = []
 
-     # street = preflop, flop, turn, river (use enum)
-    def start_street(self):
-        """
-        start the round by calling street functions
-        """
-        if self.current_street == Street.PREFLOP:
-            self._preflop()
-        elif self.current_street == Street.FLOP:
-            self._flop()
-        elif self.current_street == Street.TURN:
-            self._turn()
-        elif self.current_street == Street.RIVER:
-            self._river()
-
-        # add all active players to pending_betters, at start of street
-        # all active players are pending betters
-        self.pending_betters = self.table.active_players()
-        
-        #reset player contributions at start of street
-        self._reset_contribuiton()
-
-    # these street functions will do what needs to be done at the start of a street to set up the betting round
-        # dealer cards, blinds, etc
-
-    def _preflop(self):
-        """
-        do preflop actions 
-        """
-        self.table.deal_hole_cards()
-
-        # blinds
-        self.apply_player_action(Action.SMALL_BLIND)
-        self.apply_player_action(Action.BIG_BLIND)
-        
-
-    # function that calls declare action on flop
-    def _flop(self):
-        """
-        do flop actions
-        """
-        self.table.deal_community_cards(3)
-        self._reset_current_bet()
-
-    # function that calls declare action on turn
-    def _turn(self):
-        """
-        do turn actions
-        """
-        self.table.deal_community_cards(1)
-        self._reset_current_bet()
-
-    # function that calls declare action on river
-    def _river(self):
-        """
-        do river actions
-        """
-        self.table.deal_community_cards(1)
-        self._reset_current_bet()
-
     def next_street(self):
         """
         changes the current street to the next street,
@@ -95,14 +38,71 @@ class Dealer:
             self.current_street = Street.TURN
         elif self.current_street == Street.TURN:
             self.current_street = Street.RIVER
-        
+
+     # street = preflop, flop, turn, river (use enum)
+    def start_street(self):
+        """
+        start the round by calling street functions
+        """
+        if self.current_street == Street.PREFLOP:
+            self._start_preflop()
+        elif self.current_street == Street.FLOP:
+            self._start_flop()
+        elif self.current_street == Street.TURN:
+            self._start_turn()
+        elif self.current_street == Street.RIVER:
+            self._start_river()
+
+        # add all active players to pending_betters, at start of street
+        # all active players are pending betters
+        self.pending_betters = self.table.active_players()
+
+        # reset player contributions at start of street
+        self.table.reset_contribuition()
+
+    # these street functions will do what needs to be done at the start of a street to set up the betting round
+        # dealer cards, blinds, etc
+
+    def _start_preflop(self):
+        """
+        do preflop actions 
+        """
+        self.table.deal_hole_cards()
+
+        # blinds
+        self.apply_player_action(Action.SMALL_BLIND)
+        self.apply_player_action(Action.BIG_BLIND)
+
+   
+
+    def _start_flop(self):
+        """
+        do start of flop actions
+        """
+        self.table.deal_community_cards(3)
+        self._reset_current_bet()
+
+   
+    def _start_turn(self):
+        """
+        do start of turn actions
+        """
+        self.table.deal_community_cards(1)
+        self._reset_current_bet()
+
+    
+    def _start_river(self):
+        """
+        do start of river actions
+        """
+        self.table.deal_community_cards(1)
+        self._reset_current_bet()
 
     def _raise_bet(self, amount):
         """
         raise the current bet by the amount (this is so we can keep track of the current bet)
         """
         self.current_bet += amount
-        
 
     def apply_player_action(self, action: Action, raise_amount: Optional[int] = None):
         """
@@ -114,7 +114,7 @@ class Dealer:
         if action == Action.CALL:
             self._call()
         elif action == Action.RAISE:
-            #we need to pay the current bet before we can raise
+            # we need to pay the current bet before we can raise
             self._raise(raise_amount)
         elif action == Action.FOLD:
             # TODO: replace this with player fold function
@@ -129,33 +129,29 @@ class Dealer:
     def _blind(self, blind):
         self.table.current_player.bet(blind)
         self._add_to_pot(blind)
-    
+
     def _fold(self):
         self.table.current_player.state = PlayerState.FOLDED
         self._remove_better(self.table.current_player)
 
     def _raise(self, raise_amount):
-        #need to pay current bet first 
+        # need to pay current bet first
         call_amount = self.current_bet - self.table.current_player.contribuition
         self.table.current_player.bet(call_amount)
         self._add_to_pot(call_amount)
 
-        #do the raise action
+        # do the raise action
         self._raise_bet(raise_amount)
         self.table.current_player.bet(raise_amount)
         self._add_to_pot(raise_amount)
         self._add_betters(self.table.current_player)
-        
 
     def _call(self):
         call_amount = self.current_bet - self.table.current_player.contribuition
         self.table.current_player.bet(call_amount)
-            
 
         self._add_to_pot(call_amount)
         self._remove_better(self.table.current_player)
-
-
 
     def is_players_turn(self) -> bool:
         """
@@ -181,9 +177,9 @@ class Dealer:
         # if they raise all the other players are in the array as well
         # if betting is over need to set current bet to 0 (in game_engine)
 
-        #should this check if every other player is folded.
+        # should this check if every other player is folded.
 
-        # when checking if betting is over and thats true, you should check if the round is over 
+        # when checking if betting is over and thats true, you should check if the round is over
         return len(self.pending_betters) == 0 or len(self.table.active_players()) == 1
 
     def _remove_better(self, current_player):
@@ -208,15 +204,10 @@ class Dealer:
         """
         self.current_bet = 0
 
-    #TODO: should probably be table function 
-    def _reset_contribuiton(self):
-        """
-        after every street we need to reset the contribuition of every player
-        """
-        for player in self.table.players:
-            player.contribuition = 0
+    # TODO: should probably be table function
+   
 
-    def is_round_over(self) -> bool: 
+    def is_round_over(self) -> bool:
         """
         the round is over when betting is over on the
         river street 
@@ -230,7 +221,3 @@ class Dealer:
         if len(self.table.active_players()) == 1:
             return True
         return False
-
-
-
-    

@@ -89,3 +89,10 @@ class Table:
         return list of active players
         """
         return [player for player in self.players if player.state == PlayerState.ACTIVE]
+    
+    def reset_contribuition(self):
+        """
+        after every street we need to reset the contribuition of every player
+        """
+        for player in self.players:
+            player.contribuition = 0
