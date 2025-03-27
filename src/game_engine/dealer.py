@@ -114,7 +114,6 @@ class Dealer:
         if action == Action.CALL:
             self._call()
         elif action == Action.RAISE:
-            # we need to pay the current bet before we can raise
             self._raise(raise_amount)
         elif action == Action.FOLD:
             # TODO: replace this with player fold function
@@ -204,9 +203,7 @@ class Dealer:
         """
         self.current_bet = 0
 
-    # TODO: should probably be table function
-   
-
+    
     def is_round_over(self) -> bool:
         """
         the round is over when betting is over on the
