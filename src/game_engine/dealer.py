@@ -19,7 +19,7 @@ class Dealer:
         self.table = Table()
 
         # this array represents active
-        # players who haven't responded to a raise yet
+        # players who haven't responded to a bet yet
         self.pending_betters = []
 
      # street = preflop, flop, turn, river (use enum)
@@ -39,6 +39,9 @@ class Dealer:
         # add all active players to pending_betters, at start of street
         # all active players are pending betters
         self.pending_betters = self.table.active_players()
+        
+        #reset player contributions at start of street
+        self._reset_contribuiton()
 
     # these street functions will do what needs to be done at the start of a street to set up the betting round
         # dealer cards, blinds, etc
@@ -96,6 +99,7 @@ class Dealer:
         raise the current bet by the amount (this is so we can keep track of the current bet)
         """
         self.current_bet += amount
+        
 
     def apply_player_action(self, action: Action, raise_amount: Optional[int] = None):
         """
@@ -106,14 +110,19 @@ class Dealer:
         current_player = self.table.current_player
 
         if action == Action.CALL:
-            current_player.bet(self.current_bet)
-            self._add_to_pot(self.current_bet)
+            call_amount = self.current_bet - current_player.contribuition
+            current_player.bet(call_amount)
+            
+
+            self._add_to_pot(call_amount)
             self._remove_better(current_player)
+        
         elif action == Action.RAISE:
             #we need to pay the current bet before we can raise
+            call_amount = self.current_bet - current_player.contribuition
             current_player.bet(self.current_bet)
             self._add_to_pot(self.current_bet)
-
+           
             #do the raise action
             self._raise_bet(raise_amount)
             current_player.bet(raise_amount)
@@ -125,6 +134,7 @@ class Dealer:
             self._remove_better(current_player)
         elif action == Action.SMALL_BLIND:
             current_player.bet(self.blind)
+        
             self._add_to_pot(self.blind)
         elif action == Action.BIG_BLIND:
             amount = self.blind*2
@@ -180,5 +190,12 @@ class Dealer:
         reset current bet to 0
         """
         self.current_bet = 0
+
+    def _reset_contribuiton(self):
+        """
+        after every street we need to reset the contribuition of every player
+        """
+        for player in self.table.players:
+            player.contribuition = 0
 
     

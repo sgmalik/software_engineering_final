@@ -3,8 +3,12 @@ from game_engine.constants import PlayerState, Action
 class TestDealer:
     
 
-    #simple raise test seeing if values are changed as expected
+    
     def test_apply_player_action_raise(self):
+       """
+       simple raise test seeing if values are changed as expected
+       """
+
        dealer = Dealer(small_blind=1, initial_stack=1000)
        table = dealer.table
 
@@ -20,6 +24,9 @@ class TestDealer:
     
     
     def test_two_raises(self):
+        """
+        raising twice to test current_bet is working as expected
+        """
         dealer = Dealer(small_blind=1, initial_stack=1000)
         table = dealer.table
 
@@ -43,6 +50,7 @@ class TestDealer:
         assert dealer.pot == 40
 
     def test_raises_with_contribuitions(self):
+        #TODO:
         dealer = Dealer(small_blind=1, initial_stack=1000)
         table = dealer.table
 
@@ -50,6 +58,9 @@ class TestDealer:
 
 
     def test_check(self):
+        """
+        test checking when initial blinds are done
+        """
         dealer = Dealer(small_blind=1, initial_stack=1000)
         table = dealer.table
 
@@ -92,14 +103,25 @@ class TestDealer:
         dealer.apply_player_action(Action.RAISE, 20)
         dealer.apply_player_action(Action.CALL)
 
+        pc = dealer.table.players[0]
+        cpu1 = dealer.table.players[1]
+
+        assert pc.stack == 970
+        assert cpu1.stack == 970
+
+        assert pc.contribuition == 30
+        assert cpu1.contribuition == 30
 
     def test_is_betting_over(self):
         pass
 
     def test_is_betting_over_folds(self):
+        """
+        
+        """
         pass
 
-    
+
 
         
 
