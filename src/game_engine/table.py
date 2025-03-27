@@ -20,7 +20,7 @@ class Table:
         self.community_cards = []
         
         self.deck: Deck = Deck()
-
+        self.pot = 0
         self.players: list[Player] = []
         self.current_player = None
 
@@ -77,7 +77,6 @@ class Table:
         else:
             self.blind_pos = 0
         
-
     def deal_community_cards(self, num_cards):
         """
         deal num_cards to the community cards
@@ -96,3 +95,17 @@ class Table:
         """
         for player in self.players:
             player.contribuition = 0
+
+    def add_to_pot(self, amount):
+        """
+        add amount to pot
+        """
+        self.pot += amount
+
+    def is_players_turn(self) -> bool:
+        """
+        check if it is the players turn, this is a helper function so we don't have to do this in GUI code
+        """
+        
+        # TODO: replace with is active player func
+        return self.current_player.name == "pc" and self.current_player.state == PlayerState.ACTIVE
