@@ -81,11 +81,13 @@ class Dealer:
         self.table.deal_community_cards(1)
         self._reset_current_bet()
 
-    def _next_street(self):
+    def next_street(self):
         """
         changes the current street to the next street,
         this should be called when street is over/ betting 
-        has concluded .
+        has concluded.
+
+        call in engine.py
         """
         if self.current_street == Street.PREFLOP:
             self.current_street = Street.FLOP
@@ -93,6 +95,7 @@ class Dealer:
             self.current_street = Street.TURN
         elif self.current_street == Street.TURN:
             self.current_street = Street.RIVER
+        
 
     def _raise_bet(self, amount):
         """
@@ -107,42 +110,52 @@ class Dealer:
         """
         # TODO: check if player has folded
         # TODO: check if player has enough stack to call or raise
-        current_player = self.table.current_player
 
         if action == Action.CALL:
-            call_amount = self.current_bet - current_player.contribuition
-            current_player.bet(call_amount)
-            
-
-            self._add_to_pot(call_amount)
-            self._remove_better(current_player)
-        
+            self._call()
         elif action == Action.RAISE:
             #we need to pay the current bet before we can raise
-            call_amount = self.current_bet - current_player.contribuition
-            current_player.bet(self.current_bet)
-            self._add_to_pot(self.current_bet)
-           
-            #do the raise action
-            self._raise_bet(raise_amount)
-            current_player.bet(raise_amount)
-            self._add_to_pot(raise_amount)
-            self._add_betters(current_player)
+            self._raise(raise_amount)
         elif action == Action.FOLD:
             # TODO: replace this with player fold function
-            current_player.state = PlayerState.FOLDED
-            self._remove_better(current_player)
+            self._fold()
         elif action == Action.SMALL_BLIND:
-            current_player.bet(self.blind)
-        
-            self._add_to_pot(self.blind)
+            self._blind(self.blind)
         elif action == Action.BIG_BLIND:
-            amount = self.blind*2
-            current_player.bet(amount)
-            self._add_to_pot(amount)
-            self._raise_bet(amount)
+            self._blind(self.blind*2)
+            self.current_bet = self.blind*2
         self.table.next_player()
-           
+
+    def _blind(self, blind):
+        self.table.current_player.bet(blind)
+        self._add_to_pot(blind)
+    
+    def _fold(self):
+        self.table.current_player.state = PlayerState.FOLDED
+        self._remove_better(self.table.current_player)
+
+    def _raise(self, raise_amount):
+        #need to pay current bet first 
+        call_amount = self.current_bet - self.table.current_player.contribuition
+        self.table.current_player.bet(call_amount)
+        self._add_to_pot(call_amount)
+
+        #do the raise action
+        self._raise_bet(raise_amount)
+        self.table.current_player.bet(raise_amount)
+        self._add_to_pot(raise_amount)
+        self._add_betters(self.table.current_player)
+        
+
+    def _call(self):
+        call_amount = self.current_bet - self.table.current_player.contribuition
+        self.table.current_player.bet(call_amount)
+            
+
+        self._add_to_pot(call_amount)
+        self._remove_better(self.table.current_player)
+
+
 
     def is_players_turn(self) -> bool:
         """
@@ -168,8 +181,10 @@ class Dealer:
         # if they raise all the other players are in the array as well
         # if betting is over need to set current bet to 0 (in game_engine)
 
-        #should this check if every other player is folded. 
-        return len(self.pending_betters) == 0
+        #should this check if every other player is folded.
+
+        # when checking if betting is over and thats true, you should check if the round is over 
+        return len(self.pending_betters) == 0 or len(self.table.active_players()) == 1
 
     def _remove_better(self, current_player):
         """
@@ -201,11 +216,20 @@ class Dealer:
         for player in self.table.players:
             player.contribuition = 0
 
-    def _is_round_over(self):
+    def is_round_over(self) -> bool: 
         """
         the round is over when betting is over on the
         river street 
+
+        or
+
+        all but one players have folded 
         """
+        if self.current_street == Street.RIVER and self.is_betting_over():
+            return True
+        if len(self.table.active_players()) == 1:
+            return True
+        return False
 
 
 

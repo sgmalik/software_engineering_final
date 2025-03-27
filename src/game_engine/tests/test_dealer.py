@@ -1,3 +1,6 @@
+"""
+tests for dealer class: most of these tests are assuming only two players
+"""
 from game_engine.dealer import Dealer
 from game_engine.constants import PlayerState, Action
 class TestDealer:
@@ -67,7 +70,7 @@ class TestDealer:
 
         table.init_players(initial_stack=1000, num_players=2)
 
-        #start preflop 
+        #start preflop
         dealer.start_street()
         #after blinds current_bet should be 2
         assert dealer.current_bet == 2
@@ -119,7 +122,6 @@ class TestDealer:
         table.init_players(initial_stack=1000, num_players=2)
 
 
-
         dealer.start_street()
         assert dealer.is_betting_over() is False
 
@@ -129,6 +131,7 @@ class TestDealer:
         assert dealer.is_betting_over() is True
 
         #go to next street betting should begin
+        dealer.next_street()
         dealer.start_street()
         assert dealer.is_betting_over() is False
 
@@ -137,6 +140,7 @@ class TestDealer:
         assert dealer.is_betting_over() is True
 
         #if both players raise betting should not be over
+        dealer.next_street()
         dealer.start_street()
         dealer.apply_player_action(Action.RAISE, 10)
         dealer.apply_player_action(Action.RAISE, 10)
@@ -150,7 +154,7 @@ class TestDealer:
         dealer.apply_player_action(Action.CALL)
         assert dealer.is_betting_over() is True
 
-    def test_is_betting_over_folds(self):
+    def test_is_betting_over_fold(self):
         """
         this fails but I think I dont want is_betting_over
         to check if all but one has folded, that will be something 
@@ -162,11 +166,65 @@ class TestDealer:
 
         table.init_players(initial_stack=1000, num_players=2)
         dealer.start_street()
-        #if one player folds betting is over 
-        
+
+        #if one player folds betting is over, and the round is over
         dealer.apply_player_action(Action.FOLD)
         assert dealer.is_betting_over() is True
 
+    def test_is_round_over_fold(self):
+        """
+        test if round is over when 1 player folds 
+        """
+        dealer = Dealer(small_blind=1, initial_stack=1000)
+        table = dealer.table
+
+        table.init_players(initial_stack=1000, num_players=2)
+        dealer.start_street()
+
+        dealer.apply_player_action(Action.FOLD)
+        assert dealer.is_round_over() is True
+
+    def test_round_over_river(self):
+        dealer = Dealer(small_blind=1, initial_stack=1000)
+        table = dealer.table
+
+        table.init_players(initial_stack=1000, num_players=2)
+
+        #start preflop
+        dealer.start_street()
+
+        #preflop betting 
+        dealer.apply_player_action(Action.RAISE, 10)
+        dealer.apply_player_action(Action.CALL)
+
+        assert dealer.is_round_over() is False
+
+        #flop
+        dealer.next_street()
+        dealer.start_street()
+        dealer.apply_player_action(Action.RAISE, 10)
+        dealer.apply_player_action(Action.CALL)
+
+        assert dealer.is_round_over() is False
+        #turn
+        dealer.next_street()
+        dealer.start_street()
+        dealer.apply_player_action(Action.RAISE, 10)
+        dealer.apply_player_action(Action.CALL)
+
+        assert dealer.is_round_over() is False
+
+        #river
+        dealer.next_street()
+        dealer.start_street()
+        dealer.apply_player_action(Action.RAISE, 10)
+        dealer.apply_player_action(Action.CALL)
+
+        assert dealer.is_round_over() is True
+        assert dealer.pot == 87
+
+
+       
         
 
 
