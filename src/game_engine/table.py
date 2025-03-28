@@ -97,12 +97,6 @@ class Table:
         for player in self.players:
             player.contribuition = 0
 
-    def add_to_pot(self, amount):
-        """
-        add amount to pot
-        """
-        self.pot += amount
-
     def is_players_turn(self) -> bool:
         """
         check if it is the players turn, this is a helper function so we don't have to do this in GUI code

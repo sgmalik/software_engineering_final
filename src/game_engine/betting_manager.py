@@ -2,15 +2,26 @@ from .constants import Action
 from .table import Table
 from .constants import PlayerState
 
+
 class BettingManager: 
+    """
+    the purpose of betting manager, is to track pending_betters (who is still in the hand)
+    as well as update table information based on player action
+    """
     def __init__(self, table, blind):
         
         self.table = table
         self.current_bet = 0
         self.blind = blind
+
+        # this array represents active
+        # players who haven't responded to a bet yet
         self.pending_betters = []
 
     def reset_betting_round(self):
+        """
+        set up betting state, for the next street
+        """
         self.current_bet = 0
         self.pending_betters = self.table.active_players()
         self.table.reset_contribution()
@@ -34,14 +45,23 @@ class BettingManager:
         self.table.next_player()
 
     def _blind(self, current_player, blind):
+        """
+        blind player action
+        """
         current_player.bet(blind)
         self.table.pot.add_to_pot(blind)
 
     def _fold(self, current_player):
+        """
+        change playerState, remove from pending betters
+        """
         current_player.state = PlayerState.FOLDED
         self._remove_better(current_player)
 
     def _raise(self, current_player, raise_amount):
+        """
+        pay current bet, raise bet 
+        """
         # need to pay current bet first
         call_amount = self.current_bet - current_player.contribuition
         current_player.bet(call_amount)
@@ -54,6 +74,9 @@ class BettingManager:
         self._add_betters(current_player)
 
     def _call(self, current_player):
+        """
+        pay current bet
+        """
         call_amount = self.current_bet - current_player.contribuition
         current_player.bet(call_amount)
 
@@ -62,17 +85,9 @@ class BettingManager:
 
     def is_betting_over(self) -> bool:
         """
-        check if betting is over (to be used in game_engine),
-        if betting is over than the street is over 
+        check if betting is over (to be used in dealer),
+        if betting is over than the street is over
         """
-        # so going to have pending actions array. players that are still active will go in the array
-        # so if they check they aren't in the array anymore
-        # if they raise all the other players are in the array as well
-        # if betting is over need to set current bet to 0 (in game_engine)
-
-        # should this check if every other player is folded.
-
-        # when checking if betting is over and thats true, you should check if the round is over
         return len(self.pending_betters) == 0 or len(self.table.active_players()) == 1
 
     def _remove_better(self, current_player):
