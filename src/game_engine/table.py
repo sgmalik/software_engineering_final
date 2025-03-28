@@ -6,6 +6,7 @@ from .deck import Deck
 from .constants import Street
 from .constants import Action
 from .constants import PlayerState
+from .pot import Pot
 
 
 class Table:
@@ -20,7 +21,7 @@ class Table:
         self.community_cards = []
         
         self.deck: Deck = Deck()
-
+        self.pot = Pot()
         self.players: list[Player] = []
         self.current_player = None
 
