@@ -77,3 +77,13 @@ Most of the information that GUI gets should be from current_state_of_the_game, 
 be a string representation of the state of the game. 
 
 
+## Stuff to do in game_engine: 
+* hand_eval check rank functions (two pair, flush, etc)
+* game_eval (evaluate_winners) 
+* game_eval/pot: side pots (not needed for a while)
+* game_engine: current state of the game
+    this will likely be involved and require a lot of helper functions 
+* game_engine: CPU action using the surya's cpus
+* game_engine: function that uses game_eval to get the winner of the round.
+* need a check when a player stacks == 0 / game is over 
+* create more extensive tests for dealer
