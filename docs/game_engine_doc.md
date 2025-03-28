@@ -65,3 +65,15 @@ table keeps track of players, deck, and holds the pot. It has methods to deal ca
 **players_turn**: to be used in game_engine so the GUI knows when its the players turn 
 **active_players**: returns an array of all the players that are active in a hand 
 
+
+## Engine
+**currently unimplemented** 
+
+the Engine class works as an inbetween between the GUI and our game logic. Ideally, the only functions that will be called from the GameEngine will
+be current_state_of_the_game which will use (dealer,player,game_eval,hand_eval, etc) to return an object containing all the information the GUI needs. A start street wrapper 
+function and a next_street wrapper. As well as functions to start a round, and start game. 
+
+Most of the information that GUI gets should be from current_state_of_the_game, and this object shouldn't contain any classes that we use in game_engine. It should 
+be a string representation of the state of the game. 
+
+
