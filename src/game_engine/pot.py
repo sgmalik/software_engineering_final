@@ -1,6 +1,6 @@
 class Pot: 
     def __init__(self):
-        self.pot = 0
+        self.value = 0
     
     def add_to_pot(self, amount):
-        pot += amount
+        self.value += amount

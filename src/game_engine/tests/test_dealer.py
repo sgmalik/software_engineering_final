@@ -18,12 +18,12 @@ class TestDealer:
        table.init_players(initial_stack=1000, num_players=2)
 
        #raise 10 
-       dealer.apply_player_action(Action.RAISE, 10)
+       dealer.apply_action(Action.RAISE, 10)
         
        assert table.players[0].stack == 990
        
-       assert dealer.current_bet == 10
-       assert dealer.pot == 10
+       assert dealer.betting_manager.current_bet == 10
+       assert dealer.table.pot.value == 10
     
     
     def test_two_raises(self):
@@ -36,21 +36,21 @@ class TestDealer:
         table.init_players(initial_stack=1000, num_players=2)
 
         #pc raises 10
-        assert dealer.current_bet == 0
-        dealer.apply_player_action(Action.RAISE, 10)
-        assert dealer.current_bet == 10
+        assert dealer.betting_manager.current_bet == 0
+        dealer.apply_action(Action.RAISE, 10)
+        assert dealer.betting_manager.current_bet == 10
     
 
         #make next player does its job
         assert table.current_player.name == "cpu1"
         
         #cpu1 calls 10, and raises 20 so should be -30
-        dealer.apply_player_action(Action.RAISE, 20)
+        dealer.apply_action(Action.RAISE, 20)
         
         assert table.players[0].stack == 990
         assert table.players[1].stack == 970
-        assert dealer.current_bet == 30
-        assert dealer.pot == 40
+        assert dealer.betting_manager.current_bet == 30  
+        assert dealer.table.pot.value == 40
 
     def test_raises_with_contribuitions(self):
         #TODO:
@@ -73,21 +73,21 @@ class TestDealer:
         #start preflop
         dealer.start_street()
         #after blinds current_bet should be 2
-        assert dealer.current_bet == 2
-        assert dealer.pending_betters == table.active_players()
+        assert dealer.betting_manager.current_bet == 2
+        assert dealer.betting_manager.pending_betters == table.active_players()
 
         #after blinds its pc's turn
         assert dealer.table.current_player.name == "pc"
 
-        dealer.apply_player_action(Action.CALL)
-        dealer.apply_player_action(Action.CALL)
+        dealer.apply_action(Action.CALL)
+        dealer.apply_action(Action.CALL)
 
         
         #stacks and pot are after two blinds (blind_pos starts with p1)
         # so p1 pays 1, p2 pays 2, they both call 2
         assert table.players[0].stack == 997
         assert table.players[1].stack == 996
-        assert dealer.pot == 7
+        assert dealer.table.pot.value == 7
 
     
     def test_contribution(self):
@@ -102,9 +102,9 @@ class TestDealer:
 
         table.init_players(initial_stack=1000, num_players=2)
 
-        dealer.apply_player_action(Action.RAISE, 10)
-        dealer.apply_player_action(Action.RAISE, 20)
-        dealer.apply_player_action(Action.CALL)
+        dealer.apply_action(Action.RAISE, 10)
+        dealer.apply_action(Action.RAISE, 20)
+        dealer.apply_action(Action.CALL)
 
         pc = dealer.table.players[0]
         cpu1 = dealer.table.players[1]
@@ -114,7 +114,7 @@ class TestDealer:
 
         assert pc.contribuition == 30
         assert cpu1.contribuition == 30
-        assert dealer.pot == 60
+        assert dealer.table.pot.value == 60
 
     def test_is_betting_over(self):
         dealer = Dealer(small_blind=1, initial_stack=1000)
@@ -123,36 +123,36 @@ class TestDealer:
 
 
         dealer.start_street()
-        assert dealer.is_betting_over() is False
+        assert dealer.betting_manager.is_betting_over() is False
 
         #if player 1 raises, and then p2 calls then betting for the street is over
-        dealer.apply_player_action(Action.RAISE, 100)
-        dealer.apply_player_action(Action.CALL)
-        assert dealer.is_betting_over() is True
+        dealer.apply_action(Action.RAISE, 100)
+        dealer.apply_action(Action.CALL)
+        assert dealer.betting_manager.is_betting_over() is True
 
         #go to next street betting should begin
         dealer.next_street()
         dealer.start_street()
-        assert dealer.is_betting_over() is False
+        assert dealer.betting_manager.is_betting_over() is False
 
-        dealer.apply_player_action(Action.CALL)
-        dealer.apply_player_action(Action.CALL)
-        assert dealer.is_betting_over() is True
+        dealer.apply_action(Action.CALL)
+        dealer.apply_action(Action.CALL)
+        assert dealer.betting_manager.is_betting_over() is True
 
         #if both players raise betting should not be over
         dealer.next_street()
         dealer.start_street()
-        dealer.apply_player_action(Action.RAISE, 10)
-        dealer.apply_player_action(Action.RAISE, 10)
-        assert dealer.is_betting_over() is False
+        dealer.apply_action(Action.RAISE, 10)
+        dealer.apply_action(Action.RAISE, 10)
+        assert dealer.betting_manager.is_betting_over() is False
 
         #if player raise's again we are still betting
-        dealer.apply_player_action(Action.RAISE, 30)
-        assert dealer.is_betting_over() is False
+        dealer.apply_action(Action.RAISE, 30)
+        assert dealer.betting_manager.is_betting_over() is False
 
         #if player calls after the raise we are done betting
-        dealer.apply_player_action(Action.CALL)
-        assert dealer.is_betting_over() is True
+        dealer.apply_action(Action.CALL)
+        assert dealer.betting_manager.is_betting_over() is True
 
     def test_is_betting_over_fold(self):
         """
@@ -168,8 +168,8 @@ class TestDealer:
         dealer.start_street()
 
         #if one player folds betting is over, and the round is over
-        dealer.apply_player_action(Action.FOLD)
-        assert dealer.is_betting_over() is True
+        dealer.apply_action(Action.FOLD)
+        assert dealer.betting_manager.is_betting_over() is True
 
     def test_is_round_over_fold(self):
         """
@@ -181,7 +181,7 @@ class TestDealer:
         table.init_players(initial_stack=1000, num_players=2)
         dealer.start_street()
 
-        dealer.apply_player_action(Action.FOLD)
+        dealer.apply_action(Action.FOLD)
         assert dealer.is_round_over() is True
 
     def test_round_over_river(self):
@@ -194,34 +194,34 @@ class TestDealer:
         dealer.start_street()
 
         #preflop betting 
-        dealer.apply_player_action(Action.RAISE, 10)
-        dealer.apply_player_action(Action.CALL)
+        dealer.apply_action(Action.RAISE, 10)
+        dealer.apply_action(Action.CALL)
 
         assert dealer.is_round_over() is False
 
         #flop
         dealer.next_street()
         dealer.start_street()
-        dealer.apply_player_action(Action.RAISE, 10)
-        dealer.apply_player_action(Action.CALL)
+        dealer.apply_action(Action.RAISE, 10)
+        dealer.apply_action(Action.CALL)
 
         assert dealer.is_round_over() is False
         #turn
         dealer.next_street()
         dealer.start_street()
-        dealer.apply_player_action(Action.RAISE, 10)
-        dealer.apply_player_action(Action.CALL)
+        dealer.apply_action(Action.RAISE, 10)
+        dealer.apply_action(Action.CALL)
 
         assert dealer.is_round_over() is False
 
         #river
         dealer.next_street()
         dealer.start_street()
-        dealer.apply_player_action(Action.RAISE, 10)
-        dealer.apply_player_action(Action.CALL)
+        dealer.apply_action(Action.RAISE, 10)
+        dealer.apply_action(Action.CALL)
 
         assert dealer.is_round_over() is True
-        assert dealer.pot == 87
+        assert dealer.table.pot.value == 87
 
 
        

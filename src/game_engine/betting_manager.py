@@ -3,9 +3,11 @@ from .table import Table
 from .constants import PlayerState
 
 class BettingManager: 
-    def __init__(self, table):
+    def __init__(self, table, blind):
+        
         self.table = table
         self.current_bet = 0
+        self.blind = blind
         self.pending_betters = []
 
     def reset_betting_round(self):
@@ -25,10 +27,10 @@ class BettingManager:
             # TODO: replace this with player fold function
             self._fold(current_player)
         elif action == Action.SMALL_BLIND:
-            self._blind(current_player, self.table.blind)
+            self._blind(current_player, self.blind)
         elif action == Action.BIG_BLIND:
-            self._blind(current_player, self.table.blind*2)
-            self.current_bet = self.table.blind*2
+            self._blind(current_player, self.blind*2)
+            self.current_bet = self.blind*2
         self.table.next_player()
 
     def _blind(self, current_player, blind):

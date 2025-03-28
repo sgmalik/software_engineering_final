@@ -15,15 +15,14 @@ class Dealer:
 
         self.current_street = Street.PREFLOP
         self.blind = small_blind
-       
+
         self.initial_stack = initial_stack
         # setting num_players to 2 for now
         self.table = Table()
-        self.betting_manager = BettingManager(self.table)
+        self.betting_manager = BettingManager(self.table, self.blind)
 
         # this array represents active
         # players who haven't responded to a bet yet
-       
 
     def next_street(self):
         """
@@ -58,9 +57,6 @@ class Dealer:
         # all active players are pending betters
         self.betting_manager.reset_betting_round()
 
-        # reset player contributions at start of street
-        self.table.reset_contribuition()
-
     # these street functions will do what needs to be done at the start of a street to set up the betting round
         # dealer cards, blinds, etc
 
@@ -71,34 +67,28 @@ class Dealer:
         self.table.deal_hole_cards()
 
         # blinds
-        self.betting_manager.apply_player_action(self.table.current_player, Action.SMALL_BLIND)
-        self.betting_manager.apply_player_action(self.table.current_player, Action.BIG_BLIND)
-
-   
+        self.betting_manager.apply_player_action(
+            self.table.current_player, Action.SMALL_BLIND)
+        self.betting_manager.apply_player_action(
+            self.table.current_player, Action.BIG_BLIND)
 
     def _start_flop(self):
         """
         do start of flop actions
         """
         self.table.deal_community_cards(3)
-        
 
-   
     def _start_turn(self):
         """
         do start of turn actions
         """
         self.table.deal_community_cards(1)
-       
 
-    
     def _start_river(self):
         """
         do start of river actions
         """
         self.table.deal_community_cards(1)
-        
-
 
     def is_players_turn(self) -> bool:
         """
@@ -107,11 +97,7 @@ class Dealer:
         player = self.table.current_player
         # TODO: replace with is active player func
         return player.name == "pc" and player.state == PlayerState.ACTIVE
-    
 
-
-
-    
     def is_round_over(self) -> bool:
         """
         the round is over when betting is over on the
@@ -126,3 +112,10 @@ class Dealer:
         if len(self.table.active_players()) == 1:
             return True
         return False
+    
+    def apply_action(self, action: Action, raise_amount: Optional[int] = None):
+        """
+            wrapper for betting manager 
+        """
+        current_player = self.table.current_player
+        self.betting_manager.apply_player_action(current_player, action, raise_amount)
