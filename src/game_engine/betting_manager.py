@@ -43,7 +43,7 @@ class BettingManager:
 
     def _raise(self, current_player, raise_amount):
         # need to pay current bet first
-        call_amount = self.current_bet -current_player.contribuition
+        call_amount = self.current_bet - current_player.contribuition
         current_player.bet(call_amount)
         self.table.pot.add_to_pot(call_amount)
 

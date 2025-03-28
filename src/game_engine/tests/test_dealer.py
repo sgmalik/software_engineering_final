@@ -196,7 +196,9 @@ class TestDealer:
         #preflop betting 
         dealer.apply_action(Action.RAISE, 10)
         dealer.apply_action(Action.CALL)
-
+        
+        assert table.players[0].stack == 988
+        assert dealer.table.pot.value == 24
         assert dealer.is_round_over() is False
 
         #flop
@@ -205,6 +207,8 @@ class TestDealer:
         dealer.apply_action(Action.RAISE, 10)
         dealer.apply_action(Action.CALL)
 
+        
+        assert dealer.table.pot.value == 44
         assert dealer.is_round_over() is False
         #turn
         dealer.next_street()
@@ -221,7 +225,7 @@ class TestDealer:
         dealer.apply_action(Action.CALL)
 
         assert dealer.is_round_over() is True
-        assert dealer.table.pot.value == 87
+        assert dealer.table.pot.value == 84
 
 
        
