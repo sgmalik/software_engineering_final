@@ -44,6 +44,10 @@ class Dealer:
         """
         start the round by calling street functions
         """
+
+       
+        self.betting_manager.reset_betting_round()
+        
         if self.current_street == Street.PREFLOP:
             self._start_preflop()
         elif self.current_street == Street.FLOP:
@@ -55,7 +59,7 @@ class Dealer:
 
         # add all active players to pending_betters, at start of street
         # all active players are pending betters
-        self.betting_manager.reset_betting_round()
+        
 
     # these street functions will do what needs to be done at the start of a street to set up the betting round
         # dealer cards, blinds, etc

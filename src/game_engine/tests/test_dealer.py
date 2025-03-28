@@ -85,9 +85,9 @@ class TestDealer:
         
         #stacks and pot are after two blinds (blind_pos starts with p1)
         # so p1 pays 1, p2 pays 2, they both call 2
-        assert table.players[0].stack == 997
-        assert table.players[1].stack == 996
-        assert dealer.table.pot.value == 7
+        assert table.players[0].stack == 998
+        assert table.players[1].stack == 998
+        assert dealer.table.pot.value == 4
 
     
     def test_contribution(self):

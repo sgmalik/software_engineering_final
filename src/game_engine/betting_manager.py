@@ -29,8 +29,8 @@ class BettingManager:
         elif action == Action.SMALL_BLIND:
             self._blind(current_player, self.blind)
         elif action == Action.BIG_BLIND:
-            self._blind(current_player, self.blind*2)
             self.current_bet = self.blind*2
+            self._blind(current_player, self.blind*2)
         self.table.next_player()
 
     def _blind(self, current_player, blind):
