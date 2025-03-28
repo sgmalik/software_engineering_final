@@ -1,2 +1,0 @@
-class StreetManager:
-    pass
