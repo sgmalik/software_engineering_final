@@ -12,14 +12,14 @@ from .pot import Pot
 class Table:
     """
     Table will be responsible for keeping track of players and
-    dealing community cards 
+    dealing cards 
     """
 
     def __init__(self):
-        
+
         self.blind_pos = 0
         self.community_cards = []
-        
+
         self.deck: Deck = Deck()
         self.pot = Pot()
         self.players: list[Player] = []
@@ -29,31 +29,30 @@ class Table:
         """
         initialize players with initial stack
         """
-        #if not pc, cpu1, cpu2, etc
+        # if not pc, cpu1, cpu2, etc
         for i in range(num_players):
             self.players.append(Player(initial_stack, f"cpu{i}"))
 
         # name gui player pc
         self.players[0].name = "pc"
-        
+
         # init current player to first player
         self.current_player = self.players[0]
-        
 
     def reset_table(self):
         """
         set up table for next round
         """
-        #clear dealer community cards
-        #clear player's hole_cards
+        # clear dealer community cards
+        # clear player's hole_cards
 
     # set this to whos turn it is
     def next_player(self):
         """
         set current player to the next player
         """
-        #For heads up, don't need to change this
-        #more players needs to be based on active players
+        # For heads up, don't need to change this because when a player folds the round is over
+        # more players needs to be based on active players
         if self.current_player == self.players[-1]:
             self.current_player = self.players[0]
         else:
@@ -77,19 +76,19 @@ class Table:
             self.blind_pos = 1
         else:
             self.blind_pos = 0
-        
+
     def deal_community_cards(self, num_cards):
         """
         deal num_cards to the community cards
         """
         self.community_cards += self.deck.draw_cards(num_cards)
-    
+
     def active_players(self):
         """
         return list of active players
         """
         return [player for player in self.players if player.state == PlayerState.ACTIVE]
-    
+
     def reset_contribution(self):
         """
         after every street we need to reset the contribuition of every player
@@ -101,6 +100,6 @@ class Table:
         """
         check if it is the players turn, this is a helper function so we don't have to do this in GUI code
         """
-        
+
         # TODO: replace with is active player func
         return self.current_player.name == "pc" and self.current_player.state == PlayerState.ACTIVE
