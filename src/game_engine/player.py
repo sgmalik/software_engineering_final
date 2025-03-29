@@ -76,9 +76,9 @@ class Player:
         add action to player's action history
         """
         history = None
-        if action.value == Action.FOLD:
+        if action == Action.FOLD:
             history = {"action": action}
-        elif action.value == Action.CALL:
+        elif action == Action.CALL:
             pay_history = [
                 h
                 for h in self.action_histories
@@ -91,7 +91,7 @@ class Player:
                 "amount": chip_amount,
                 "paid": chip_amount - last_pay_amount,
             }
-        elif action.value == Action.RAISE:
+        elif action == Action.RAISE:
             pay_history = [
                 h
                 for h in self.action_histories
@@ -105,15 +105,15 @@ class Player:
                 "paid": chip_amount - last_pay_amount,
                 "add_amount": add_amount,
             }
-        elif action.value == Action.SMALL_BLIND:
+        elif action == Action.SMALL_BLIND:
             assert sb_amount is not None
             add_amount = sb_amount
             history = {"action": action, "amount": sb_amount, "add_amount": add_amount}
-        elif action.value == Action.BIG_BLIND:
+        elif action == Action.BIG_BLIND:
             assert bb_amount is not None
             add_amount = bb_amount
             history = {"action": action, "amount": bb_amount, "add_amount": add_amount}
-        elif action.value == Action.ANTE:
+        elif action == Action.ANTE:
             assert chip_amount > 0 if chip_amount is not None else True
             history = {"action": action, "amount": chip_amount}
         else:
