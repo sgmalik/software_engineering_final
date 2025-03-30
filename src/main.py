@@ -1,20 +1,25 @@
-import pygame
+"""Main entry point for the Poker game"""
+
 import sys
-from gui.util import *
+import pygame
+from gui.util import change_to_main_menu, Screen
 
 # Initialize Pygame
 pygame.init()
-scale = 4
+SCALE = 4
 game_screen = [Screen.HOME] # Using list because Enums are immutable on their own
 
 # Set up display
-screen = pygame.display.set_mode((200 * scale, 150 * scale))
-pygame.display.set_caption("Scaled Poker Board")
+screen = pygame.display.set_mode((200 * SCALE, 150 * SCALE))
+pygame.display.set_caption("Poker")
 
 # Load backgrounds
-main_menu_background = pygame.transform.scale(pygame.image.load("../assets/poker-main-menu.png"), (200 * scale, 150 * scale))
-settings_background = pygame.transform.scale(pygame.image.load("../assets/poker-settings.png"), (200 * scale, 150 * scale))
-game_background = pygame.transform.scale(pygame.image.load("../assets/poker-board.png"), (200 * scale, 150 * scale))
+main_menu_background = pygame.transform.scale(pygame.image.load(
+    "../assets/poker-main-menu.png"), (200 * SCALE, 150 * SCALE))
+settings_background = pygame.transform.scale(pygame.image.load(
+    "../assets/poker-settings.png"), (200 * SCALE, 150 * SCALE))
+game_background = pygame.transform.scale(pygame.image.load(
+    "../assets/poker-board.png"), (200 * SCALE, 150 * SCALE))
 
 # Global GUI element lists
 buttons = []
@@ -24,16 +29,16 @@ chips = []
 numtexts = []
 
 # Initialize GUI elements
-change_to_main_menu(scale, game_screen, buttons, sliders, cards, chips, numtexts)
+change_to_main_menu(SCALE, game_screen, buttons, sliders, cards, chips, numtexts)
 
-running = True
-while running:
+RUNNING = True
+while RUNNING:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            RUNNING = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                change_to_main_menu(scale, game_screen, buttons, sliders, cards, chips, numtexts)
+                change_to_main_menu(SCALE, game_screen, buttons, sliders, cards, chips, numtexts)
 
         # Pass events to buttons and other GUI elements
         for button in buttons:
@@ -73,4 +78,3 @@ while running:
 
 pygame.quit()
 sys.exit()
-
