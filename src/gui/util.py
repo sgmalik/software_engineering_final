@@ -2,6 +2,7 @@ from gui.button import Button
 from gui.slider import Slider
 from gui.card import Card
 from gui.chip import Chip
+from gui.numtext import NumText
 from enum import Enum
 
 spritesheet_path = "../assets/poker-spritesheet.png"
@@ -67,28 +68,30 @@ def get_proper_chip_distribution(user_value):
     return distribution # (1, 5, 10, 50, 100)
 
 
-def change_to_main_menu(scale, game_screen, buttons, sliders, cards, chips):
+def change_to_main_menu(scale, game_screen, buttons, sliders, cards, chips, numtexts):
     game_screen[0] = Screen.HOME
     
     buttons.clear()
     sliders.clear()
     cards.clear()
     chips.clear()
+    numtexts.clear()
 
-    new_game = Button(spritesheet_path, (51 * scale, 79 * scale), (scale, scale), 98, 22, "new game", callback=lambda: change_to_game(scale, game_screen, buttons, sliders, cards, chips))
-    settings = Button(spritesheet_path, (51 * scale, 113 * scale), (scale, scale), 98, 22, "settings", callback=lambda: change_to_settings(scale, game_screen, buttons, sliders, cards, chips))
+    new_game = Button(spritesheet_path, (51 * scale, 79 * scale), (scale, scale), 98, 22, "new game", callback=lambda: change_to_game(scale, game_screen, buttons, sliders, cards, chips, numtexts))
+    settings = Button(spritesheet_path, (51 * scale, 113 * scale), (scale, scale), 98, 22, "settings", callback=lambda: change_to_settings(scale, game_screen, buttons, sliders, cards, chips, numtexts))
     
     buttons.append(new_game)
     buttons.append(settings)
 
 
-def change_to_settings(scale, game_screen, buttons, sliders, cards, chips):
+def change_to_settings(scale, game_screen, buttons, sliders, cards, chips, numtexts):
     game_screen[0] = Screen.SETTINGS
     
     buttons.clear()
     sliders.clear()
     cards.clear()
     chips.clear()
+    numtexts.clear()
     
     difficulty = Button(spritesheet_path, (25 * scale, 83 * scale), (scale, scale), 67, 13, "difficulty")
     change_card = Button(spritesheet_path, (25 * scale, 109 * scale), (scale, scale), 67, 13, "change card")
@@ -97,13 +100,14 @@ def change_to_settings(scale, game_screen, buttons, sliders, cards, chips):
     buttons.append(change_card)
 
 
-def change_to_game(scale, game_screen, buttons, sliders, cards, chips):
+def change_to_game(scale, game_screen, buttons, sliders, cards, chips, numtexts):
     game_screen[0] = Screen.GAME
     
     buttons.clear()
     sliders.clear()
     cards.clear()
     chips.clear()
+    numtexts.clear()
     
     # Create buttons
     button_names = ["check", "call", "fold", "raise", "all in", "75%", "50%", "25%"]
@@ -172,5 +176,15 @@ def change_to_game(scale, game_screen, buttons, sliders, cards, chips):
             y -= 2
             chip = Chip(spritesheet_path, ((9 + x) * scale, (27 + y) * scale), (scale, scale), colors[i])
             chips.append(chip)
+
+    # Num texts
+    bid_num = NumText(spritesheet_path, (105, 103), (scale, scale), 0)
+    numtexts.append(bid_num)
+    cpu_val = NumText(spritesheet_path, (184, 24), (scale, scale), cpu_value)
+    numtexts.append(cpu_val)
+    ply_val = NumText(spritesheet_path, (184, 32), (scale, scale), player_value)
+    numtexts.append(ply_val)
+    pot_val = NumText(spritesheet_path, (184, 40), (scale, scale), 0)
+    numtexts.append(pot_val)
     
 

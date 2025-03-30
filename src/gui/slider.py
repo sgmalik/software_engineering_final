@@ -1,5 +1,6 @@
 import pygame
 
+
 class Slider:
     def __init__(self, spritesheet_path, position, scale, base_width, base_height, thumb_width, thumb_height):
         """

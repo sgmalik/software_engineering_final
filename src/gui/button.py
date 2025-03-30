@@ -1,5 +1,6 @@
 import pygame
 
+
 class Button:
     def __init__(self, spritesheet_path, position, scale, sprite_width, sprite_height, button_type, callback=None):
         """
@@ -26,7 +27,7 @@ class Button:
         # Define the two sprites (unpressed and pressed)
         self.set_sprites(button_type)
         
-        #button action 
+        # Button action 
         self.action = button_type
 
         # Current sprite (default to unpressed)
@@ -111,7 +112,6 @@ class Button:
             if self.rect.collidepoint(event.pos):
                 # IF BUTTON IS CLICKED, DO WHATEVER WE NEED TO DO HERE
                 self.current_sprite = self.pressed_sprite
-                print("this is event", self.action)
                 if self.callback:
                     self.callback() # Call provided function when clicked
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:

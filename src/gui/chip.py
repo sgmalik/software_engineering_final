@@ -1,5 +1,6 @@
 import pygame
 
+
 class Chip:
     def __init__(self, spritesheet_path, position, scale, color):
         """

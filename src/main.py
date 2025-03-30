@@ -21,9 +21,10 @@ buttons = []
 sliders = []
 cards = []
 chips = []
+numtexts = []
 
 # Initialize GUI elements
-change_to_main_menu(scale, game_screen, buttons, sliders, cards, chips)
+change_to_main_menu(scale, game_screen, buttons, sliders, cards, chips, numtexts)
 
 running = True
 while running:
@@ -32,7 +33,7 @@ while running:
             running = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                change_to_main_menu(scale, game_screen, buttons, sliders, cards, chips)
+                change_to_main_menu(scale, game_screen, buttons, sliders, cards, chips, numtexts)
 
         # Pass events to buttons and other GUI elements
         for button in buttons:
@@ -43,6 +44,8 @@ while running:
             card.handle_event(event)
         for chip in chips:
             chip.handle_event(event)
+        for numtext in numtexts:
+            numtext.handle_event(event)
 
     # Make sure only one screen is drawn at a time
     screen.fill((0, 0, 0))  # Clear screen before drawing
@@ -63,6 +66,8 @@ while running:
         card.draw(screen)
     for chip in chips:
         chip.draw(screen)
+    for numtext in numtexts:
+        numtext.draw(screen)
 
     pygame.display.flip()
 
