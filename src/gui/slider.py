@@ -1,8 +1,15 @@
+"""Class and methods for the Slider GUI element"""
 import pygame
 
 
 class Slider:
-    def __init__(self, spritesheet_path, position, scale, base_width, base_height, thumb_width, thumb_height):
+    """
+    Slider GUI element. Used for when a slider needs to be displayed
+    in the GUI. Meant to be easy to set up and intuitive to use
+    with minimal setup.
+    """
+    def __init__(self, spritesheet_path, position, scale, base_width,
+                 base_height, thumb_width, thumb_height):
         """
         Initialize the Slider.
 
@@ -31,7 +38,9 @@ class Slider:
         self.thumb_sprite = self.get_sprite(9, 76, thumb_width, thumb_height)
 
         # Thumb position (relative to the slider base)
-        self.thumb_position = (position[0], position[1] + (self.scaled_base_height - self.scaled_thumb_height) // 2)
+        self.thumb_position = (position[0], position[1] +
+                               (self.scaled_base_height -
+                                self.scaled_thumb_height) // 2)
 
         # Thumb movement bounds (scaled)
         self.min_y = position[1]
@@ -63,7 +72,8 @@ class Slider:
         :param event: The Pygame event to handle.
         """
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left mouse button
-            thumb_rect = pygame.Rect(self.thumb_position[0], self.thumb_position[1], self.scaled_thumb_width, self.scaled_thumb_height)
+            thumb_rect = pygame.Rect(self.thumb_position[0], self.thumb_position[1],
+                                     self.scaled_thumb_width, self.scaled_thumb_height)
             if thumb_rect.collidepoint(event.pos):
                 self.dragging = True
 
@@ -84,4 +94,3 @@ class Slider:
         """
         screen.blit(self.base_sprite, self.position)
         screen.blit(self.thumb_sprite, self.thumb_position)
-

@@ -1,7 +1,13 @@
+"""Class and methods for the Card GUI element"""
 import pygame
 
 
 class Card:
+    """
+    Card GUI element. Used for when a card needs to be displayed
+    in the GUI. Meant to be easy to set up and intuitive to use
+    with minimal setup.
+    """
     def __init__(self, spritesheet_path, position, scale, rank, suite, revealed=False):
         """
         Initialize the Card.
@@ -106,13 +112,15 @@ class Card:
             screen.blit(self.open_sprite, self.position)
 
             # Draw the suite sprite
-            suite_x = self.position[0] + (self.card_width * self.scale[0] - self.suite_sprite.get_width()) // 2
-            suite_y = self.position[1] + (self.card_height * self.scale[1] - self.suite_sprite.get_height()) // 2
+            suite_x = self.position[0] + (self.card_width * self.scale[0] -
+                                          self.suite_sprite.get_width()) // 2
+            suite_y = self.position[1] + (self.card_height * self.scale[1] -
+                                          self.suite_sprite.get_height()) // 2
             screen.blit(self.suite_sprite, (suite_x, suite_y))
-            
+
             # Draw the top left rank sprite
-            top_left_rank_x = self.position[0] + 3 * self.scale[0]  # 3 pixels from the left (scaled)
-            top_left_rank_y = self.position[1] + 3 * self.scale[1]  # 3 pixels from the top (scaled)
+            top_left_rank_x = self.position[0] + 3 * self.scale[0]
+            top_left_rank_y = self.position[1] + 3 * self.scale[1]
             screen.blit(self.rank_sprite, (top_left_rank_x, top_left_rank_y))
 
             # Draw the bottom right rank sprite
@@ -134,5 +142,3 @@ class Card:
         :param event: The Pygame event to handle.
         """
         # ADD EVENT HANDLING IF WE WANT IT IN THE FUTURE
-        pass
-

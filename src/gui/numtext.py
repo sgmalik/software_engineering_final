@@ -1,7 +1,13 @@
+"""Class and methods for the NumText GUI element"""
 import pygame
 
 
 class NumText:
+    """
+    NumText GUI element. Used for when a number needs to be displayed
+    in the GUI. Meant to be easy to set up and intuitive to use
+    with minimal setup.
+    """
     def __init__(self, spritesheet_path, position, scale, number):
         """
         Initialize the NumberText element.
@@ -100,5 +106,3 @@ class NumText:
 
         :param event: The Pygame event to handle.
         """
-        pass
-

@@ -1,11 +1,13 @@
+"""Helper functions for the GUI"""
+
+from enum import Enum
 from gui.button import Button
 from gui.slider import Slider
 from gui.card import Card
 from gui.chip import Chip
 from gui.numtext import NumText
-from enum import Enum
 
-spritesheet_path = "../assets/poker-spritesheet.png"
+SPRITESHEET_PATH = "../assets/poker-spritesheet.png"
 
 
 class Screen(Enum):
@@ -69,46 +71,65 @@ def get_proper_chip_distribution(user_value):
 
 
 def change_to_main_menu(scale, game_screen, buttons, sliders, cards, chips, numtexts):
+    """
+    Changes the GUI elements to the ones found in the main menu screen
+    """
     game_screen[0] = Screen.HOME
-    
+
     buttons.clear()
     sliders.clear()
     cards.clear()
     chips.clear()
     numtexts.clear()
 
-    new_game = Button(spritesheet_path, (51 * scale, 79 * scale), (scale, scale), 98, 22, "new game", callback=lambda: change_to_game(scale, game_screen, buttons, sliders, cards, chips, numtexts))
-    settings = Button(spritesheet_path, (51 * scale, 113 * scale), (scale, scale), 98, 22, "settings", callback=lambda: change_to_settings(scale, game_screen, buttons, sliders, cards, chips, numtexts))
-    
+    new_game = Button(SPRITESHEET_PATH, (51 * scale, 79 * scale),
+                      (scale, scale), 98, 22, "new game",
+                      callback=lambda: change_to_game(scale, game_screen,
+                                                      buttons, sliders, cards,
+                                                      chips, numtexts))
+    settings = Button(SPRITESHEET_PATH, (51 * scale, 113 * scale),
+                      (scale, scale), 98, 22, "settings",
+                      callback=lambda: change_to_settings(scale, game_screen,
+                                                          buttons, sliders, cards,
+                                                          chips, numtexts))
+
     buttons.append(new_game)
     buttons.append(settings)
 
 
 def change_to_settings(scale, game_screen, buttons, sliders, cards, chips, numtexts):
+    """
+    Changes the GUI elements to the ones found in the settings screen
+    """
     game_screen[0] = Screen.SETTINGS
-    
+
     buttons.clear()
     sliders.clear()
     cards.clear()
     chips.clear()
     numtexts.clear()
-    
-    difficulty = Button(spritesheet_path, (25 * scale, 83 * scale), (scale, scale), 67, 13, "difficulty")
-    change_card = Button(spritesheet_path, (25 * scale, 109 * scale), (scale, scale), 67, 13, "change card")
-    
+
+    difficulty = Button(SPRITESHEET_PATH, (25 * scale, 83 * scale),
+                        (scale, scale), 67, 13, "difficulty")
+    change_card = Button(SPRITESHEET_PATH, (25 * scale, 109 * scale),
+                         (scale, scale), 67, 13, "change card")
+
     buttons.append(difficulty)
     buttons.append(change_card)
 
 
 def change_to_game(scale, game_screen, buttons, sliders, cards, chips, numtexts):
+    """
+    Changes the GUI elements to the ones found in the game screen
+    """
     game_screen[0] = Screen.GAME
-    
+
     buttons.clear()
     sliders.clear()
     cards.clear()
     chips.clear()
     numtexts.clear()
-    
+
     # Create buttons
     button_names = ["check", "call", "fold", "raise", "all in", "75%", "50%", "25%"]
     button_positions = [
@@ -122,38 +143,40 @@ def change_to_game(scale, game_screen, buttons, sliders, cards, chips, numtexts)
     (155 * scale, 134 * scale),
     ]
     for i in range(len(button_names)):
-        button = Button(spritesheet_path, button_positions[i], (scale, scale), 23, 9, button_names[i])
+        button = Button(SPRITESHEET_PATH, button_positions[i],
+                        (scale, scale), 23, 9, button_names[i])
         buttons.append(button)
-    
+
     # Create slider
-    sliders.append(Slider(spritesheet_path, (183 * scale, 101 * scale), (scale, scale), 9, 42, 9, 5))
+    sliders.append(Slider(SPRITESHEET_PATH, (183 * scale, 101 * scale),
+                          (scale, scale), 9, 42, 9, 5))
 
     # Player Cards
-    card = Card(spritesheet_path, (80 * scale, 112 * scale), (scale, scale), "a", "spades", True)
+    card = Card(SPRITESHEET_PATH, (80 * scale, 112 * scale), (scale, scale), "a", "spades", True)
     cards.append(card)
-    card = Card(spritesheet_path, (103 * scale, 112 * scale), (scale, scale), "q", "hearts", True)
+    card = Card(SPRITESHEET_PATH, (103 * scale, 112 * scale), (scale, scale), "q", "hearts", True)
     cards.append(card)
-    card = Card(spritesheet_path, (80 * scale, 7 * scale), (scale, scale), "10", "hearts", False)
+    card = Card(SPRITESHEET_PATH, (80 * scale, 7 * scale), (scale, scale), "10", "hearts", False)
     cards.append(card)
-    card = Card(spritesheet_path, (103 * scale, 7 * scale), (scale, scale), "4", "clubs", False)
+    card = Card(SPRITESHEET_PATH, (103 * scale, 7 * scale), (scale, scale), "4", "clubs", False)
     cards.append(card)
-    
+
     # Community Cards
-    card = Card(spritesheet_path, (51 * scale, 59 * scale), (scale, scale), "2", "hearts", True)
+    card = Card(SPRITESHEET_PATH, (51 * scale, 59 * scale), (scale, scale), "2", "hearts", True)
     cards.append(card)
-    card = Card(spritesheet_path, (71 * scale, 59 * scale), (scale, scale), "k", "clubs", True)
+    card = Card(SPRITESHEET_PATH, (71 * scale, 59 * scale), (scale, scale), "k", "clubs", True)
     cards.append(card)
-    card = Card(spritesheet_path, (91 * scale, 59 * scale), (scale, scale), "10", "hearts", True)
+    card = Card(SPRITESHEET_PATH, (91 * scale, 59 * scale), (scale, scale), "10", "hearts", True)
     cards.append(card)
-    card = Card(spritesheet_path, (111 * scale, 59 * scale), (scale, scale), "4", "spades", True)
+    card = Card(SPRITESHEET_PATH, (111 * scale, 59 * scale), (scale, scale), "4", "spades", True)
     cards.append(card)
-    card = Card(spritesheet_path, (131 * scale, 59 * scale), (scale, scale), "j", "hearts", True)
+    card = Card(SPRITESHEET_PATH, (131 * scale, 59 * scale), (scale, scale), "j", "hearts", True)
     cards.append(card)
-    
+
     # Player chips
     player_value = 500
     distribution = get_proper_chip_distribution(player_value)
-    
+
     colors = ["white", "red", "blue", "green", "black"]
     x = -13
     for i in range(0, 5):
@@ -161,30 +184,30 @@ def change_to_game(scale, game_screen, buttons, sliders, cards, chips, numtexts)
         y = 2
         for _ in range(0, distribution[i]):
             y -= 2
-            chip = Chip(spritesheet_path, ((9 + x) * scale, (132 + y) * scale), (scale, scale), colors[i])
+            chip = Chip(SPRITESHEET_PATH, ((9 + x) * scale, (132 + y) * scale),
+                        (scale, scale), colors[i])
             chips.append(chip)
 
     # CPU chips
     cpu_value = 500
     distribution = get_proper_chip_distribution(cpu_value)
-    
+
     x = -13
     for i in range(0, 5):
         x += 13
         y = 2
         for _ in range(0, distribution[i]):
             y -= 2
-            chip = Chip(spritesheet_path, ((9 + x) * scale, (27 + y) * scale), (scale, scale), colors[i])
+            chip = Chip(SPRITESHEET_PATH, ((9 + x) * scale, (27 + y) * scale),
+                        (scale, scale), colors[i])
             chips.append(chip)
 
     # Num texts
-    bid_num = NumText(spritesheet_path, (105, 103), (scale, scale), 0)
+    bid_num = NumText(SPRITESHEET_PATH, (105, 103), (scale, scale), 0)
     numtexts.append(bid_num)
-    cpu_val = NumText(spritesheet_path, (184, 24), (scale, scale), cpu_value)
+    cpu_val = NumText(SPRITESHEET_PATH, (184, 24), (scale, scale), cpu_value)
     numtexts.append(cpu_val)
-    ply_val = NumText(spritesheet_path, (184, 32), (scale, scale), player_value)
+    ply_val = NumText(SPRITESHEET_PATH, (184, 32), (scale, scale), player_value)
     numtexts.append(ply_val)
-    pot_val = NumText(spritesheet_path, (184, 40), (scale, scale), 0)
+    pot_val = NumText(SPRITESHEET_PATH, (184, 40), (scale, scale), 0)
     numtexts.append(pot_val)
-    
-

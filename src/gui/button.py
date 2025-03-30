@@ -1,8 +1,16 @@
+"""Class and methods for the Button GUI element"""
 import pygame
 
 
 class Button:
-    def __init__(self, spritesheet_path, position, scale, sprite_width, sprite_height, button_type, callback=None):
+    """
+    Button GUI element. Used for when a button is necessary somwhere
+    in the GUI. Meant to be easy to set up and intuitive to use with minimal
+    setup.
+    """
+    def __init__(self, spritesheet_path, position, scale,
+                 sprite_width, sprite_height, button_type,
+                 callback=None):
         """
         Initialize the Button.
 
@@ -11,7 +19,8 @@ class Button:
         :param scale: Tuple (scale_x, scale_y) to scale the button.
         :param sprite_width: Width of a single sprite in the spritesheet.
         :param sprite_height: Height of a single sprite in the spritesheet.
-        :param callback: Function to execute when the button is clicked. FUNCTION MUST BE PASSED AS A LAMBDA FUNCTION
+        :param callback: Function to execute when the button is clicked.
+                        FUNCTION MUST BE PASSED AS A LAMBDA FUNCTION
         """
         self.spritesheet = pygame.image.load(spritesheet_path).convert_alpha()
         self.position = position
@@ -26,67 +35,62 @@ class Button:
 
         # Define the two sprites (unpressed and pressed)
         self.set_sprites(button_type)
-        
-        # Button action 
+
+        # Button action
         self.action = button_type
 
         # Current sprite (default to unpressed)
         self.current_sprite = self.unpressed_sprite
 
         # Rect for collision detection
-        self.rect = pygame.Rect(position[0], position[1], self.scaled_width, self.scaled_height)
+        self.rect = pygame.Rect(position[0], position[1], self.scaled_width,
+                                self.scaled_height)
 
 
     def set_sprites(self, button_type):
+        """
+        Based on the button_type, set the pressed and unpressed sprites
+        for the button
+
+        :param button_type: String of the button type the button should be
+        """
         match button_type:
             case "check":
                 self.unpressed_sprite = self.get_sprite(0, 58)
                 self.pressed_sprite = self.get_sprite(92, 58)
-                pass
             case "call":
                 self.unpressed_sprite = self.get_sprite(23, 58)
                 self.pressed_sprite = self.get_sprite(115, 58)
-                pass
             case "fold":
                 self.unpressed_sprite = self.get_sprite(46, 58)
                 self.pressed_sprite = self.get_sprite(138, 58)
-                pass
             case "raise":
                 self.unpressed_sprite = self.get_sprite(69, 58)
                 self.pressed_sprite = self.get_sprite(161, 58)
-                pass
             case "25%":
                 self.unpressed_sprite = self.get_sprite(0, 67)
                 self.pressed_sprite = self.get_sprite(92, 67)
-                pass
             case "50%":
                 self.unpressed_sprite = self.get_sprite(23, 67)
                 self.pressed_sprite = self.get_sprite(115, 67)
-                pass
             case "75%":
                 self.unpressed_sprite = self.get_sprite(46, 67)
                 self.pressed_sprite = self.get_sprite(138, 67)
-                pass
             case "all in":
                 self.unpressed_sprite = self.get_sprite(69, 67)
                 self.pressed_sprite = self.get_sprite(161, 67)
-                pass
             case "new game":
                 self.unpressed_sprite = self.get_sprite(0, 118)
                 self.pressed_sprite = self.get_sprite(98, 118)
-                pass
             case "settings":
                 self.unpressed_sprite = self.get_sprite(0, 140)
                 self.pressed_sprite = self.get_sprite(98, 140)
-                pass
             case "difficulty":
                 self.unpressed_sprite = self.get_sprite(0, 162)
                 self.pressed_sprite = self.get_sprite(67, 162)
-                pass
             case "change card":
                 self.unpressed_sprite = self.get_sprite(0, 175)
                 self.pressed_sprite = self.get_sprite(67, 175)
-                pass
 
 
     def get_sprite(self, x, y):
@@ -97,9 +101,12 @@ class Button:
         :param y: Y coordinate in the spritesheet.
         :return: A scaled pygame.Surface representing the sprite.
         """
-        sprite = pygame.Surface((self.sprite_width, self.sprite_height), pygame.SRCALPHA)
-        sprite.blit(self.spritesheet, (0, 0), (x, y, self.sprite_width, self.sprite_height))
-        return pygame.transform.scale(sprite, (self.scaled_width, self.scaled_height))
+        sprite = pygame.Surface((self.sprite_width, self.sprite_height),
+                                pygame.SRCALPHA)
+        sprite.blit(self.spritesheet, (0, 0), (x, y, self.sprite_width,
+                                               self.sprite_height))
+        return pygame.transform.scale(sprite, (self.scaled_width,
+                                               self.scaled_height))
 
 
     def handle_event(self, event):
@@ -125,4 +132,3 @@ class Button:
         :param screen: The Pygame surface to draw the button on.
         """
         screen.blit(self.current_sprite, self.position)
-

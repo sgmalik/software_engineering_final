@@ -1,7 +1,13 @@
+"""Class and methods for the Chip GUI element"""
 import pygame
 
 
 class Chip:
+    """
+    Chip GUI element. Used for when a chip needs to be displayed
+    in the GUI. Meant to be easy to set up and intuitive to use
+    with minimal setup.
+    """
     def __init__(self, spritesheet_path, position, scale, color):
         """
         Initialize the Chip.
@@ -72,5 +78,3 @@ class Chip:
         :param event: The Pygame event to handle.
         """
         # ADD FUTURE EVENTS HERE IF WE WANT
-        pass
-
