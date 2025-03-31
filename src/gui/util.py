@@ -70,7 +70,9 @@ def get_proper_chip_distribution(user_value):
     return distribution # (1, 5, 10, 50, 100)
 
 
-def change_to_main_menu(scale, game_screen, buttons, sliders, cards, chips, numtexts):
+
+def change_to_main_menu(scale, game_screen, buttons, sliders, cards, chips, numtexts, player_balance, pot_total):
+
     """
     Changes the GUI elements to the ones found in the main menu screen
     """
@@ -86,7 +88,10 @@ def change_to_main_menu(scale, game_screen, buttons, sliders, cards, chips, numt
                       (scale, scale), 98, 22, "new game",
                       callback=lambda: change_to_game(scale, game_screen,
                                                       buttons, sliders, cards,
-                                                      chips, numtexts))
+
+                                                      chips, numtexts, 
+                                                      player_balance, pot_total))
+
     settings = Button(SPRITESHEET_PATH, (51 * scale, 113 * scale),
                       (scale, scale), 98, 22, "settings",
                       callback=lambda: change_to_settings(scale, game_screen,
@@ -118,7 +123,7 @@ def change_to_settings(scale, game_screen, buttons, sliders, cards, chips, numte
     buttons.append(change_card)
 
 
-def change_to_game(scale, game_screen, buttons, sliders, cards, chips, numtexts):
+def change_to_game(scale, game_screen, buttons, sliders, cards, chips, numtexts, player_balance, pot_total):
     """
     Changes the GUI elements to the ones found in the game screen
     """
@@ -142,6 +147,37 @@ def change_to_game(scale, game_screen, buttons, sliders, cards, chips, numtexts)
     (155 * scale, 123 * scale),
     (155 * scale, 134 * scale),
     ]
+
+    # Make betting percentage buttons work 
+    for i in range(len(button_names)):
+        name = button_names[i]
+        pos = button_positions[i]
+    
+    percentage_map = {
+    "25%": 0.25,
+    "50%": 0.50,
+    "75%": 0.75,
+    "all in": 1.0
+}
+    # Create betting buttons action 
+    for i in range(len(button_names)):
+        name = button_names[i]
+        pos = button_positions[i]
+
+        if name in percentage_map:
+            pct = percentage_map[name]
+            button = Button(SPRITESHEET_PATH, pos, (scale, scale), 23, 9, name,
+                            callback=(lambda pct_val:
+                                    lambda: bet_percentage(pct_val, player_balance, pot_total,
+                                                            chips, scale, numtexts))(pct))
+        else:
+            button = Button(SPRITESHEET_PATH, pos, (scale, scale), 23, 9, name)
+
+        buttons.append(button)
+
+
+    
+
     for i in range(len(button_names)):
         button = Button(SPRITESHEET_PATH, button_positions[i],
                         (scale, scale), 23, 9, button_names[i])
@@ -205,9 +241,116 @@ def change_to_game(scale, game_screen, buttons, sliders, cards, chips, numtexts)
     # Num texts
     bid_num = NumText(SPRITESHEET_PATH, (105, 103), (scale, scale), 0)
     numtexts.append(bid_num)
-    cpu_val = NumText(SPRITESHEET_PATH, (184, 24), (scale, scale), cpu_value)
+    cpu_val = NumText(SPRITESHEET_PATH, (184, 24), (scale, scale), cpu_value, label="cpu_balance")
     numtexts.append(cpu_val)
-    ply_val = NumText(SPRITESHEET_PATH, (184, 32), (scale, scale), player_value)
+    ply_val = NumText(SPRITESHEET_PATH, (184, 32), (scale, scale), player_value, label="player_balance")
     numtexts.append(ply_val)
-    pot_val = NumText(SPRITESHEET_PATH, (184, 40), (scale, scale), 0)
+    pot_val = NumText(SPRITESHEET_PATH, (184, 40), (scale, scale), 0, label="pot")
     numtexts.append(pot_val)
+
+    
+    
+    
+
+
+def update_player_chips(chips, scale, player_balance):
+    """
+    Rebuilds the player's chip stack to visually reflect their current balance.
+
+    Removes all chips marked as "player", then regenerates a new distribution
+    based on the remaining balance using the standard chip values.
+
+    Parameters:
+        chips (list): The master chip list used in the game.
+        scale (int): The UI scaling factor for screen resolution.
+        player_balance (list[int]): A one-item list tracking the player's balance.
+    """
+    colors = ["white", "red", "blue", "green", "black"]
+    distribution = get_proper_chip_distribution(player_balance[0])
+
+    # Remove previous player chips
+    chips[:] = [chip for chip in chips if getattr(chip, "owner", "") != "player"]
+
+    x = -13
+    for i in range(5):
+        x += 13
+        y = 2
+        for _ in range(distribution[i]):
+            y -= 2
+            chip = Chip(SPRITESHEET_PATH, ((9 + x) * scale, (132 + y) * scale),
+                        (scale, scale), colors[i])
+            chip.owner = "player"
+            chips.append(chip)
+
+
+def bet_percentage(percent, player_balance, pot_total, chips, scale, numtexts):
+    """
+    Handles betting logic triggered by the 25%, 50%, 75%, and All In buttons.
+
+    Deducts a percentage of the player's balance, updates both the player's 
+    displayed chips and the visual pot, and updates number displays.
+
+    Parameters:
+        percent (float): Fraction of the player's balance to bet (e.g., 0.25).
+        player_balance (list[int]): Player’s current balance.
+        pot_total (list[int]): Total value in the pot.
+        chips (list): The master list of chip sprites on screen.
+        scale (int): The global screen scaling factor.
+        numtexts (list): List of all NumText elements to update.
+    """
+    if player_balance[0] <= 0:
+        return
+
+    amount_to_bet = int(player_balance[0] * percent)
+    if amount_to_bet == 0 and player_balance[0] > 0:
+        amount_to_bet = 1  # minimum bet if there's money
+
+    player_balance[0] -= amount_to_bet
+    pot_total[0] += amount_to_bet
+
+    # Update display
+    for num in numtexts:
+        if getattr(num, "label", "") == "player_balance":
+            num.set_number(player_balance[0])
+        elif getattr(num, "label", "") == "pot":
+            num.set_number(pot_total[0])
+
+    # Update chips
+    update_player_chips(chips, scale, player_balance)
+    # Update physical pot 
+    add_chips_to_pot(chips, scale, amount_to_bet)
+
+def add_chips_to_pot(chips, scale, amount):
+    """
+    Visually adds chip sprites to the pot area based on the amount bet.
+
+    Chips are placed in fixed x/y stacks by denomination to match the board layout.
+
+    Parameters:
+        chips (list): The main chip list used in the game.
+        scale (int): The screen scaling factor.
+        amount (int): The total dollar amount being added to the pot.
+    """
+    colors = ["white", "red", "blue", "green", "black"]
+    distribution = get_proper_chip_distribution(amount)
+
+    # Pot stack positions for each chip type
+    chip_stack_positions = {
+        "white": (167, 80),
+        "red": (183, 76),
+        "blue": (174, 68),
+        "green": (162, 62),
+        "black": (160, 56)
+    }
+
+    for i, color in enumerate(colors):
+        x_base, y_base = chip_stack_positions[color]
+        y_offset = 0
+        for _ in range(distribution[i]):
+            chip = Chip(SPRITESHEET_PATH,
+                        ((x_base) * scale, (y_base - y_offset) * scale),
+                        (scale, scale), color)
+            chip.owner = "pot"
+            chips.append(chip)
+            y_offset += 2  # Stack upward
+

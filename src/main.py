@@ -27,9 +27,12 @@ sliders = []
 cards = []
 chips = []
 numtexts = []
-
+# Innitialize the players money and pot 
+player_balance = [500]
+pot_total = [0]
 # Initialize GUI elements
-change_to_main_menu(SCALE, game_screen, buttons, sliders, cards, chips, numtexts)
+change_to_main_menu(SCALE, game_screen, buttons, sliders, cards, chips, numtexts, player_balance, pot_total)
+
 
 RUNNING = True
 while RUNNING:
@@ -38,7 +41,7 @@ while RUNNING:
             RUNNING = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                change_to_main_menu(SCALE, game_screen, buttons, sliders, cards, chips, numtexts)
+                change_to_main_menu(SCALE, game_screen, buttons, sliders, cards, chips, numtexts, player_balance, pot_total)
 
         # Pass events to buttons and other GUI elements
         for button in buttons:
