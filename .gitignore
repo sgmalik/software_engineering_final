@@ -1,3 +1,4 @@
 src/game_engine/__pycache__/
 gui/__pycache__/
-src/game_engine/tests/__pycache__
+src/game_engine/tests/__pycache__/
+src/game_engine/cpu/__pycache__/
