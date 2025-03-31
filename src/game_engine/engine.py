@@ -69,7 +69,7 @@ It needs to return information that the GUI needs
        #TODO: add surya's action history
 
         return {
-            "players_turn": self.dealer.is_players_turn(),
+            "players_turn": self.dealer.table.is_players_turn(),
             "community_cards": community_cards,
             "players": players
         }
@@ -104,7 +104,7 @@ It needs to return information that the GUI needs
         action = Action(action)
 
         #apply player action
-        self.dealer.apply_player_action(action, raise_amount)
+        self.dealer.apply_action(action, raise_amount)
         #go to next player 
         self.dealer.table.next_player()
     
@@ -114,7 +114,7 @@ It needs to return information that the GUI needs
         """
 
         #CPU is just going to call for now 
-        self.dealer.apply_player_action(Action.CALL)
+        self.dealer.apply_action(Action.CALL)
 
     def winners(self):
         """
