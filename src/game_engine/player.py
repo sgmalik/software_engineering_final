@@ -4,7 +4,7 @@ This module contains the Player class
 
 from .constants import Action, Street, PlayerState
 from .card import Card
-from typing import Union, List
+from typing import Union, List, Optional
 
 
 class Player:
@@ -12,7 +12,7 @@ class Player:
     represents a player in the game
     """
 
-    def __init__(self, initial_stack, name):
+    def __init__(self, initial_stack, name: Optional[str] = None):
         self.hole_cards = []
         self.stack = initial_stack
         self.state = PlayerState.ACTIVE
@@ -22,6 +22,7 @@ class Player:
         # 4 == len(["preflop", "flop", "turn", "river"])
         self.contribuition = 0
         self.action_histories = []
+        self.name = name
 
     def add_hole_card(self, cards: List[Card]):
         if len(self.hole_cards) != 0:
@@ -31,15 +32,12 @@ class Player:
         if not all(isinstance(card, Card) for card in cards):
             raise ValueError("Player can only have cards as hole cards")
         self.hole_cards = cards
-=======
-        self.name = name
 
-    #eq's for removing from pending_betters, assuming names are unique
+    # eq's for removing from pending_betters, assuming names are unique
     def __eq__(self, other_player):
         if isinstance(other_player, Player):
             return self.name == other_player.name
         return False
->>>>>>> origin/main
 
     def clear_hole_cards(self):
         """
