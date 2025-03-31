@@ -1,4 +1,4 @@
-from Constants import Action, PlayerState
+from game_engine.constants import Action, PlayerState
 from pypokerengine.players import BasePokerPlayer
 
 # assuming that round_state is a dictionary with the following structure:

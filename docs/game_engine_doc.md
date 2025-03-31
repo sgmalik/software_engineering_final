@@ -80,10 +80,27 @@ be a string representation of the state of the game.
 ## Stuff to do in game_engine: 
 * hand_eval check rank functions (two pair, flush, etc)
 * game_eval (evaluate_winners) 
-* game_eval/pot: side pots (not needed for a while)
+
 * game_engine: current state of the game
     this will likely be involved and require a lot of helper functions 
 * game_engine: CPU action using the surya's cpus
 * game_engine: function that uses game_eval to get the winner of the round.
 * need a check when a player stacks == 0 / game is over 
 * create more extensive tests for dealer
+* showdown logic (can be implemented in dealer, I think I like putting it in engine better)
+* game_engine function that builds round_state object (for cpus, can either be Card or just all strings)
+* game_engine action histories 
+
+## if time:
+* game_eval/pot: side pots (not needed for a while)
+
+
+## GUI: 
+potential GUI: check/call one btn  (if bid == 0 ? "check" : "call" )
+settings: can navigate back to game_start screen 
+
+implementing functionality based on game_engine game state object 
+    * gui should only have have to call 
+        current_state_of_game 
+        declare_action 
+        as well as create the Engine object where you would pass your settings config

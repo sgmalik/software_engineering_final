@@ -1,8 +1,7 @@
 from pypokerengine.players import BasePokerPlayer
-from Deck import Deck
+from game_engine.deck import Deck
 from enum import Enum
-from Constants import Action
-from Constants import PlayerState
+from game_engine.constants import Action, PlayerState
 
 # assunuing that round_state is a dictionary with the following structure:
 
