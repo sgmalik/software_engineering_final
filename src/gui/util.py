@@ -70,7 +70,9 @@ def get_proper_chip_distribution(user_value):
     return distribution # (1, 5, 10, 50, 100)
 
 
+
 def change_to_main_menu(scale, game_screen, buttons, sliders, cards, chips, numtexts, player_balance, pot_total):
+
     """
     Changes the GUI elements to the ones found in the main menu screen
     """
@@ -86,8 +88,10 @@ def change_to_main_menu(scale, game_screen, buttons, sliders, cards, chips, numt
                       (scale, scale), 98, 22, "new game",
                       callback=lambda: change_to_game(scale, game_screen,
                                                       buttons, sliders, cards,
+
                                                       chips, numtexts, 
                                                       player_balance, pot_total))
+
     settings = Button(SPRITESHEET_PATH, (51 * scale, 113 * scale),
                       (scale, scale), 98, 22, "settings",
                       callback=lambda: change_to_settings(scale, game_screen,
@@ -173,6 +177,7 @@ def change_to_game(scale, game_screen, buttons, sliders, cards, chips, numtexts,
 
 
     
+
     for i in range(len(button_names)):
         button = Button(SPRITESHEET_PATH, button_positions[i],
                         (scale, scale), 23, 9, button_names[i])

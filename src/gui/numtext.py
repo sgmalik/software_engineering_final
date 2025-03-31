@@ -8,7 +8,9 @@ class NumText:
     in the GUI. Meant to be easy to set up and intuitive to use
     with minimal setup.
     """
+
     def __init__(self, spritesheet_path, position, scale, number, label=None):
+
         """
         Initialize the NumberText element.
 
@@ -29,6 +31,7 @@ class NumText:
         self.number_sprites = self.create_number_sprites(number)
 
         self.label = label 
+
 
 
     def recolor_sprite_white(self, sprite):
