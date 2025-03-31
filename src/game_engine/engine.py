@@ -1,6 +1,11 @@
+
 """
 Poker Engine
 """
+
+from .dealer import Dealer
+from .constants import Action
+from typing import Optional
 
 class Engine():
     """
@@ -15,32 +20,106 @@ It needs to return information that the GUI needs
         pot 
 """
 
+    #pass a settings config when creating class to set up game
     def __init__(self, num_players, blind, initial_stack):
         self.num_players = num_players
         self.blind = blind
         self.initial_stack = initial_stack
-        
+        self.dealer = Dealer(self.blind, self.initial_stack)
+    
+    
+    def start_game(self):
+        """
+        function that will be called when starting up the GUI
+        """
+        #initialize players
+        self.dealer.table.init_players(self.initial_stack, self.num_players)
 
-    def starting_state(self):
-        """
-        starting state: blind, initial stack, etc. something to implement later
-        """
+        #start preflop street
+        self.dealer.start_street()
+
 
     def current_state_of_player(self):
         """
-        takes player, and returns current state of player to ensure still in hand
+        takes player, and returns current state of player to ensure still in hand.
+        This will be useful in the GUI to gray out player buttons when
+            1. player has folded
+            2. player is all in
+            3. player has already bet
+            4. its not the players turn
         """
 
     def current_state_of_game(self):
         """
         create a data structure so that the GUI can display the current state of the game
         """
+        #get the players stacks and cards
+        community_cards = self.dealer.table.community_cards
+
+        #TODO: players shouldn't be card class, should be string representation
+        #TODO: none of the classes in the engine should be returned to the GUI
+        players = [
+        {
+                "name": player.name,
+                "stack": player.stack,
+                "hole_cards": player.hole_cards,
+                "state": player.state
+        } for player in self.dealer.table.players]
+
+       #TODO: add surya's action history
+
+        return {
+            "players_turn": self.dealer.is_players_turn(),
+            "community_cards": community_cards,
+            "players": players
+        }
+            
+
+    def start_next_street(self):
+        """
+        function that will be called when the street is over.
+        """
+        self.dealer.start_street()
+        #TODO: check if round is over, if so, call start_next_round
+        
+
+    def start_next_round(self):
+        """
+        function that will be called when the round is over
+        (so call this when river is done)
+        """
+        
+        self.dealer.table.reset_table()
+        self.dealer.start_street()
+    
+    def player_action(self, action: str, raise_amount: Optional[int] = None):
+        """
+        function that will be called when its the players turn
+        and they are active in the hand
+
+        this receives the btn string from the GUI 
+        """
+
+        #convert string to Action enum
+        action = Action(action)
+
+        #apply player action
+        self.dealer.apply_player_action(action, raise_amount)
+        #go to next player 
+        self.dealer.table.next_player()
+    
+    def cpu_action(self):
+        """
+        function that will be called when its the cpu's turn
+        """
+
+        #CPU is just going to call for now 
+        self.dealer.apply_player_action(Action.CALL)
 
     def winners(self):
         """
         use game_eval to determine winners
         """
-
 
     def pot_size(self):
         """

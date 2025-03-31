@@ -12,7 +12,7 @@ class Player:
     represents a player in the game
     """
 
-    def __init__(self, initial_stack: int):
+    def __init__(self, initial_stack, name):
         self.hole_cards = []
         self.stack = initial_stack
         self.state = PlayerState.ACTIVE
@@ -31,6 +31,15 @@ class Player:
         if not all(isinstance(card, Card) for card in cards):
             raise ValueError("Player can only have cards as hole cards")
         self.hole_cards = cards
+=======
+        self.name = name
+
+    #eq's for removing from pending_betters, assuming names are unique
+    def __eq__(self, other_player):
+        if isinstance(other_player, Player):
+            return self.name == other_player.name
+        return False
+>>>>>>> origin/main
 
     def clear_hole_cards(self):
         """
