@@ -8,6 +8,7 @@ class TestEngine:
         start game is expected to initialize players
         and start the game with the preflop street
         """
+        #init game start preflop
         engine = Engine(num_players=2,initial_stack=1000, blind=1)
         engine.start_game()
 
@@ -17,7 +18,7 @@ class TestEngine:
         cpu1_stack = engine.dealer.table.players[1].stack
         assert pc_stack == 999
         assert cpu1_stack == 998
-
+        
         #testing if players are initialized correctly
         pc_name = engine.dealer.table.players[0].name
         cpu1_name = engine.dealer.table.players[1].name

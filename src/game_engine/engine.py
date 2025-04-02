@@ -88,7 +88,7 @@ It needs to return information that the GUI needs
         (so call this when river is done)
         """
         
-        self.dealer.table.reset_table()
+        self.dealer.set_up_next_round()
         self.dealer.start_street()
     
     def player_action(self, action: str, raise_amount: Optional[int] = None):

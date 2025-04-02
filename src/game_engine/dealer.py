@@ -112,5 +112,6 @@ class Dealer:
         self.table.next_player()
 
     def set_up_next_round(self):
+        self.current_street = Street.PREFLOP
         self.table.reset_table()
         self.betting_manager.reset_betting_round()
