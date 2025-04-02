@@ -18,7 +18,7 @@ class TestDealer:
         dealer = Dealer(small_blind=1, initial_stack=1000)
         table = dealer.table
 
-        table.init_players(initial_stack=1000, num_players=2)
+        
 
         # raise 10
         dealer.apply_action(Action.RAISE, 10)
@@ -34,7 +34,7 @@ class TestDealer:
         """
         dealer = Dealer(small_blind=1, initial_stack=1000)
         
-        dealer.table.init_players(initial_stack=1000, num_players=2)
+        
 
         # pc raises 10
         assert dealer.table.current_player.name == "pc"
@@ -62,7 +62,7 @@ class TestDealer:
         dealer = Dealer(small_blind=1, initial_stack=1000)
         table = dealer.table
 
-        table.init_players(initial_stack=1000, num_players=2)
+        
 
         # start preflop
         dealer.start_street()
@@ -91,7 +91,7 @@ class TestDealer:
         dealer = Dealer(small_blind=1, initial_stack=1000)
         table = dealer.table
 
-        table.init_players(initial_stack=1000, num_players=2)
+       
 
         dealer.apply_action(Action.RAISE, 10)
         dealer.apply_action(Action.RAISE, 20)
@@ -113,7 +113,7 @@ class TestDealer:
         """
         dealer = Dealer(small_blind=1, initial_stack=1000)
         table = dealer.table
-        table.init_players(initial_stack=1000, num_players=2)
+        
 
         dealer.start_street()
         assert dealer.betting_manager.is_betting_over() is False
@@ -157,7 +157,6 @@ class TestDealer:
         dealer = Dealer(small_blind=1, initial_stack=1000)
         table = dealer.table
 
-        table.init_players(initial_stack=1000, num_players=2)
         dealer.start_street()
 
         # if one player folds betting is over, and the round is over
@@ -171,7 +170,7 @@ class TestDealer:
         dealer = Dealer(small_blind=1, initial_stack=1000)
         table = dealer.table
 
-        table.init_players(initial_stack=1000, num_players=2)
+  
         dealer.start_street()
 
         dealer.apply_action(Action.FOLD)
@@ -184,7 +183,7 @@ class TestDealer:
         dealer = Dealer(small_blind=1, initial_stack=1000)
         table = dealer.table
 
-        table.init_players(initial_stack=1000, num_players=2)
+ 
 
         # start preflop
         dealer.start_street()

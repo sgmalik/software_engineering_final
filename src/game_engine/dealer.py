@@ -20,6 +20,8 @@ class Dealer:
         self.initial_stack = initial_stack
         
         self.table = Table()
+        self.table.init_players(initial_stack=initial_stack, num_players=2)
+        
         self.betting_manager = BettingManager(self.table, self.blind)
         
 
