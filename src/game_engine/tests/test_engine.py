@@ -50,7 +50,7 @@ class TestEngine:
         containing the current state of the game
         """
         engine = Engine(num_players=2,initial_stack=1000, blind=1)
-        engine.start_game()
+        engine.start_next_round()
 
         state = engine.current_state_of_game()
         
@@ -58,6 +58,9 @@ class TestEngine:
         assert state["players_turn"] is True
         assert state["community_cards"] == []
         assert len(state["players"]) == 2
+        assert state["pot"] == 3
+        assert state["betting_over"] is False
+        assert state["round_over"] is False
 
         pc = state["players"][0]
         cpu1 = state["players"][1]

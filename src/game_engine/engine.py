@@ -34,6 +34,8 @@ It needs to return information that the GUI needs
         #get the players stacks and cards
         community_cards = self.dealer.table.community_cards
 
+
+        #TODO: cards and state need to be string 
         players = [
         {
                 "name": player.name,
