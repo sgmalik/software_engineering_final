@@ -45,7 +45,7 @@ It needs to return information that the GUI needs
                 "state": player.state
         } for player in self.dealer.table.players]
 
-        return {
+        state = {
             "pot": self.dealer.table.pot.value,
             "players_turn": self.dealer.table.is_players_turn(),
             "betting_over": self.dealer.betting_manager.is_betting_over(),
@@ -53,6 +53,9 @@ It needs to return information that the GUI needs
             "community_cards": community_cards,
             "players": players
         }
+        print(state)
+        return state
+    
             
     def start_next_street(self):
         """
@@ -84,11 +87,9 @@ It needs to return information that the GUI needs
         #convert string to Action enum
         #TODO: need to assert that raise is not greater than stack and is less than 
         
+        action = Action(action)
         self.dealer.apply_action(action, raise_amount)
         
-
-        action = Action(action)
-
         #apply player action
         
     def cpu_action(self):

@@ -82,7 +82,7 @@ class TestEngine:
         """
         engine = Engine(num_players=2,initial_stack=1000, blind=1)
         engine.start_next_round()
-        state = engine.current_state_of_game()
+       
 
         #pc raises 10
         engine.player_action("raise", 10)
@@ -90,12 +90,35 @@ class TestEngine:
 
         assert state["players_turn"] is False
         assert state["community_cards"] == []
-        assert state["pot"] == 3
+        assert state["pot"] == 14
         assert state["betting_over"] is False
         assert state["round_over"] is False
-        assert state["players"][0].stack == 988
+        assert state["players"][0]["stack"] == 988
 
-        #after blinds current player should be pc (index 0)
-        assert engine.dealer.table.current_player == 0
+        #cpu1 raises 10
+        engine.player_action("raise", 10)
+        state = engine.current_state_of_game()
 
-        engine.player_action("check")
+        #player turn will be true because cpu1 just did an action
+        assert state["players_turn"] is True
+        assert state["community_cards"] == []
+        assert state["pot"] == 34
+        assert state["betting_over"] is False
+        assert state["round_over"] is False
+        assert state["players"][0]["stack"] == 988
+        assert state["players"][1]["stack"] == 978
+
+        #pc calls this 
+        engine.player_action("call")
+        state = engine.current_state_of_game()
+
+        assert state["players_turn"] is False
+        assert state["community_cards"] == []
+        assert state["pot"] == 44
+        assert state["betting_over"] is True
+        assert state["round_over"] is False
+        assert state["players"][0]["stack"] == 978
+        assert state["players"][1]["stack"] == 978
+
+        
+        
