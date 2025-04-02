@@ -51,7 +51,7 @@ class Card:
     # debug prints
 
     def __str__(self):
-        return f"{self.suit}{self.card_val}"
+        return f"{self.card_val}{self.suit}"
 
     def __repr__(self):
         return f"{self.suit}{self.card_val}"
