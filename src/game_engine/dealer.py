@@ -109,3 +109,4 @@ class Dealer:
         current_player = self.table.current_player
         self.betting_manager.apply_player_action(
             current_player, action, raise_amount)
+        self.table.next_player()

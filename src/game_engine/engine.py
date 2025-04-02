@@ -106,7 +106,7 @@ It needs to return information that the GUI needs
         #apply player action
         self.dealer.apply_action(action, raise_amount)
         #go to next player 
-        self.dealer.table.next_player()
+        
     
     def cpu_action(self):
         """
