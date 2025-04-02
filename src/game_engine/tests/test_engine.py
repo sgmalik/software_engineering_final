@@ -8,9 +8,17 @@ class TestEngine:
         start game is expected to initialize players
         and start the game with the preflop street
         """
-        #init game start preflop
-        engine = Engine(num_players=2,initial_stack=1000, blind=1)
-        engine.start_game()
+        #init game start preflop 
+        engine = Engine(num_players=2, initial_stack=1000, blind=1)
+        engine.start_next_round()
+
+        #make sure dealer is correct
+        assert engine.dealer.blind == 1
+        assert engine.dealer.initial_stack == 1000
+        assert engine.dealer.current_street == Street.PREFLOP
+
+        #betting manager
+        assert engine.dealer.betting_manager.blind == 1
 
         
         #testing blinds adjust players stack correctly
@@ -18,13 +26,17 @@ class TestEngine:
         cpu1_stack = engine.dealer.table.players[1].stack
         assert pc_stack == 999
         assert cpu1_stack == 998
+        assert engine.dealer.table.pot.value == 3
 
         #testing if players are initialized correctly
         pc_name = engine.dealer.table.players[0].name
         cpu1_name = engine.dealer.table.players[1].name
         assert pc_name == "pc"
         assert cpu1_name == "cpu1"
-        
+
+        #it should be pc's turn after blinds
+        assert engine.dealer.table.current_player.name == "pc"
+
         #testing if hole cards are dealt correctly
         pc_hole_cards = engine.dealer.table.players[0].hole_cards
         cpu1_hole_cards = engine.dealer.table.players[1].hole_cards

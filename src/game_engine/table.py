@@ -17,7 +17,7 @@ class Table:
 
     def __init__(self):
 
-        self.blind_pos = 0
+        self.blind_pos = 1
         self.community_cards = []
 
         self.deck: Deck = Deck()

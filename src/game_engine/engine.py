@@ -21,11 +21,11 @@ It needs to return information that the GUI needs
 """
 
     #pass a settings config when creating class to set up game
-    def __init__(self, num_players, blind, initial_stack):
+    def __init__(self, num_players, initial_stack, blind):
         self.num_players = num_players
         self.blind = blind
         self.initial_stack = initial_stack
-        self.dealer = Dealer(self.blind, self.initial_stack)
+        self.dealer = Dealer(self.initial_stack, self.blind)
 
     def current_state_of_game(self):
         """
@@ -87,7 +87,6 @@ It needs to return information that the GUI needs
 
         #apply player action
         
-    
     def cpu_action(self):
         """
         function that will be called when its the cpu's turn
