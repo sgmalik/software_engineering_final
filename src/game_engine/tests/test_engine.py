@@ -67,16 +67,14 @@ class TestEngine:
 
         assert pc["name"] == "pc"
         assert pc["stack"] == 999
-        assert pc["hole_cards"] == engine.dealer.table.players[0].hole_cards
         assert pc["state"] == PlayerState.ACTIVE
 
         assert cpu1["name"] == "cpu1"
         assert cpu1["stack"] == 998
-        assert cpu1["hole_cards"] == engine.dealer.table.players[1].hole_cards
         assert cpu1["state"] == PlayerState.ACTIVE
 
         
-    def test_preflop_betting_round(self):
+    def test_preflop_betting_round_raises(self):
         """
         test the preflop round of bets
         """

@@ -41,7 +41,7 @@ It needs to return information that the GUI needs
         {
                 "name": player.name,
                 "stack": player.stack,
-                "hole_cards": player.hole_cards,
+                "hole_cards": [str(card) for card in player.hole_cards],
                 "state": player.state
         } for player in self.dealer.table.players]
 
@@ -50,7 +50,7 @@ It needs to return information that the GUI needs
             "players_turn": self.dealer.table.is_players_turn(),
             "betting_over": self.dealer.betting_manager.is_betting_over(),
             "round_over": self.dealer.is_round_over(),
-            "community_cards": community_cards,
+            "community_cards": [str(card) for card in community_cards],
             "players": players
         }
         print(state)
