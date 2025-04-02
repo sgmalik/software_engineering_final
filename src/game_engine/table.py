@@ -63,13 +63,14 @@ class Table:
         """
         set current player to the next player
         """
+        print("[TRACE] next_player() called")
+
         # For heads up, don't need to change this because when a player folds the round is over
         # more players needs to be based on active players
-        if self.current_player == self.players[-1]:
+        if self.current_player == self.players[1]:
             self.current_player = self.players[0]
         else:
-            index = self.players.index(self.current_player)
-            self.current_player = self.players[index + 1]
+            self.current_player = self.players[1]
 
     def deal_hole_cards(self):
         """
