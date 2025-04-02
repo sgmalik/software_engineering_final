@@ -110,3 +110,7 @@ class Dealer:
         self.betting_manager.apply_player_action(
             current_player, action, raise_amount)
         self.table.next_player()
+
+    def set_up_next_round(self):
+        self.table.reset_table()
+        self.betting_manager.reset_betting_round()

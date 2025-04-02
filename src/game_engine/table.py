@@ -45,6 +45,18 @@ class Table:
         """
         # clear dealer community cards
         # clear player's hole_cards
+        self.deck = Deck()
+        self.community_cards = []
+        self.pot.value = 0
+
+        for player in self.players:
+            player.hole_cards = []
+            player.contribuition = 0
+            player.state = PlayerState.ACTIVE
+        
+        self.set_blind_pos()
+        #change to the player paying the small blind
+        self.current_player = self.players[self.blind_pos]
 
     # set this to whos turn it is
     def next_player(self):
