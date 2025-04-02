@@ -25,12 +25,12 @@ class Street(Enum):
     SHOWDOWN = 4
     FINISHED = 5
 
-class PlayerState(Enum): 
+class PlayerState(Enum):
     """
     whether the player is active, folded, allin, waiting, or winner
     """
-    ACTIVE = 0
-    FOLDED = 1
-    ALLIN = 2
-    WAITING = 3
-    WINNER = 4
+    ACTIVE = "active"
+    FOLDED = "folded"
+    ALLIN = "allin"
+    WAITING = "waiting"
+    WINNER = "winner"

@@ -42,7 +42,7 @@ It needs to return information that the GUI needs
                 "name": player.name,
                 "stack": player.stack,
                 "hole_cards": [str(card) for card in player.hole_cards],
-                "state": player.state
+                "state": player.state.value
         } for player in self.dealer.table.players]
 
         state = {
@@ -53,7 +53,7 @@ It needs to return information that the GUI needs
             "community_cards": [str(card) for card in community_cards],
             "players": players
         }
-        print(state)
+        
         return state
     
             

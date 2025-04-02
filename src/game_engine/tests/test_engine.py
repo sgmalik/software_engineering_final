@@ -67,11 +67,11 @@ class TestEngine:
 
         assert pc["name"] == "pc"
         assert pc["stack"] == 999
-        assert pc["state"] == PlayerState.ACTIVE
+        assert PlayerState(pc["state"]) == PlayerState.ACTIVE
 
         assert cpu1["name"] == "cpu1"
         assert cpu1["stack"] == 998
-        assert cpu1["state"] == PlayerState.ACTIVE
+        assert PlayerState(cpu1["state"]) == PlayerState.ACTIVE
 
         
     def test_preflop_betting_round_raises(self):
