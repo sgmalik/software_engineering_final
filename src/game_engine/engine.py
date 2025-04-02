@@ -56,9 +56,6 @@ It needs to return information that the GUI needs
         #get the players stacks and cards
         community_cards = self.dealer.table.community_cards
 
-        #TODO: players shouldn't be card class, should be string representation
-        #TODO: none of the classes in the engine should be returned to the GUI
-        #TODO: 
         players = [
         {
                 "name": player.name,
@@ -68,6 +65,7 @@ It needs to return information that the GUI needs
         } for player in self.dealer.table.players]
 
         return {
+            "pot": self.dealer.table.pot.value,
             "players_turn": self.dealer.table.is_players_turn(),
             "betting_over": self.dealer.betting_manager.is_betting_over(),
             "round_over": self.dealer.is_round_over(),
