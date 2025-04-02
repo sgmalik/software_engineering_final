@@ -81,7 +81,19 @@ class TestEngine:
         test the preflop round of bets
         """
         engine = Engine(num_players=2,initial_stack=1000, blind=1)
-        engine.start_game()
+        engine.start_next_round()
+        state = engine.current_state_of_game()
+
+        #pc raises 10
+        engine.player_action("raise", 10)
+        state = engine.current_state_of_game()
+
+        assert state["players_turn"] is False
+        assert state["community_cards"] == []
+        assert state["pot"] == 3
+        assert state["betting_over"] is False
+        assert state["round_over"] is False
+        assert state["players"][0].stack == 988
 
         #after blinds current player should be pc (index 0)
         assert engine.dealer.table.current_player == 0

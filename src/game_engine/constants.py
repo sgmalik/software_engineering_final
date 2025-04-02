@@ -7,12 +7,12 @@ class Action(Enum):
     """
     represents the actions a player can take
     """
-    FOLD  = 0
-    CALL  = 1
-    RAISE = 2
-    SMALL_BLIND = 3
-    BIG_BLIND = 4
-    ANTE = 5
+    FOLD  = "fold"
+    CALL  = "call"
+    RAISE = "raise"
+    SMALL_BLIND = "sb"
+    BIG_BLIND = "bb"
+    ANTE = "ante"
 
 class Street(Enum):
     """

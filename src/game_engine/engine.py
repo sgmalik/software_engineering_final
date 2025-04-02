@@ -36,6 +36,7 @@ It needs to return information that the GUI needs
 
 
         #TODO: cards and state need to be string 
+        #TODO: check if game is over (one of the players stack is 0)
         players = [
         {
                 "name": player.name,
@@ -57,6 +58,7 @@ It needs to return information that the GUI needs
         """
         function that will be called when the street is over.
         """
+        self.dealer.next_street()
         self.dealer.start_street()
         #TODO: check if round is over, if so, call start_next_round
         
