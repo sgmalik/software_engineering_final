@@ -58,6 +58,7 @@ It needs to return information that the GUI needs
 
         #TODO: players shouldn't be card class, should be string representation
         #TODO: none of the classes in the engine should be returned to the GUI
+        #TODO: 
         players = [
         {
                 "name": player.name,
@@ -66,10 +67,10 @@ It needs to return information that the GUI needs
                 "state": player.state
         } for player in self.dealer.table.players]
 
-       #TODO: add surya's action history
-
         return {
             "players_turn": self.dealer.table.is_players_turn(),
+            "betting_over": self.dealer.betting_manager.is_betting_over(),
+            "round_over": self.dealer.is_round_over(),
             "community_cards": community_cards,
             "players": players
         }
@@ -99,20 +100,25 @@ It needs to return information that the GUI needs
 
         this receives the btn string from the GUI 
         """
-
+        #if current_player == pc then can dealer apply_action.
+        # if not need to call cpu_action so 
         #convert string to Action enum
+        #TODO: need to assert that raise is not greater than stack and is less than 
+        
+        self.dealer.apply_action(action, raise_amount)
+        
+
         action = Action(action)
 
         #apply player action
-        self.dealer.apply_action(action, raise_amount)
-        #go to next player 
         
     
     def cpu_action(self):
         """
         function that will be called when its the cpu's turn
         """
-
+        #here is where you would get the action from the cpu players
+        #then you would call apply_action with that call 
         #CPU is just going to call for now 
         self.dealer.apply_action(Action.CALL)
 
