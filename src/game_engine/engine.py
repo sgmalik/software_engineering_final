@@ -26,28 +26,6 @@ It needs to return information that the GUI needs
         self.blind = blind
         self.initial_stack = initial_stack
         self.dealer = Dealer(self.blind, self.initial_stack)
-    
-    
-    def start_game(self):
-        """
-        function that will be called when starting up the GUI
-        """
-        #initialize players
-        self.dealer.table.init_players(self.initial_stack, self.num_players)
-
-        #start preflop street
-        self.dealer.start_street()
-
-
-    def current_state_of_player(self):
-        """
-        takes player, and returns current state of player to ensure still in hand.
-        This will be useful in the GUI to gray out player buttons when
-            1. player has folded
-            2. player is all in
-            3. player has already bet
-            4. its not the players turn
-        """
 
     def current_state_of_game(self):
         """
@@ -73,7 +51,6 @@ It needs to return information that the GUI needs
             "players": players
         }
             
-
     def start_next_street(self):
         """
         function that will be called when the street is over.
@@ -125,7 +102,4 @@ It needs to return information that the GUI needs
         use game_eval to determine winners
         """
 
-    def pot_size(self):
-        """
-        gets the pot size to display in GUI
-        """
+   

@@ -63,8 +63,6 @@ class Table:
         """
         set current player to the next player
         """
-        print("[TRACE] next_player() called")
-
         # For heads up, don't need to change this because when a player folds the round is over
         # more players needs to be based on active players
         if self.current_player == self.players[1]:

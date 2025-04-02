@@ -18,7 +18,7 @@ class TestEngine:
         cpu1_stack = engine.dealer.table.players[1].stack
         assert pc_stack == 999
         assert cpu1_stack == 998
-        
+
         #testing if players are initialized correctly
         pc_name = engine.dealer.table.players[0].name
         cpu1_name = engine.dealer.table.players[1].name
@@ -69,6 +69,6 @@ class TestEngine:
         engine.start_game()
 
         #after blinds current player should be pc (index 0)
-        assert engine.dealer.table.current_player_index == 0
+        assert engine.dealer.table.current_player == 0
 
         engine.player_action("check")

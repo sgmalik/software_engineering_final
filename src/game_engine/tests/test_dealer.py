@@ -89,7 +89,6 @@ class TestDealer:
         all of current_bet) based on contribuition on the current street
         """
         dealer = Dealer(small_blind=1, initial_stack=1000)
-        table = dealer.table
 
        
 
@@ -112,8 +111,7 @@ class TestDealer:
         check if betting is over works as expected at multiple points in a round
         """
         dealer = Dealer(small_blind=1, initial_stack=1000)
-        table = dealer.table
-        
+
 
         dealer.start_street()
         assert dealer.betting_manager.is_betting_over() is False
@@ -155,7 +153,7 @@ class TestDealer:
         """
 
         dealer = Dealer(small_blind=1, initial_stack=1000)
-        table = dealer.table
+
 
         dealer.start_street()
 
@@ -168,7 +166,7 @@ class TestDealer:
         test if round is over when 1 player folds 
         """
         dealer = Dealer(small_blind=1, initial_stack=1000)
-        table = dealer.table
+     
 
   
         dealer.start_street()
