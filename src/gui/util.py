@@ -248,10 +248,6 @@ def change_to_game(scale, game_screen, buttons, sliders, cards, chips, numtexts,
     pot_val = NumText(SPRITESHEET_PATH, (184, 40), (scale, scale), 0, label="pot")
     numtexts.append(pot_val)
 
-    
-    
-    
-
 
 def update_player_chips(chips, scale, player_balance):
     """
@@ -320,6 +316,7 @@ def bet_percentage(percent, player_balance, pot_total, chips, scale, numtexts):
     # Update physical pot 
     add_chips_to_pot(chips, scale, amount_to_bet)
 
+
 def add_chips_to_pot(chips, scale, amount):
     """
     Visually adds chip sprites to the pot area based on the amount bet.
@@ -331,28 +328,30 @@ def add_chips_to_pot(chips, scale, amount):
         scale (int): The screen scaling factor.
         amount (int): The total dollar amount being added to the pot.
     """
-    colors = ["white", "red", "blue", "green", "black"]
+    colors = ["black", "green", "blue", "red", "white"]
+    
     distribution = get_proper_chip_distribution(amount)
 
     # Pot stack positions for each chip type
     chip_stack_positions = {
-        "white": (167, 80),
+        "white": (167, 79),
         "red": (183, 76),
-        "blue": (174, 68),
-        "green": (162, 62),
-        "black": (160, 56)
+        "blue": (173, 69),
+        "green": (163, 62),
+        "black": (179, 59)
     }
 
     for i, color in enumerate(colors):
         x_base, y_base = chip_stack_positions[color]
         y_offset = 0
-        for _ in range(distribution[i]):
+        for _ in range(distribution[len(distribution) - i - 1]):
             chip = Chip(SPRITESHEET_PATH,
                         ((x_base) * scale, (y_base - y_offset) * scale),
                         (scale, scale), color)
             chip.owner = "pot"
             chips.append(chip)
             y_offset += 2  # Stack upward
+
 
 def slider_bet_callback(sliders, player_balance, pot_total, chips, scale, numtexts):
     """
