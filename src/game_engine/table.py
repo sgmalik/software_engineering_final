@@ -17,7 +17,7 @@ class Table:
 
     def __init__(self):
 
-        self.blind_pos = 0
+        self.blind_pos = 1
         self.community_cards = []
 
         self.deck: Deck = Deck()
@@ -45,6 +45,18 @@ class Table:
         """
         # clear dealer community cards
         # clear player's hole_cards
+        self.deck = Deck()
+        self.community_cards = []
+        self.pot.value = 0
+
+        for player in self.players:
+            player.hole_cards = []
+            player.contribuition = 0
+            player.state = PlayerState.ACTIVE
+        
+        self.set_blind_pos()
+        #change to the player paying the small blind
+        self.current_player = self.players[self.blind_pos]
 
     # set this to whos turn it is
     def next_player(self):
@@ -53,11 +65,10 @@ class Table:
         """
         # For heads up, don't need to change this because when a player folds the round is over
         # more players needs to be based on active players
-        if self.current_player == self.players[-1]:
+        if self.current_player == self.players[1]:
             self.current_player = self.players[0]
         else:
-            index = self.players.index(self.current_player)
-            self.current_player = self.players[index + 1]
+            self.current_player = self.players[1]
 
     def deal_hole_cards(self):
         """

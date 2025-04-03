@@ -2,7 +2,7 @@
 import pygame
 
 
-class Card:
+class GUI_Card:
     """
     Card GUI element. Used for when a card needs to be displayed
     in the GUI. Meant to be easy to set up and intuitive to use

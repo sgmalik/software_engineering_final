@@ -20,6 +20,8 @@ class Dealer:
         self.initial_stack = initial_stack
         
         self.table = Table()
+        self.table.init_players(initial_stack=initial_stack, num_players=2)
+        
         self.betting_manager = BettingManager(self.table, self.blind)
         
 
@@ -64,10 +66,14 @@ class Dealer:
         self.table.deal_hole_cards()
 
         # blinds
+        print("start preflop", self.table.current_player.name)
         self.betting_manager.apply_player_action(
             self.table.current_player, Action.SMALL_BLIND)
+        
         self.betting_manager.apply_player_action(
             self.table.current_player, Action.BIG_BLIND)
+        
+        
 
     def _start_flop(self):
         """
@@ -109,3 +115,9 @@ class Dealer:
         current_player = self.table.current_player
         self.betting_manager.apply_player_action(
             current_player, action, raise_amount)
+        
+
+    def set_up_next_round(self):
+        self.current_street = Street.PREFLOP
+        self.table.reset_table()
+        self.betting_manager.reset_betting_round()

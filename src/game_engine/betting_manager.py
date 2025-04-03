@@ -30,6 +30,7 @@ class BettingManager:
         """
         declare action for the current player
         """
+        #TODO: need all_in action
         if action == Action.CALL:
             self._call(current_player)
         elif action == Action.RAISE:
@@ -43,6 +44,7 @@ class BettingManager:
             self.current_bet = self.blind*2
             self._blind(current_player, self.blind*2)
         self.table.next_player()
+        
 
     def _blind(self, current_player, blind):
         """

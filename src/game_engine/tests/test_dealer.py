@@ -18,7 +18,7 @@ class TestDealer:
         dealer = Dealer(small_blind=1, initial_stack=1000)
         table = dealer.table
 
-        table.init_players(initial_stack=1000, num_players=2)
+        
 
         # raise 10
         dealer.apply_action(Action.RAISE, 10)
@@ -33,23 +33,25 @@ class TestDealer:
         raising twice to test current_bet is working as expected
         """
         dealer = Dealer(small_blind=1, initial_stack=1000)
-        table = dealer.table
-
-        table.init_players(initial_stack=1000, num_players=2)
+        
+        
 
         # pc raises 10
+        assert dealer.table.current_player.name == "pc"
         assert dealer.betting_manager.current_bet == 0
         dealer.apply_action(Action.RAISE, 10)
         assert dealer.betting_manager.current_bet == 10
+        print(dealer.table.players)
 
         # make next player does its job
-        assert table.current_player.name == "cpu1"
+        
+        assert dealer.table.current_player.name == "cpu1"
 
         # cpu1 calls 10, and raises 20 so should be -30
         dealer.apply_action(Action.RAISE, 20)
 
-        assert table.players[0].stack == 990
-        assert table.players[1].stack == 970
+        assert dealer.table.players[0].stack == 990
+        assert dealer.table.players[1].stack == 970
         assert dealer.betting_manager.current_bet == 30
         assert dealer.table.pot.value == 40
 
@@ -60,7 +62,7 @@ class TestDealer:
         dealer = Dealer(small_blind=1, initial_stack=1000)
         table = dealer.table
 
-        table.init_players(initial_stack=1000, num_players=2)
+        
 
         # start preflop
         dealer.start_street()
@@ -87,9 +89,8 @@ class TestDealer:
         all of current_bet) based on contribuition on the current street
         """
         dealer = Dealer(small_blind=1, initial_stack=1000)
-        table = dealer.table
 
-        table.init_players(initial_stack=1000, num_players=2)
+       
 
         dealer.apply_action(Action.RAISE, 10)
         dealer.apply_action(Action.RAISE, 20)
@@ -110,8 +111,7 @@ class TestDealer:
         check if betting is over works as expected at multiple points in a round
         """
         dealer = Dealer(small_blind=1, initial_stack=1000)
-        table = dealer.table
-        table.init_players(initial_stack=1000, num_players=2)
+
 
         dealer.start_street()
         assert dealer.betting_manager.is_betting_over() is False
@@ -153,9 +153,8 @@ class TestDealer:
         """
 
         dealer = Dealer(small_blind=1, initial_stack=1000)
-        table = dealer.table
 
-        table.init_players(initial_stack=1000, num_players=2)
+
         dealer.start_street()
 
         # if one player folds betting is over, and the round is over
@@ -167,9 +166,9 @@ class TestDealer:
         test if round is over when 1 player folds 
         """
         dealer = Dealer(small_blind=1, initial_stack=1000)
-        table = dealer.table
+     
 
-        table.init_players(initial_stack=1000, num_players=2)
+  
         dealer.start_street()
 
         dealer.apply_action(Action.FOLD)
@@ -182,7 +181,7 @@ class TestDealer:
         dealer = Dealer(small_blind=1, initial_stack=1000)
         table = dealer.table
 
-        table.init_players(initial_stack=1000, num_players=2)
+ 
 
         # start preflop
         dealer.start_street()

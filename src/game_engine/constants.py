@@ -7,12 +7,12 @@ class Action(Enum):
     """
     represents the actions a player can take
     """
-    FOLD  = 0
-    CALL  = 1
-    RAISE = 2
-    SMALL_BLIND = 3
-    BIG_BLIND = 4
-    ANTE = 5
+    FOLD  = "fold"
+    CALL  = "call"
+    RAISE = "raise"
+    SMALL_BLIND = "sb"
+    BIG_BLIND = "bb"
+    ANTE = "ante"
 
 class Street(Enum):
     """
@@ -25,12 +25,12 @@ class Street(Enum):
     SHOWDOWN = 4
     FINISHED = 5
 
-class PlayerState(Enum): 
+class PlayerState(Enum):
     """
     whether the player is active, folded, allin, waiting, or winner
     """
-    ACTIVE = 0
-    FOLDED = 1
-    ALLIN = 2
-    WAITING = 3
-    WINNER = 4
+    ACTIVE = "active"
+    FOLDED = "folded"
+    ALLIN = "allin"
+    WAITING = "waiting"
+    WINNER = "winner"
