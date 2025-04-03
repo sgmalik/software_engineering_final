@@ -94,3 +94,15 @@ class Slider:
         """
         screen.blit(self.base_sprite, self.position)
         screen.blit(self.thumb_sprite, self.thumb_position)
+
+    def get_value(self):
+        """
+        method to get the value of the slide
+        all the way up is 100%
+        all the way down is 0%
+        """
+        range_pixels = self.max_y - self.min_y
+        if range_pixels == 0:
+            return 0.0
+        slider_pos = self.thumb_position[1] - self.min_y
+        return 1.0 - (slider_pos / range_pixels)
