@@ -91,8 +91,6 @@ It needs to return information that the GUI needs
         #calling showdown will change player stack values
         if self.dealer.is_showdown():
             self.dealer.showdown()
-    
-            
 
         
     def cpu_action(self):
