@@ -87,7 +87,11 @@ It needs to return information that the GUI needs
         
         action = Action(action)
         self.dealer.apply_action(action, raise_amount)
-        #apply player action
+        #after we apply the action need to check if the round is over so can do showdown logic
+        if self.dealer.is_round_over():
+            
+            
+
         
     def cpu_action(self):
         """
@@ -106,7 +110,7 @@ It needs to return information that the GUI needs
         #I want game eval to be seperate from dealer/table logic 
         #game_eval should just give me the winners 
         #check if round over then ca
-        
+
 
         
 

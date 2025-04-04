@@ -36,7 +36,7 @@ Game Evaluator will:
         Once winners are determine, add money to winners stacks based on pot.
         NOTE: doesn't handle side pots rn 
         """
-        for winner in winners: 
+        for winner in winners:
             winner.stack += (table.pot.value / len(winners))
 
     @classmethod

@@ -102,12 +102,17 @@ class Dealer:
 
         all but one players have folded 
         """
-        if self.current_street == Street.RIVER and self.betting_manager.is_betting_over():
-            #round is over do showdown logic
+        if self.is_showdown():
             return True
         if len(self.table.active_players()) == 1:
             return True
         return False
+    
+    def is_showdown(self):
+        """
+        check if the round is over and we need to do showdown logic
+        """
+        return self.betting_manager.is_betting_over() and self.current_street == Street.RIVER
 
 
     def apply_action(self, action: Action, raise_amount: Optional[int] = None):
@@ -120,6 +125,9 @@ class Dealer:
         
 
     def set_up_next_round(self):
+        """
+        reset table and betting manager for the next round
+        """
         self.current_street = Street.PREFLOP
         self.table.reset_table()
         self.betting_manager.reset_betting_round()
