@@ -55,6 +55,19 @@ while RUNNING:
         for numtext in numtexts:
             numtext.handle_event(event)
 
+    # Logic for slidder to display the bid amount 
+        # --- SLIDER TO BID DISPLAY ---
+    if game_screen[0] == Screen.GAME and sliders:
+        slider = sliders[0]
+        percent = slider.get_value()
+        bid_amount = int(player_balance[0] * percent)
+
+        # Update the Bid $ display
+        for num in numtexts:
+            if getattr(num, "label", "") == "bid_amount":
+                num.set_number(bid_amount)
+
+
     # Make sure only one screen is drawn at a time
     screen.fill((0, 0, 0))  # Clear screen before drawing
 

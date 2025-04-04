@@ -209,9 +209,8 @@ def change_to_game(scale, game_screen, buttons, sliders, cards, chips, numtexts,
     card = GUI_Card(SPRITESHEET_PATH, (131 * scale, 59 * scale), (scale, scale), "j", "hearts", True)
     cards.append(card)
 
-    # Player chips
-    player_value = 500
-    distribution = get_proper_chip_distribution(player_value)
+    # Player chips, based on player_balance from main 
+    distribution = get_proper_chip_distribution(player_balance[0])
 
     colors = ["white", "red", "blue", "green", "black"]
     x = -13
@@ -222,6 +221,7 @@ def change_to_game(scale, game_screen, buttons, sliders, cards, chips, numtexts,
             y -= 2
             chip = Chip(SPRITESHEET_PATH, ((9 + x) * scale, (132 + y) * scale),
                         (scale, scale), colors[i])
+            chip.owner = "player"
             chips.append(chip)
 
     # CPU chips
@@ -239,11 +239,11 @@ def change_to_game(scale, game_screen, buttons, sliders, cards, chips, numtexts,
             chips.append(chip)
 
     # Num texts
-    bid_num = NumText(SPRITESHEET_PATH, (105, 103), (scale, scale), 0)
+    bid_num = NumText(SPRITESHEET_PATH, (105, 103), (scale, scale), 0, label="bid_amount")
     numtexts.append(bid_num)
     cpu_val = NumText(SPRITESHEET_PATH, (184, 24), (scale, scale), cpu_value, label="cpu_balance")
     numtexts.append(cpu_val)
-    ply_val = NumText(SPRITESHEET_PATH, (184, 32), (scale, scale), player_value, label="player_balance")
+    ply_val = NumText(SPRITESHEET_PATH, (184, 32), (scale, scale), player_balance[0], label="player_balance")
     numtexts.append(ply_val)
     pot_val = NumText(SPRITESHEET_PATH, (184, 40), (scale, scale), 0, label="pot")
     numtexts.append(pot_val)
@@ -353,3 +353,13 @@ def add_chips_to_pot(chips, scale, amount):
             chip.owner = "pot"
             chips.append(chip)
             y_offset += 2  # Stack upward
+
+def slider_bet_callback(sliders, player_balance, pot_total, chips, scale, numtexts):
+    """
+    Called when the 'Bid $' button is clicked. Reads the current slider position
+    and uses that percentage to place a bet.
+    """
+    if not sliders:
+        return
+    percent = sliders[0].get_value()
+    bet_percentage(percent, player_balance, pot_total, chips, scale, numtexts)
