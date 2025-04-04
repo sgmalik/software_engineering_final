@@ -18,6 +18,7 @@ Game Evaluator will:
         """
         Uses hand evaluator to determine the winners of the hand 
         """
+        #flatten object into list of numbers
         # first check compare rank of hand ("pair", "two-pair", etc)
 
         # if this is a tie check primary_cards
