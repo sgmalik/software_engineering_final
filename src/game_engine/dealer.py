@@ -6,6 +6,7 @@ from .constants import Action
 from .constants import PlayerState
 from .player import Player
 from .betting_manager import BettingManager
+from .game_evaluator import GameEvaluator
 
 
 
@@ -72,8 +73,7 @@ class Dealer:
         
         self.betting_manager.apply_player_action(
             self.table.current_player, Action.BIG_BLIND)
-        
-        
+    
 
     def _start_flop(self):
         """
@@ -103,10 +103,12 @@ class Dealer:
         all but one players have folded 
         """
         if self.current_street == Street.RIVER and self.betting_manager.is_betting_over():
+            #round is over do showdown logic
             return True
         if len(self.table.active_players()) == 1:
             return True
         return False
+
 
     def apply_action(self, action: Action, raise_amount: Optional[int] = None):
         """
@@ -121,3 +123,11 @@ class Dealer:
         self.current_street = Street.PREFLOP
         self.table.reset_table()
         self.betting_manager.reset_betting_round()
+
+    def showdown(self): 
+        """
+        this will be called when the round is over and we need to determine the winner
+        """
+        winners = GameEvaluator.determine_winners(self.table)
+        GameEvaluator.add_money_to_winners(self.table, winners)
+        

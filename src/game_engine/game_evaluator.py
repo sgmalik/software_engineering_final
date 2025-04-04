@@ -33,8 +33,10 @@ Game Evaluator will:
     @classmethod
     def add_money_to_winners(cls, table, winners):
         """
-        Once winners are determine, add money to winners stacks based on pot 
+        Once winners are determine, add money to winners stacks based on pot.
+        NOTE: doesn't handle side pots rn 
         """
+        
 
     @classmethod
     def _eligible_players(cls, table):

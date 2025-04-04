@@ -35,7 +35,6 @@ It needs to return information that the GUI needs
         community_cards = self.dealer.table.community_cards
 
 
-        #TODO: cards and state need to be string 
         #TODO: check if game is over (one of the players stack is 0)
         players = [
         {
@@ -71,7 +70,6 @@ It needs to return information that the GUI needs
         function that will be called when the round is over
         (so call this when river is done)
         """
-        
         self.dealer.set_up_next_round()
         self.dealer.start_street()
     
@@ -89,7 +87,6 @@ It needs to return information that the GUI needs
         
         action = Action(action)
         self.dealer.apply_action(action, raise_amount)
-        
         #apply player action
         
     def cpu_action(self):
@@ -103,7 +100,16 @@ It needs to return information that the GUI needs
 
     def winners(self):
         """
-        use game_eval to determine winners
+        use game_eval to determine the winner (or winners) of the hand,
+        and give that to GUI 
         """
+        #I want game eval to be seperate from dealer/table logic 
+        #game_eval should just give me the winners 
+        #check if round over then ca
+        
+
+        
+
+
 
    
