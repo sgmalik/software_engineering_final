@@ -88,8 +88,10 @@ It needs to return information that the GUI needs
         action = Action(action)
         self.dealer.apply_action(action, raise_amount)
         #after we apply the action need to check if the round is over so can do showdown logic
-        if self.dealer.is_round_over():
-            
+        #calling showdown will change player stack values
+        if self.dealer.is_showdown():
+            self.dealer.showdown()
+    
             
 
         
