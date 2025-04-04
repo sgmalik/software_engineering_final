@@ -2,6 +2,7 @@
     used to determine who won the hand 
 """
 from .table import Table
+from .hand_evaluator import HandEvaluator
 
 
 class GameEvaluator():
@@ -18,9 +19,14 @@ Game Evaluator will:
         """
         Uses hand evaluator to determine the winners of the hand 
         """
-        #flatten object into list of numbers
-        # first check compare rank of hand ("pair", "two-pair", etc)
-
+        #get each hand 
+        hands = {}
+        for player in table.players:
+            hand_info = HandEvaluator.hand_eval(player.hole_cards, table.community_cards)
+            hands[player.name] = hand_info
+               
+        for hand in hands
+            
         # if this is a tie check primary_cards
 
         # if primary cards are a tie check kickers

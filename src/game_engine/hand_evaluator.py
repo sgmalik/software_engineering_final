@@ -92,17 +92,14 @@ class HandEvaluator():
 
         cls._set_kickers(sorted_cards)
 
-        #this can just be an array. I'm going to keep this for now incase I want
         #to use information about the hand rank in the future
         return {
-            "strength": {
-                "hand_rank": hand_rank,
-                "primary_cards_rank": cls._primary_cards
-            },
+            "hand_rank": hand_rank,
+            "primary_cards_rank": cls._primary_cards,
             "kickers": cls._kicker_cards
         }
     
-    
+
 
     # gets the kickers based on the cards used to make up hand rank
 
