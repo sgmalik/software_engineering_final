@@ -67,7 +67,6 @@ class Dealer:
         self.table.deal_hole_cards()
 
         # blinds
-        print("start preflop", self.table.current_player.name)
         self.betting_manager.apply_player_action(
             self.table.current_player, Action.SMALL_BLIND)
         

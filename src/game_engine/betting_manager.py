@@ -36,7 +36,6 @@ class BettingManager:
         elif action == Action.RAISE:
             self._raise(current_player, raise_amount)
         elif action == Action.FOLD:
-            # TODO: replace this with player fold function
             self._fold(current_player)
         elif action == Action.SMALL_BLIND:
             self._blind(current_player, self.blind)

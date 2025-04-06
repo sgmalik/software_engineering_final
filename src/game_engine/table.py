@@ -98,7 +98,7 @@ class Table:
         """
         return list of active players
         """
-        return [player for player in self.players if player.state == PlayerState.ACTIVE]
+        return [player for player in self.players if player.is_active()]
 
     def reset_contribution(self):
         """
