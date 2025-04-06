@@ -37,10 +37,15 @@ class Card:
         return False
 
     def __lt__(self, other_card):
-        pass
+        if isinstance(other_card, Card):
+            return self.get_card_rank() < other_card.get_card_rank()
+        return False
+        
 
     def __gt__(self, other_card):
-        pass
+        if isinstance(other_card, Card):
+            return self.get_card_rank() < other_card.get_card_rank()
+        return False
 
     def __ge__(self, other_card):
         pass

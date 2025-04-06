@@ -18,57 +18,43 @@ Game Evaluator will:
     @classmethod
     def determine_winners(cls, table):
         """
-        Uses hand evaluator to determine the winners of the hand 
+        Uses hand evaluator to determine the winners of the hand,
+        NOTE: only 1v1 for now 
         """
         #get each hand 
         hands = {}
-        winners = []
+        
         for player in table.players:
             hand_info = HandEvaluator.hand_eval(player.hole_cards, table.community_cards)
             hands[player.name] = hand_info
                
                 
-            
-        winners = reduce(cls.determine_winning_hand, hands.values())
-        # if this is a tie check primary_cards
+        player1 = table.players[0]
+        player2 = table.players[1]
+        hand1 = hands[table.players[0].name]
+        hand2 = hands[table.players[1].name]
 
-        # if primary cards are a tie check kickers
-
-        # return list of winners
-
-        # for testing purposes I am returning the 1st player always wins
-        return winners
-    
-    @classmethod
-    def determine_winning_hand(cls, hand1, hand2):
-        """
-        return the winning hand out of two hands 
-        """
-        #if list of two hands just use the first hand (they are the same)
-
-        hand1 = hand1[0] if isinstance(hand1, list) else hand1
-        hand2 = hand2[0] if isinstance(hand2, list) else hand2
-
-        #check hand ranks first 
+        #check hand ranks first
         if hand1["hand_rank"] > hand2["hand_rank"]:
-            return [hand1]
+            return [player1]
         if hand1["hand_rank"] < hand2["hand_rank"]:
-            return [hand2]
+            return [player2]
         
         #check primary cards 
+        #will not work because its card class 
         if max(hand1["primary_cards_rank"]) > max(hand2["primary_cards_rank"]):
-            return [hand1]
+            return [player1]
         if max(hand1["primary_cards_rank"]) < max(hand2["primary_cards_rank"]):
-            return [hand2]
+            return [player2]
         
         #check kickers
         if max(hand1["kickers"]) > max(hand2["kickers"]):
-            return [hand1]
+            return [player1]
         if max(hand1["kickers"]) < max(hand2["kickers"]):
-            return [hand2]
+            return [player2]
         
-        # hand is tied  
-        return [hand1, hand2]
+        # should return array of players 
+        return [player1, player2]
         
 
     # distribute money to winners

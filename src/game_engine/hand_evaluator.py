@@ -62,7 +62,7 @@ class HandEvaluator():
         main function to evaluate the hand, will call helper functions to determine the strength 
         of the hand and the kickers to create an object that will be used for tie breaking
         """
-        # sort the cards in ascending order
+        # sort the cards in decensding order
         sorted_cards = Deck.sort_cards_by_rank(hole_cards + community_cards)
         hand_rank: str = ""
 
