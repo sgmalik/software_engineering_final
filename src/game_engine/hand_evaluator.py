@@ -98,8 +98,6 @@ class HandEvaluator():
             "primary_cards_rank": cls._primary_cards,
             "kickers": cls._kicker_cards
         }
-    
-
 
     # gets the kickers based on the cards used to make up hand rank
 

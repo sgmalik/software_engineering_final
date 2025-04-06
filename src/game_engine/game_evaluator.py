@@ -28,7 +28,7 @@ Game Evaluator will:
             hand_info = HandEvaluator.hand_eval(player.hole_cards, table.community_cards)
             hands[player.name] = hand_info
                
-                
+        print("hands", hands)
         player1 = table.players[0]
         player2 = table.players[1]
         hand1 = hands[table.players[0].name]
@@ -40,20 +40,22 @@ Game Evaluator will:
         if hand1["hand_rank"] < hand2["hand_rank"]:
             return [player2]
         
+        #NOTE: in these loops we are assuming every card array is in decending order
         #check primary cards 
-        #will not work because its card class 
-        if max(hand1["primary_cards_rank"]) > max(hand2["primary_cards_rank"]):
-            return [player1]
-        if max(hand1["primary_cards_rank"]) < max(hand2["primary_cards_rank"]):
-            return [player2]
+        for i in range(len(hand1["primary_cards_rank"])):
+            if hand1["primary_cards_rank"][i] > hand2["primary_cards_rank"][i]:
+                return [player1]
+            if hand1["primary_cards_rank"][i] < hand2["primary_cards_rank"][i]:
+                return [player2]
         
         #check kickers
-        if max(hand1["kickers"]) > max(hand2["kickers"]):
-            return [player1]
-        if max(hand1["kickers"]) < max(hand2["kickers"]):
-            return [player2]
+        for i in range(len(hand1["kickers"])):
+            if hand1["kickers"][i] > hand2["kickers"][i]:
+                return [player1]
+            if hand1["kickers"][i] < hand2["kickers"][i]:
+                return [player2]
         
-        # should return array of players 
+        # if passed other checks, then the hands are tied 
         return [player1, player2]
         
 

@@ -37,10 +37,8 @@ class TestHandEval():
         ]
 
         expected_info = {
-            "strength": {
-                "hand_rank": 1,
-                "primary_cards_rank": high_card_hand
-            },
+            "hand_rank": 1,
+            "primary_cards_rank": high_card_hand,
             "kickers": []
         }
 
