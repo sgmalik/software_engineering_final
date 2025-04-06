@@ -103,14 +103,6 @@ It needs to return information that the GUI needs
         #CPU is just going to call for now 
         self.dealer.apply_action(Action.CALL)
 
-    def winners(self):
-        """
-        use game_eval to determine the winner (or winners) of the hand,
-        and give that to GUI 
-        """
-        #I want game eval to be seperate from dealer/table logic 
-        #game_eval should just give me the winners 
-        #check if round over then ca
 
     def is_game_over(self) -> bool:
         """
