@@ -50,7 +50,7 @@ class Table:
         self.pot.value = 0
 
         for player in self.players:
-            player.hole_cards = []
+            player.clear_hole_cards()
             player.contribuition = 0
             player.state = PlayerState.ACTIVE
         
