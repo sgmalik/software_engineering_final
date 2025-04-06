@@ -50,7 +50,7 @@ class BettingManager:
         """
         blind player action
         """
-        current_player.bet(blind)
+        current_player.collect_bet(blind)
         self.table.pot.add_to_pot(blind)
 
     def _fold(self, current_player):
@@ -66,12 +66,12 @@ class BettingManager:
         """
         # need to pay current bet first
         call_amount = self.current_bet - current_player.contribuition
-        current_player.bet(call_amount)
+        current_player.collect_bet(call_amount)
         self.table.pot.add_to_pot(call_amount)
 
         # do the raise action
         self._raise_bet(raise_amount)
-        current_player.bet(raise_amount)
+        current_player.collect_bet(raise_amount)
         self.table.pot.add_to_pot(raise_amount)
         self._add_betters(current_player)
 
@@ -80,7 +80,7 @@ class BettingManager:
         pay current bet
         """
         call_amount = self.current_bet - current_player.contribuition
-        current_player.bet(call_amount)
+        current_player.collect_bet(call_amount)
 
         self.table.pot.add_to_pot(call_amount)
         self._remove_better(current_player)

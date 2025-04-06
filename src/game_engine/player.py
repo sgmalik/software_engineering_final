@@ -55,6 +55,7 @@ class Player:
         if self.stack < amount:
             raise ValueError("Player cannot afford this bet")
         self.stack -= amount
+        self.contribuition += amount
 
     def is_active(self):
         return self.state == PlayerState.ACTIVE
@@ -135,9 +136,3 @@ class Player:
         self.round_action_histories = [None for _ in range(4)]
         self.action_histories = []
 
-    def bet(self, amount):
-        """
-        bet amount from player's stack
-        """
-        self.stack -= amount
-        self.contribuition += amount

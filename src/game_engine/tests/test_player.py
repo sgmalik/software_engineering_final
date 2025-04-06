@@ -126,6 +126,6 @@ def test_clear_action_histories(player):
 
 
 def test_bet(player):
-    player.bet(250)
+    player.collect_bet(250)
     assert player.stack == 750
     assert player.contribuition == 250

@@ -70,6 +70,7 @@ It needs to return information that the GUI needs
         function that will be called when the round is over
         (so call this when river is done)
         """
+        #maybe just call this in _showdown 
         self.dealer.set_up_next_round()
         self.dealer.start_street()
     
@@ -80,8 +81,7 @@ It needs to return information that the GUI needs
 
         this receives the btn string from the GUI 
         """
-        #if current_player == pc then can dealer apply_action.
-        # if not need to call cpu_action so 
+        
         #convert string to Action enum
         #TODO: need to assert that raise is not greater than stack and is less than 
         
