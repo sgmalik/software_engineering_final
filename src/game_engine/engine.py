@@ -46,6 +46,7 @@ It needs to return information that the GUI needs
 
         state = {
             "pot": self.dealer.table.pot.value,
+            "game_over": self.is_game_over(),
             "players_turn": self.dealer.table.is_players_turn(),
             "betting_over": self.dealer.betting_manager.is_betting_over(),
             "round_over": self.dealer.is_round_over(),
@@ -110,6 +111,16 @@ It needs to return information that the GUI needs
         #I want game eval to be seperate from dealer/table logic 
         #game_eval should just give me the winners 
         #check if round over then ca
+
+    def is_game_over(self) -> bool:
+        """
+        check if the game is over (one of the players stack is 0)
+        """
+        #check if any of the players stack is 0 
+        for player in self.dealer.table.players:
+            if player.stack == 0:
+                return True
+        return False
 
 
         
