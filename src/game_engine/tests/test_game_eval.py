@@ -95,6 +95,47 @@ class TestGameEval():
         assert table.players[0].stack == 1020
         assert table.players[1].stack == 1000
 
+    def test_determine_winners_tie(self):
+            """
+            test if we have a tie between two players
+            """
+            dealer = Dealer(1000, 1)
+            table = dealer.table
+
+            #with these cards you would expect pc to win (high card)
+            pc_hole_cards = [
+                Card('H', '2'),
+                Card('D', '5'),
+            ]
+
+            cpu1_hole_cards = [
+                Card('S', '2'),
+                Card('C', '5'),
+            ]
+
+            community_cards = [
+                Card('S', '9'),
+                Card('C', 'J'),
+                Card('H', 'Q'),
+                Card('S', '3'),
+                Card('D', '7'),
+            ]
+
+            table.players[0].hole_cards = pc_hole_cards
+            table.players[1].hole_cards = cpu1_hole_cards
+            table.community_cards = community_cards
+
+            #will just say pot is 20 (even though no bets were made)
+            table.pot.value = 20
+            winners = GameEvaluator.determine_winners(table)
+
+            #should be a tie so both players in winner array 
+            assert winners == [table.players[0], table.players[1]]
+
+            GameEvaluator.add_money_to_winners(table, winners)
+            assert table.players[0].stack == 1010
+            assert table.players[1].stack == 1010
+
 
 
        
