@@ -1,4 +1,7 @@
 """
+adapted from deck.py in pypokerengine 
+https://github.com/ishikota/PyPokerEngine/blob/master/pypokerengine/engine/deck.py
+
 Deck of 52 Cards
 """
 

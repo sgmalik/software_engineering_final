@@ -1,3 +1,6 @@
+"""
+betting_manager is adapted from pypokerengine's RoundManager class,
+"""
 from .constants import Action
 from .table import Table
 from .constants import PlayerState

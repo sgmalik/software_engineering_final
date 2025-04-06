@@ -1,6 +1,7 @@
 
 """
-Poker Engine
+engine.py is written by us, and loosely based on how pypoker 
+keeps track of state. As well as how the game is initialzied. 
 """
 
 from .dealer import Dealer
@@ -46,7 +47,7 @@ It needs to return information that the GUI needs
 
         state = {
             "pot": self.dealer.table.pot.value,
-            "game_over": self.is_game_over(),
+            "game_over": self._is_game_over(),
             "players_turn": self.dealer.table.is_players_turn(),
             "betting_over": self.dealer.betting_manager.is_betting_over(),
             "round_over": self.dealer.is_round_over(),
@@ -84,10 +85,9 @@ It needs to return information that the GUI needs
         """
         
         #convert string to Action enum
-        #TODO: need to assert that raise is not greater than stack and is less than 
-        
         action = Action(action)
         self.dealer.apply_action(action, raise_amount)
+
         #after we apply the action need to check if the round is over so can do showdown logic
         #calling showdown will change player stack values
         if self.dealer.is_showdown():
@@ -104,7 +104,7 @@ It needs to return information that the GUI needs
         self.dealer.apply_action(Action.CALL)
 
 
-    def is_game_over(self) -> bool:
+    def _is_game_over(self) -> bool:
         """
         check if the game is over (one of the players stack is 0)
         """

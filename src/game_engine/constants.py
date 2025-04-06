@@ -1,4 +1,6 @@
 """
+adapted from constants.py in pypokerengine 
+https://github.com/ishikota/PyPokerEngine/blob/master/pypokerengine/engine/poker_constants.py
 enums to be used in the game engine 
 """
 from enum import Enum

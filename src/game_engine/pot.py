@@ -1,3 +1,7 @@
+"""
+uhh ours
+"""
+
 class Pot: 
     """
     Pot class to manage the pot in a poker game.

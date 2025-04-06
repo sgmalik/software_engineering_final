@@ -1,3 +1,6 @@
+"""
+dealer.py is adapted from pypokerengine's RoundManager class  
+"""
 from typing import Optional
 from .deck import Deck
 from .constants import Street

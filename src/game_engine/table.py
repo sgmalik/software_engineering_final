@@ -1,5 +1,6 @@
 """
-table class
+table class adapted from table.py in pypokerengine 
+https://github.com/ishikota/PyPokerEngine/blob/master/pypokerengine/engine/table.py
 """
 from .player import Player
 from .deck import Deck

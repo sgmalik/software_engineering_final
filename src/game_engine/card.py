@@ -1,5 +1,6 @@
 """
-Card class
+card.py is adapted from card.py in pypokerengine
+https://github.com/ishikota/PyPokerEngine/blob/master/pypokerengine/engine/card.py
 """
 
 class Card:

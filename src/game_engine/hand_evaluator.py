@@ -1,7 +1,7 @@
 
 """
-    HandEvaluator will take in the hole cards and community 
-    cards and return the strength of the hand
+    hand_evaluator.py is an adaptation of 
+    https://github.com/ishikota/PyPokerEngine/blob/master/pypokerengine/engine/deck.py
 """
 
 from .deck import Deck

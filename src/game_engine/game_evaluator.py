@@ -1,5 +1,7 @@
 """
-    used to determine who won the hand 
+    game_evaluator.py was inspired by 
+    https://github.com/ishikota/PyPokerEngine/blob/master/pypokerengine/engine/game_evaluator.py
+    the code is written by us, but the structure is based loosely on pypokerengine.
 """
 from .table import Table
 from .hand_evaluator import HandEvaluator
@@ -69,16 +71,11 @@ Game Evaluator will:
         for winner in winners:
             winner.stack += (table.pot.value / len(winners))
 
+    #NOTE: these will be unimplemented for now, because just 1v1
     @classmethod
     def _eligible_players(cls, table):
         """
         To be called in determine, winners, to get the players that are still in the hand
-        """
-
-    @classmethod
-    def _handle_pot(cls):
-        """
-        handle pot
         """
 
     @classmethod
