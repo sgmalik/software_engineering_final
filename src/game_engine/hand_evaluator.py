@@ -71,7 +71,7 @@ class HandEvaluator():
             pass
         elif cls._is_full_house(sorted_cards):
             pass
-        elif cls._is_four_of_a_kind(sorted_cards):
+        elif cls._is_flush(sorted_cards):
             pass
         elif cls._is_straight(sorted_cards):
             pass
