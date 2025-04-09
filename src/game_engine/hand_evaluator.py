@@ -111,7 +111,8 @@ class HandEvaluator():
         kickers_amount: int = 5 - len(cls._primary_cards)
         cls._kicker_cards = kickers[0:kickers_amount]
 
-    # these will update _strength_cards, and _primary_cards
+    # pypoker uses bit mask which is probably better
+    #there's a lot of overlapping logic. 
     @classmethod
     def _is_royal_flush(cls, sorted_cards) -> bool:
         pass
@@ -146,6 +147,11 @@ class HandEvaluator():
 
     @classmethod
     def _is_pair(cls, sorted_cards) -> bool:
+        """
+        find if two cards have the same rank
+        """
+        #make into hash map then count keys?
+
         pass
 
     @classmethod

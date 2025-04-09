@@ -44,7 +44,7 @@ It needs to return information that the GUI needs
                 "hole_cards": [str(card) for card in player.hole_cards],
                 "state": player.state.value
         } for player in self.dealer.table.players]
-
+   
         state = {
             "pot": self.dealer.table.pot.value,
             "game_over": self._is_game_over(),
