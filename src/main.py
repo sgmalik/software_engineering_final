@@ -2,12 +2,11 @@
 
 import sys
 import pygame
-from gui.util import change_to_main_menu, Screen
+from gui.util import change_to_main_menu, Screen, gui_state, update_game
 
 # Initialize Pygame
 pygame.init()
 SCALE = 4
-game_screen = [Screen.HOME] # Using list because Enums are immutable on their own
 
 # Set up display
 screen = pygame.display.set_mode((200 * SCALE, 150 * SCALE))
@@ -21,18 +20,8 @@ settings_background = pygame.transform.scale(pygame.image.load(
 game_background = pygame.transform.scale(pygame.image.load(
     "../assets/poker-board.png"), (200 * SCALE, 150 * SCALE))
 
-# Global GUI element lists
-buttons = []
-sliders = []
-cards = []
-chips = []
-numtexts = []
-# Innitialize the players money and pot 
-player_balance = [500]
-pot_total = [0]
 # Initialize GUI elements
-change_to_main_menu(SCALE, game_screen, buttons, sliders, cards, chips, numtexts, player_balance, pot_total)
-
+change_to_main_menu(SCALE)
 
 RUNNING = True
 while RUNNING:
@@ -41,53 +30,43 @@ while RUNNING:
             RUNNING = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                change_to_main_menu(SCALE, game_screen, buttons, sliders, cards, chips, numtexts, player_balance, pot_total)
+                change_to_main_menu(SCALE)
 
         # Pass events to buttons and other GUI elements
-        for button in buttons:
+        for button in list(gui_state["buttons"]):
             button.handle_event(event)
-        for slider in sliders:
+        for slider in gui_state["sliders"]:
             slider.handle_event(event)
-        for card in cards:
+        for card in list(gui_state["cards"]):
             card.handle_event(event)
-        for chip in chips:
+        for chip in gui_state["chips"]:
             chip.handle_event(event)
-        for numtext in numtexts:
+        for numtext in gui_state["numtexts"]:
             numtext.handle_event(event)
 
-    # Logic for slidder to display the bid amount 
-        # --- SLIDER TO BID DISPLAY ---
-    if game_screen[0] == Screen.GAME and sliders:
-        slider = sliders[0]
-        percent = slider.get_value()
-        bid_amount = int(player_balance[0] * percent)
-
-        # Update the Bid $ display
-        for num in numtexts:
-            if getattr(num, "label", "") == "bid_amount":
-                num.set_number(bid_amount)
-
+    if(gui_state["screen"] == Screen.GAME):
+        update_game()
 
     # Make sure only one screen is drawn at a time
     screen.fill((0, 0, 0))  # Clear screen before drawing
 
-    if game_screen[0] == Screen.HOME:
+    if gui_state["screen"] == Screen.HOME:
         screen.blit(main_menu_background, (0, 0))
-    elif game_screen[0] == Screen.SETTINGS:
+    elif gui_state["screen"] == Screen.SETTINGS:
         screen.blit(settings_background, (0, 0))
-    elif game_screen[0] == Screen.GAME:
+    elif gui_state["screen"] == Screen.GAME:
         screen.blit(game_background, (0, 0))
 
     # Draw GUI elements
-    for button in buttons:
+    for button in list(gui_state["buttons"]):
         button.draw(screen)
-    for slider in sliders:
+    for slider in gui_state["sliders"]:
         slider.draw(screen)
-    for card in cards:
+    for card in list(gui_state["cards"]):
         card.draw(screen)
-    for chip in chips:
+    for chip in gui_state["chips"]:
         chip.draw(screen)
-    for numtext in numtexts:
+    for numtext in gui_state["numtexts"]:
         numtext.draw(screen)
 
     pygame.display.flip()
