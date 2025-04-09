@@ -19,10 +19,10 @@ class TestHandEval():
             "hand_rank": 1,
             "primary_cards_rank": [
                 Card('H', 'Q'),
-                Card('S', 'J'),
+                Card('C', 'J'),
                 Card('S', '9'),
                 Card('D', '7'),
-                Card('H', '5')
+                Card('D', '5')
             ],
             "kickers": []
             },
@@ -100,7 +100,7 @@ class TestHandEval():
             [Card('C', '2'), Card('C', '3')],
             [Card('S', '4'), Card('C', '5'), Card('C', '6'), Card('S', '2'), Card('C', '7')],
             {
-            "hand_rank": 5,
+            "hand_rank": 6,
             "primary_cards_rank": [
                 Card('C', '7'),
                 Card('C', '6'),
@@ -117,7 +117,7 @@ class TestHandEval():
             [Card('H', '2'), Card('D', '5')],
             [Card('S', '4'), Card('C', '5'), Card('H', '6'), Card('S', '5'), Card('D', '2')],
             {
-            "hand_rank": 5,
+            "hand_rank": 7,
             "primary_cards_rank": [
                 Card('D', '5'),
                 Card('S', '5'),
@@ -131,29 +131,62 @@ class TestHandEval():
             "full house"
         ),
         (
-            [Card('H', '2'), Card('D', '3')],
-            [Card('S', '4'), Card('C', '5'), Card('H', '6'), Card('S', '2'), Card('D', '7')],
+            [Card('H', '2'), Card('D', '2')],
+            [Card('S', '2'), Card('C', '2'), Card('H', '6'), Card('S', '3'), Card('D', '7')],
             {
-            "hand_rank": 5,
+            "hand_rank": 8,
             "primary_cards_rank": [
-                Card('D', '7'),
-                Card('H', '6'),
-                Card('C', '5'),
-                Card('S', '4'),
-                Card('D', '3'),
+                Card('H', '2'),
+                Card('D', '2'),
+                Card('S', '2'),
+                Card('C', '2'),
             ],
             "kickers": [
-               Card('H', '2')
+               Card('D', '7')
             ]
             },
             "four of a kind"
+        ),
+        (
+            [Card('H', '2'), Card('D', '3')],
+            [Card('D', '4'), Card('D', '5'), Card('D', '6'), Card('S', '2'), Card('D', '7')],
+            {
+            "hand_rank": 9,
+            "primary_cards_rank": [
+                Card('D', '7'),
+                Card('D', '6'),
+                Card('D', '5'),
+                Card('D', '4'),
+                Card('D', '3'),
+            ],
+            "kickers": [
+            ]
+            },
+            "straight flush"
+        ),
+        (
+            [Card('D', 'A'), Card('D', 'K')],
+            [Card('D', 'Q'), Card('D', 'J'), Card('D', '10'), Card('S', '2'), Card('D', '7')],
+            {
+            "hand_rank": 10,
+            "primary_cards_rank": [
+                Card('D', 'A'),
+                Card('D', 'K'),
+                Card('D', 'Q'),
+                Card('D', 'J'),
+                Card('D', '10'),
+            ],
+            "kickers": [
+            ]
+            },
+            "royal flush"
         )
-        
     ]
 
     def _change_to_ranks(self, hand_info):
         """
         change card objects to their ranks for testing
+        NOTE: might need this later for two pair/full house 
         """
         return {
             "hand_rank": hand_info["hand_rank"],
@@ -168,14 +201,15 @@ class TestHandEval():
         """
         test hand eval function
         """
+
         hand_info = HandEvaluator.hand_eval(hole_cards, community_cards)
+       
 
-        hand_eval_rtn = self._change_to_ranks(hand_info)
-        expected_info = self._change_to_ranks(expected_info)
+        assert hand_info["hand_rank"] == expected_info["hand_rank"]
+        assert hand_info["primary_cards_rank"] == expected_info["primary_cards_rank"]
+        assert hand_info["kickers"] == expected_info["kickers"]
 
-        assert hand_eval_rtn["hand_rank"] == expected_info["hand_rank"]
-        assert hand_eval_rtn["primary_cards_rank"] == expected_info["primary_cards_rank"]
-        assert hand_eval_rtn["kickers"] == expected_info["kickers"]
+   
         
 
        
