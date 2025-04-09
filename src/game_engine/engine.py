@@ -36,7 +36,7 @@ It needs to return information that the GUI needs
         community_cards = self.dealer.table.community_cards
 
 
-        #TODO: check if game is over (one of the players stack is 0)
+        
         players = [
         {
                 "name": player.name,

@@ -12,22 +12,21 @@ from .betting_manager import BettingManager
 from .game_evaluator import GameEvaluator
 
 
-
 class Dealer:
     """
     dealer provides manages street state, and provides functions to 
     """
+
     def __init__(self, initial_stack, small_blind):
 
         self.current_street = Street.PREFLOP
         self.blind = small_blind
         self.initial_stack = initial_stack
-        
+
         self.table = Table()
         self.table.init_players(initial_stack=initial_stack, num_players=2)
-        
+
         self.betting_manager = BettingManager(self.table, self.blind)
-        
 
     def next_street(self):
         """
@@ -44,7 +43,6 @@ class Dealer:
         elif self.current_street == Street.TURN:
             self.current_street = Street.RIVER
 
-    
     def start_street(self):
         """
         start the round by calling street functions
@@ -72,10 +70,9 @@ class Dealer:
         # blinds
         self.betting_manager.apply_player_action(
             self.table.current_player, Action.SMALL_BLIND)
-        
+
         self.betting_manager.apply_player_action(
             self.table.current_player, Action.BIG_BLIND)
-    
 
     def _start_flop(self):
         """
@@ -109,13 +106,12 @@ class Dealer:
         if len(self.table.active_players()) == 1:
             return True
         return False
-    
+
     def is_showdown(self):
         """
         check if the round is over and we need to do showdown logic
         """
         return self.betting_manager.is_betting_over() and self.current_street == Street.RIVER
-
 
     def apply_action(self, action: Action, raise_amount: Optional[int] = None):
         """
@@ -124,7 +120,6 @@ class Dealer:
         current_player = self.table.current_player
         self.betting_manager.apply_player_action(
             current_player, action, raise_amount)
-        
 
     def set_up_next_round(self):
         """
@@ -134,10 +129,9 @@ class Dealer:
         self.table.reset_table()
         self.betting_manager.reset_betting_round()
 
-    def showdown(self): 
+    def showdown(self):
         """
         this will be called when the round is over and we need to determine the winner/winners
         """
         winners = GameEvaluator.determine_winners(self.table)
         GameEvaluator.add_money_to_winners(self.table, winners)
-        

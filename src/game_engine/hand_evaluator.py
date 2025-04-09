@@ -33,9 +33,9 @@ class HandEvaluator():
     STRENGTH_MAP = {
         "royal_flush": 10,
         "straight_flush": 9,
-        "full_house": 8,
-        "flush": 7,
-        "four_of_a_kind": 6,
+        "four_of_a_kind": 8,
+        "full_house": 7,
+        "flush": 6,
         "straight": 5,
         "three_of_a_kind": 4,
         "two_pair": 3,
@@ -44,16 +44,12 @@ class HandEvaluator():
     }
 
     def __init__(self):
-        # these are the cards that make up the strength Ex. two pair = ["3S", "3C", "4S", "4D"]
-        # this is used for finding the kickers
-        self._strength_cards = []
-
         # these are the highest cards (in a 5 card hand)
         # that aren't used to make up the strength (need for tie breaking)
         self._kicker_cards = []
 
         # cards that are used for tie breaking similar strength hands
-        # Ex. two pair = ["3S","4S"]
+        # Ex. two pair = ["4S", "4H", "3S", "3H"]
         self._primary_cards = []
 
     @classmethod
@@ -107,12 +103,12 @@ class HandEvaluator():
         gets the kickers based on the cards used to make up hand rank
         """
 
-        assert len(cls._strength_cards) > 0
+        assert len(cls._primary_cards) > 0
 
         kickers = [
-            card for card in sorted_cards if card not in cls._strength_cards]
+            card for card in sorted_cards if card not in cls._primary_cards]
 
-        kickers_amount: int = 5 - len(cls._strength_cards)
+        kickers_amount: int = 5 - len(cls._primary_cards)
         cls._kicker_cards = kickers[0:kickers_amount]
 
     # these will update _strength_cards, and _primary_cards
@@ -154,5 +150,4 @@ class HandEvaluator():
 
     @classmethod
     def _highest_five(cls, sorted_cards):
-        cls._strength_cards = sorted_cards[0:5]
-        cls._primary_cards = cls._strength_cards
+        cls._primary_cards = sorted_cards[0:5]
