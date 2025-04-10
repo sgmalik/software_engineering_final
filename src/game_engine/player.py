@@ -57,6 +57,9 @@ class Player:
         self.stack -= amount
         self.contribuition += amount
 
+    def reset_contribuition(self):
+        self.contribuition = 0
+
     def is_active(self):
         return self.state == PlayerState.ACTIVE
 
@@ -124,8 +127,6 @@ class Player:
         elif action == Action.ANTE:
             assert chip_amount > 0 if chip_amount is not None else True
             history = {"action": action, "amount": chip_amount}
-        else:
-            raise ValueError("Invalid action")
         self.action_histories.append(history)
 
     def save_round_action_histories(self, street: Street):
@@ -135,4 +136,3 @@ class Player:
     def clear_action_histories(self):
         self.round_action_histories = [None for _ in range(4)]
         self.action_histories = []
-
