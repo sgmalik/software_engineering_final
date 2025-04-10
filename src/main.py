@@ -3,6 +3,15 @@
 import sys
 import pygame
 from gui.util import change_to_main_menu, Screen, gui_state, update_game
+from game_engine.engine import Engine 
+
+
+
+# Connect Gui & Engine
+# Gain acess to current state of game, player action, and cpu action from engine
+engine = Engine(num_players=2, initial_stack=500, blind=10)
+#engine.start_next_round()
+
 
 # Initialize Pygame
 pygame.init()
@@ -21,7 +30,7 @@ game_background = pygame.transform.scale(pygame.image.load(
     "../assets/poker-board.png"), (200 * SCALE, 150 * SCALE))
 
 # Initialize GUI elements
-change_to_main_menu(SCALE)
+change_to_main_menu(SCALE, engine)
 
 RUNNING = True
 while RUNNING:
@@ -43,7 +52,18 @@ while RUNNING:
             chip.handle_event(event)
         for numtext in gui_state["numtexts"]:
             numtext.handle_event(event)
+    if gui_state["screen"] == Screen.GAME:
+        state = engine.current_state_of_game()
 
+
+        if state["round_over"]:
+            engine.start_next_round()
+
+        elif state["betting_over"]:
+            engine.start_next_street()
+
+        elif not state["players_turn"]:
+            engine.cpu_action()
     if(gui_state["screen"] == Screen.GAME):
         update_game()
 

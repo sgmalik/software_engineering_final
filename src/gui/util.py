@@ -6,6 +6,8 @@ from gui.slider import Slider
 from gui.gui_card import GUI_Card
 from gui.chip import Chip
 from gui.numtext import NumText
+from game_engine.engine import Engine
+from game_engine.constants import Action
 
 SPRITESHEET_PATH = "../assets/poker-spritesheet.png"
 
@@ -88,7 +90,7 @@ def get_proper_chip_distribution(user_value):
     return distribution # (1, 5, 10, 50, 100)
 
 
-def change_to_main_menu(scale):
+def change_to_main_menu(scale, engine):
     """
     Changes the GUI elements to the ones found in the main menu screen
     """
@@ -102,7 +104,7 @@ def change_to_main_menu(scale):
 
     new_game = Button(SPRITESHEET_PATH, (51 * scale, 79 * scale),
                       (scale, scale), 98, 22, "new game",
-                      callback=lambda: change_to_game(scale))
+                      callback=lambda: change_to_game(scale, engine))
 
     settings = Button(SPRITESHEET_PATH, (51 * scale, 113 * scale),
                       (scale, scale), 98, 22, "settings",
@@ -133,7 +135,7 @@ def change_to_settings(scale):
     gui_state["buttons"].append(change_card)
 
 
-def change_to_game(scale):
+def change_to_game(scale, engine):
     """
     Changes the GUI elements to the ones found in the game screen
     """
@@ -176,7 +178,7 @@ def change_to_game(scale):
 
         if name == "raise":
             button = Button(SPRITESHEET_PATH, pos, (scale, scale), 23, 9, name,
-                            callback=lambda: confirm_bid(scale))
+                            callback=lambda: confirm_bid(scale, engine))
 
         elif name in percentage_map:
             pct = percentage_map[name]
@@ -369,7 +371,7 @@ def add_chips_to_pot(scale, amount):
             y_offset += 2  # Stack upward
 
 
-def confirm_bid(scale):
+def confirm_bid(scale, engine):
     """
     Finalizes the player's previewed bet.
 
@@ -383,6 +385,9 @@ def confirm_bid(scale):
     # Safety checks
     if bet <= 0 or bet > gui_state["ply_stack"]:
         return
+
+    # call the engine to pass it the raise 
+    engine.player_action(Action.RAISE, raise_amount=bet)
 
     # Transfer bet to pot
     gui_state["ply_stack"] -= bet
