@@ -28,6 +28,7 @@ gui_state = {
         "cards": [],
         "chips": [],
         "numtexts": [],
+        "spritetexts": [],
         "cpu_turn": [],
         "ply_stack": 500,
         "cpu_stack": 500,
@@ -101,6 +102,7 @@ def change_to_main_menu(scale, engine):
     gui_state["cards"].clear()
     gui_state["chips"].clear()
     gui_state["numtexts"].clear()
+    gui_state["spritetexts"].clear()
 
     new_game = Button(SPRITESHEET_PATH, (51 * scale, 79 * scale),
                       (scale, scale), 98, 22, "new game",
@@ -125,6 +127,7 @@ def change_to_settings(scale):
     gui_state["cards"].clear()
     gui_state["chips"].clear()
     gui_state["numtexts"].clear()
+    gui_state["spritetexts"].clear()
 
     difficulty = Button(SPRITESHEET_PATH, (25 * scale, 83 * scale),
                         (scale, scale), 67, 13, "difficulty")
@@ -146,6 +149,7 @@ def change_to_game(scale, engine):
     gui_state["cards"].clear()
     gui_state["chips"].clear()
     gui_state["numtexts"].clear()
+    gui_state["spritetexts"].clear()
 
     # Create buttons
     button_names = ["check", "call", "fold", "raise", "all in", "75%", "50%", "25%"]
