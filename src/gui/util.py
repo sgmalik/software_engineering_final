@@ -204,10 +204,11 @@ def change_to_game(scale, engine):
                           (scale, scale), 9, 42, 9, 5))
 
     # Player Cards
-    card = GUI_Card(SPRITESHEET_PATH, (80 * scale, 112 * scale), (scale, scale), "a", "spades", True)
+    card = GUI_Card(SPRITESHEET_PATH, (80 * scale, 112 * scale), (scale, scale), "10", "hearts", True)
     gui_state["cards"].append(card)
-    card = GUI_Card(SPRITESHEET_PATH, (103 * scale, 112 * scale), (scale, scale), "q", "hearts", True)
+    card = GUI_Card(SPRITESHEET_PATH, (103 * scale, 112 * scale), (scale, scale), "4", "clubs", True)
     gui_state["cards"].append(card)
+    
     card = GUI_Card(SPRITESHEET_PATH, (80 * scale, 7 * scale), (scale, scale), "10", "hearts", False)
     gui_state["cards"].append(card)
     card = GUI_Card(SPRITESHEET_PATH, (103 * scale, 7 * scale), (scale, scale), "4", "clubs", False)
@@ -265,7 +266,31 @@ def change_to_game(scale, engine):
     gui_state["numtexts"].append(pot_val)
 
 
-def update_game():
+def update_game(scale, engine):
+    """
+    Handles the updating of the game. Everything related to engine/gui
+    compatibility will be in this function.
+    """
+    # Engine updating
+    state = engine.current_state_of_game()
+
+    # Update cpu and player cards, chips, and pots here.
+
+
+
+    # Update to next phase of round depending on state
+    if state["round_over"]:
+        engine.start_next_round()
+
+    elif state["betting_over"]:
+        engine.start_next_street()
+
+    elif not state["players_turn"]:
+        engine.cpu_action()
+
+
+def update_slider_info():
+    # SLIDER UPDATING
     slider = gui_state["sliders"][0]
     percent = slider.get_value()
     bid_amount = int(gui_state["ply_stack"] * percent)

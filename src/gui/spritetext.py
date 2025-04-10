@@ -8,6 +8,7 @@ TEXT_COORDS = {
     "call": (151, 31, 15, 5),
     "fold": (166, 31, 15, 5),
     "raise": (181, 31, 19, 5),
+    "NA": (199, 0, 1, 1)
 }
 
 class SpriteText:

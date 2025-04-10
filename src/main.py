@@ -2,7 +2,7 @@
 
 import sys
 import pygame
-from gui.util import change_to_main_menu, Screen, gui_state, update_game
+from gui.util import change_to_main_menu, Screen, gui_state, update_game, update_slider_info
 from game_engine.engine import Engine 
 
 
@@ -52,20 +52,9 @@ while RUNNING:
         for numtext in gui_state["numtexts"]:
             numtext.handle_event(event)
     
-    if gui_state["screen"] == Screen.GAME:
-        state = engine.current_state_of_game()
-
-
-        if state["round_over"]:
-            engine.start_next_round()
-
-        elif state["betting_over"]:
-            engine.start_next_street()
-
-        elif not state["players_turn"]:
-            engine.cpu_action()
     if(gui_state["screen"] == Screen.GAME):
-        update_game()
+        update_slider_info()
+        update_game(SCALE, engine)
 
     # Make sure only one screen is drawn at a time
     screen.fill((0, 0, 0))  # Clear screen before drawing
