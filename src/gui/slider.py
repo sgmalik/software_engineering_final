@@ -106,3 +106,24 @@ class Slider:
             return 0.0
         slider_pos = self.thumb_position[1] - self.min_y
         return 1.0 - (slider_pos / range_pixels)
+
+
+    def set_thumb(self, ply_stack, bid):
+        """
+        Sets the thumb position based on the desired bid relative to the player's stack.
+
+        :param ply_stack: The player's total stack (max value).
+        :param bid: The bid to represent with the slider thumb.
+        """
+        if ply_stack <= 0:
+            percent = 0.0
+        else:
+            # Clamp bid within valid range
+            bid = max(0, min(bid, ply_stack))
+            percent = bid / ply_stack
+
+        # Map percent to thumb y-position
+        range_pixels = self.max_y - self.min_y
+        thumb_y = self.max_y - (range_pixels * percent)
+
+        self.thumb_position = (self.thumb_position[0], int(thumb_y))
