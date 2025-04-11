@@ -68,8 +68,12 @@ Game Evaluator will:
         Once winners are determine, add money to winners stacks based on pot.
         NOTE: doesn't handle side pots rn 
         """
-        for winner in winners:
-            winner.stack += (table.pot.value / len(winners))
+        for player in table.players:
+            if player in winners:
+                #add money to winners stack 
+                player.stack += table.pot.value / len(winners)
+            
+           
 
     #NOTE: these will be unimplemented for now, because just 1v1
     @classmethod

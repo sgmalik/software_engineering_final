@@ -36,7 +36,6 @@ It needs to return information that the GUI needs
         community_cards = self.dealer.table.community_cards
 
 
-        
         players = [
         {
                 "name": player.name,
@@ -46,6 +45,7 @@ It needs to return information that the GUI needs
         } for player in self.dealer.table.players]
    
         state = {
+            "is_showdown": self.dealer.is_showdown(),
             "pot": self.dealer.table.pot.value,
             "game_over": self._is_game_over(),
             "players_turn": self.dealer.table.is_players_turn(),
@@ -103,12 +103,16 @@ It needs to return information that the GUI needs
         #CPU is just going to call for now 
         self.dealer.apply_action(Action.CALL)
 
+        if self.dealer.is_showdown():
+            self.dealer.showdown()
+
 
     def _is_game_over(self) -> bool:
         """
         check if the game is over (one of the players stack is 0)
         """
         #check if any of the players stack is 0 
+        #TODO: this does not work fix this if player all in the game is over 
         for player in self.dealer.table.players:
             if player.stack == 0:
                 return True

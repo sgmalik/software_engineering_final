@@ -134,4 +134,5 @@ class Dealer:
         this will be called when the round is over and we need to determine the winner/winners
         """
         winners = GameEvaluator.determine_winners(self.table)
+        print("THIS IS WINNERS", winners)
         GameEvaluator.add_money_to_winners(self.table, winners)
