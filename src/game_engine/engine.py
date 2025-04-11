@@ -112,14 +112,14 @@ It needs to return information that the GUI needs
         check if the game is over (one of the players stack is 0)
         """
         #check if any of the players stack is 0 
-        #TODO: this does not work fix this if player all in the game is over 
-        for player in self.dealer.table.players:
-            if player.stack == 0:
-                return True
+        #if round is over and player didn't win
+        if self.dealer.is_round_over():
+            for player in self.dealer.table.players:
+                if player.stack == 0:
+                    return True
         return False
 
 
-        
 
 
 
