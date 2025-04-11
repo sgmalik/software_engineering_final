@@ -64,10 +64,10 @@ class GUI_Card:
         :return: A pygame.Surface representing the suite sprite.
         """
         suite_positions = {
-            "diamonds": (0, 36),
-            "hearts": (11, 36),
-            "clubs": (22, 36),
-            "spades": (33, 36),
+            "D": (0, 36),
+            "H": (11, 36),
+            "C": (22, 36),
+            "S": (33, 36),
         }
         x, y = suite_positions.get(self.suite, (0, 0))
         return self.get_sprite(x, y, 11, 11)
@@ -80,10 +80,10 @@ class GUI_Card:
         :return: A pygame.Surface representing the rank sprite.
         """
         rank_positions = {
-            "a": (0, 31),
-            "k": (5, 31),
-            "q": (10, 31),
-            "j": (15, 31),
+            "A": (0, 31),
+            "K": (5, 31),
+            "Q": (10, 31),
+            "J": (15, 31),
             "2": (30, 31),
             "3": (35, 31),
             "4": (40, 31),

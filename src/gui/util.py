@@ -142,6 +142,8 @@ def change_to_game(scale, engine):
     """
     Changes the GUI elements to the ones found in the game screen
     """
+    engine.start_next_round() # Start game
+
     gui_state["screen"] = Screen.GAME
 
     gui_state["buttons"].clear()
@@ -203,31 +205,57 @@ def change_to_game(scale, engine):
     gui_state["sliders"].append(Slider(SPRITESHEET_PATH, (183 * scale, 101 * scale),
                           (scale, scale), 9, 42, 9, 5))
 
-    # Player Cards
-    card = GUI_Card(SPRITESHEET_PATH, (80 * scale, 112 * scale), (scale, scale), "10", "hearts", True)
+    # Num texts
+    bid_num = NumText(SPRITESHEET_PATH, (105, 103), (scale, scale), 0, label="bid_amount")
+    gui_state["numtexts"].append(bid_num)
+    cpu_val = NumText(SPRITESHEET_PATH, (184, 24), (scale, scale), 0, label="cpu_balance")
+    gui_state["numtexts"].append(cpu_val)
+    ply_val = NumText(SPRITESHEET_PATH, (184, 32), (scale, scale), 0, label="player_balance")
+    gui_state["numtexts"].append(ply_val)
+    pot_val = NumText(SPRITESHEET_PATH, (184, 40), (scale, scale), 0, label="pot")
+    gui_state["numtexts"].append(pot_val)
+
+
+def update_game(scale, engine):
+    """
+    Handles the updating of the game. Everything related to engine/gui
+    compatibility will be in this function.
+    """
+    gui_state["cards"].clear()
+    gui_state["chips"].clear()
+
+    # Engine updating
+    state = engine.current_state_of_game()
+
+    # Update cpu and player cards
+    ply_cards = state["players"][0]["hole_cards"]
+    cpu_cards = state["players"][1]["hole_cards"]
+
+    card = GUI_Card(SPRITESHEET_PATH, (80 * scale, 112 * scale),
+                    (scale, scale), ply_cards[0][:-1], ply_cards[0][-1], True)
     gui_state["cards"].append(card)
-    card = GUI_Card(SPRITESHEET_PATH, (103 * scale, 112 * scale), (scale, scale), "4", "clubs", True)
+    card = GUI_Card(SPRITESHEET_PATH, (103 * scale, 112 * scale),
+                    (scale, scale), ply_cards[1][:-1], ply_cards[1][-1], True)
     gui_state["cards"].append(card)
     
-    card = GUI_Card(SPRITESHEET_PATH, (80 * scale, 7 * scale), (scale, scale), "10", "hearts", False)
+    card = GUI_Card(SPRITESHEET_PATH, (80 * scale, 7 * scale),
+                    (scale, scale), cpu_cards[0][:-1], cpu_cards[0][-1], False)
     gui_state["cards"].append(card)
-    card = GUI_Card(SPRITESHEET_PATH, (103 * scale, 7 * scale), (scale, scale), "4", "clubs", False)
-    gui_state["cards"].append(card)
-
-    # Community Cards
-    card = GUI_Card(SPRITESHEET_PATH, (51 * scale, 59 * scale), (scale, scale), "2", "hearts", True)
-    gui_state["cards"].append(card)
-    card = GUI_Card(SPRITESHEET_PATH, (71 * scale, 59 * scale), (scale, scale), "k", "clubs", True)
-    gui_state["cards"].append(card)
-    card = GUI_Card(SPRITESHEET_PATH, (91 * scale, 59 * scale), (scale, scale), "10", "hearts", True)
-    gui_state["cards"].append(card)
-    card = GUI_Card(SPRITESHEET_PATH, (111 * scale, 59 * scale), (scale, scale), "4", "spades", True)
-    gui_state["cards"].append(card)
-    card = GUI_Card(SPRITESHEET_PATH, (131 * scale, 59 * scale), (scale, scale), "j", "hearts", True)
+    card = GUI_Card(SPRITESHEET_PATH, (103 * scale, 7 * scale),
+                    (scale, scale), cpu_cards[1][:-1], cpu_cards[1][-1], False)
     gui_state["cards"].append(card)
 
-    # Player chips, based on player_balance from main 
-    gui_state["ply_distribution"] = get_proper_chip_distribution(gui_state["ply_stack"])
+    # Update community cards
+    community_cards = state["community_cards"]
+    community_card_positions = ((51 * scale, 59 * scale),
+                                (71 * scale, 59 * scale),
+                                (91 * scale, 59 * scale),
+                                (111 * scale, 59 * scale),
+                                (131 * scale, 59 * scale))
+    
+    # Update player chips
+    ply_value = state["players"][0]["stack"]
+    gui_state["ply_distribution"] = get_proper_chip_distribution(ply_value)
 
     colors = ["white", "red", "blue", "green", "black"]
     x = -13
@@ -240,9 +268,9 @@ def change_to_game(scale, engine):
                         (scale, scale), colors[i])
             chip.owner = "player"
             gui_state["chips"].append(chip)
-
-    # CPU chips
-    cpu_value = 500
+    
+    # Update cpu chips
+    cpu_value = state["players"][1]["stack"]
     gui_state["cpu_distribution"] = get_proper_chip_distribution(cpu_value)
 
     x = -13
@@ -253,40 +281,65 @@ def change_to_game(scale, engine):
             y -= 2
             chip = Chip(SPRITESHEET_PATH, ((9 + x) * scale, (27 + y) * scale),
                         (scale, scale), colors[i])
+            chip.owner = "cpu"
             gui_state["chips"].append(chip)
 
-    # Num texts
-    bid_num = NumText(SPRITESHEET_PATH, (105, 103), (scale, scale), 0, label="bid_amount")
-    gui_state["numtexts"].append(bid_num)
-    cpu_val = NumText(SPRITESHEET_PATH, (184, 24), (scale, scale), cpu_value, label="cpu_balance")
-    gui_state["numtexts"].append(cpu_val)
-    ply_val = NumText(SPRITESHEET_PATH, (184, 32), (scale, scale), gui_state["ply_stack"], label="player_balance")
-    gui_state["numtexts"].append(ply_val)
-    pot_val = NumText(SPRITESHEET_PATH, (184, 40), (scale, scale), 0, label="pot")
-    gui_state["numtexts"].append(pot_val)
+
+    for i in range(len(community_cards)):
+        card = GUI_Card(SPRITESHEET_PATH, community_card_positions[i],
+                        (scale, scale), community_cards[i][:-1], community_cards[i][-1], True)
+        gui_state["cards"].append(card)
+        
+    # Update pot chips
+    pot_value = gui_state["pot_stack"]
+    gui_state["pot_distribution"] = get_proper_chip_distribution(pot_value)
+
+    colors = ["black", "green", "blue", "red", "white"]
+    chip_stack_positions = {
+        "white": (167, 79),
+        "red": (183, 76),
+        "blue": (173, 69),
+        "green": (163, 62),
+        "black": (179, 59)
+    }
+
+    for i, color in enumerate(colors):
+        x_base, y_base = chip_stack_positions[color]
+        y_offset = 0
+        for _ in range(gui_state["pot_distribution"][len(gui_state["pot_distribution"]) - i - 1]):
+            chip = Chip(SPRITESHEET_PATH,
+                        ((x_base) * scale, (y_base - y_offset) * scale),
+                        (scale, scale), color)
+            chip.owner = "pot"
+            gui_state["chips"].append(chip)
+            y_offset += 2  # Stack upward
 
 
-def update_game(scale, engine):
-    """
-    Handles the updating of the game. Everything related to engine/gui
-    compatibility will be in this function.
-    """
-    # Engine updating
-    state = engine.current_state_of_game()
-
-    # Update cpu and player cards, chips, and pots here.
-
-
+    # Update numtexts
+    gui_state["numtexts"][1].set_number(gui_state["cpu_stack"]) # Cpu balance
+    gui_state["numtexts"][2].set_number(gui_state["ply_stack"]) # Player balance
+    gui_state["numtexts"][3].set_number(gui_state["pot_stack"]) # Pot
 
     # Update to next phase of round depending on state
     if state["round_over"]:
         engine.start_next_round()
+        update_gui_state(engine)
 
     elif state["betting_over"]:
         engine.start_next_street()
+        update_gui_state(engine)
 
     elif not state["players_turn"]:
         engine.cpu_action()
+        update_gui_state(engine)
+
+
+def update_gui_state(engine):
+    state = engine.current_state_of_game()
+
+    gui_state["pot_stack"] = state["pot"]
+    gui_state["ply_stack"] = state["players"][0]["stack"]
+    gui_state["cpu_stack"] = state["players"][1]["stack"]
 
 
 def update_slider_info():
@@ -299,36 +352,6 @@ def update_slider_info():
     for num in gui_state["numtexts"]:
         if getattr(num, "label", "") == "bid_amount":
             num.set_number(bid_amount)
-
-
-def update_player_chips(scale):
-    """
-    Rebuilds the player's chip stack to visually reflect their current balance.
-
-    Removes all chips marked as "player", then regenerates a new distribution
-    based on the remaining balance using the standard chip values.
-
-    Parameters:
-        chips (list): The master chip list used in the game.
-        scale (int): The UI scaling factor for screen resolution.
-        player_balance (list[int]): A one-item list tracking the player's balance.
-    """
-    colors = ["white", "red", "blue", "green", "black"]
-    distribution = get_proper_chip_distribution(gui_state["ply_stack"])
-
-    # Remove previous player chips
-    gui_state["chips"][:] = [chip for chip in gui_state["chips"] if getattr(chip, "owner", "") != "player"]
-
-    x = -13
-    for i in range(5):
-        x += 13
-        y = 2
-        for _ in range(distribution[i]):
-            y -= 2
-            chip = Chip(SPRITESHEET_PATH, ((9 + x) * scale, (132 + y) * scale),
-                        (scale, scale), colors[i])
-            chip.owner = "player"
-            gui_state["chips"].append(chip)
 
 
 def bet_percentage(scale, percent):
@@ -364,42 +387,6 @@ def bet_percentage(scale, percent):
     """
 
 
-def add_chips_to_pot(scale, amount):
-    """
-    Visually adds chip sprites to the pot area based on the amount bet.
-
-    Chips are placed in fixed x/y stacks by denomination to match the board layout.
-
-    Parameters:
-        chips (list): The main chip list used in the game.
-        scale (int): The screen scaling factor.
-        amount (int): The total dollar amount being added to the pot.
-    """
-    colors = ["black", "green", "blue", "red", "white"]
-    
-    distribution = get_proper_chip_distribution(amount)
-
-    # Pot stack positions for each chip type
-    chip_stack_positions = {
-        "white": (167, 79),
-        "red": (183, 76),
-        "blue": (173, 69),
-        "green": (163, 62),
-        "black": (179, 59)
-    }
-
-    for i, color in enumerate(colors):
-        x_base, y_base = chip_stack_positions[color]
-        y_offset = 0
-        for _ in range(distribution[len(distribution) - i - 1]):
-            chip = Chip(SPRITESHEET_PATH,
-                        ((x_base) * scale, (y_base - y_offset) * scale),
-                        (scale, scale), color)
-            chip.owner = "pot"
-            gui_state["chips"].append(chip)
-            y_offset += 2  # Stack upward
-
-
 def confirm_bid(scale, engine):
     """
     Finalizes the player's previewed bet.
@@ -431,10 +418,6 @@ def confirm_bid(scale, engine):
             num.set_number(gui_state["pot_stack"])
         elif getattr(num, "label", "") == "bid_amount":
             num.set_number(0)
-
-    # Rebuild chips
-    update_player_chips(scale)
-    add_chips_to_pot(scale, bet)
 
 
 def slider_bet_callback(scale):
