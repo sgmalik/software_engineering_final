@@ -111,7 +111,25 @@ class Dealer:
         """
         check if the round is over and we need to do showdown logic
         """
-        return self.betting_manager.is_betting_over() and self.current_street == Street.RIVER
+        
+        if self.betting_manager.is_betting_over() is not True:
+            return False
+        
+        players_all_in = 0
+        for player in self.table.players:
+            if player.state == PlayerState.ALLIN:
+                players_all_in += 1
+        
+        #if there's only 1 player that's not all_in at end of betting round, showdown
+        if players_all_in >= len(self.table.players):
+            return True
+
+        #if river betting is over showdown
+        if self.current_street == Street.RIVER:
+            return True
+        
+        return False
+        
 
     def apply_action(self, action: Action, raise_amount: Optional[int] = None):
         """
@@ -136,3 +154,5 @@ class Dealer:
         winners = GameEvaluator.determine_winners(self.table)
         print("THIS IS WINNERS", winners)
         GameEvaluator.add_money_to_winners(self.table, winners)
+    
+
