@@ -24,17 +24,16 @@ from typing import List, Union, Dict, Any, Optional
 #         },
 #         {
 #             'name': 'AI',
-#             'uuid': 'ai-uuid',
 #             'stack': 1200,
 #             'state': 'participating'
 #         }
 #     ],
 #     'action_histories': {
 #         'preflop': [
-#             {'uuid': 'player1-uuid', 'action': 'small_blind', 'amount': 10},
-#             {'uuid': 'ai-uuid', 'action': 'big_blind', 'amount': 20},
-#             {'uuid': 'player1-uuid', 'action': 'call', 'amount': 10},
-#             {'uuid': 'ai-uuid', 'action': 'check', 'amount': 0}
+#             {'name': 'player1', 'action': 'small_blind', 'amount': 10},
+#             {'name': 'ai', 'action': 'big_blind', 'amount': 20},
+#             {'name': 'player1', 'action': 'call', 'amount': 10},
+#             {'name': 'ai', 'action': 'check', 'amount': 0}
 #         ],
 #         'flop': [],
 #         'turn': [],
@@ -83,15 +82,12 @@ class potOddsCPU(BasePokerPlayer):
         
         # Game state tracking
         self.game_info: Optional[Dict[str, Any]] = None
-        self.uuid: Optional[str] = None
         self.name = "ai"  # Set name to "ai" for testing
         self.round_count = 0
         self.seats: List[Dict[str, Any]] = []
         self.street: Optional[str] = None
         self.community_cards: List[Card] = []
         self.opponent_actions: List[Dict[str, Any]] = []
-        self.games_played = 0
-        self.games_won = 0
     
     def add_hole_card(self, cards: List[Card]):
         if len(self.hole_cards) != 0:

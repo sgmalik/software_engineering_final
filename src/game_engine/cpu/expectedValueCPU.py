@@ -23,23 +23,21 @@ from game_engine.constants import Action, PlayerState, Street
 #     'seats': [
 #         {
 #             'name': 'Player1',
-#             'uuid': 'player1-uuid',
 #             'stack': 800,  # Chips left
 #             'state': 'participating',  # 'participating', 'folded', 'allin'
 #         },
 #         {
 #             'name': 'AI',
-#             'uuid': 'ai-uuid',
 #             'stack': 1200,
 #             'state': 'participating'
 #         }
 #     ],
 #     'action_histories': {
 #         'preflop': [
-#             {'uuid': 'player1-uuid', 'action': 'small_blind', 'amount': 10},
-#             {'uuid': 'ai-uuid', 'action': 'big_blind', 'amount': 20},
-#             {'uuid': 'player1-uuid', 'action': 'call', 'amount': 10},
-#             {'uuid': 'ai-uuid', 'action': 'check', 'amount': 0}
+#             {'name': 'player1', 'action': 'small_blind', 'amount': 10},
+#             {'name': 'ai', 'action': 'big_blind', 'amount': 20},
+#             {'name': 'player1', 'action': 'call', 'amount': 10},
+#             {'name': 'ai', 'action': 'check', 'amount': 0}
 #         ],
 #         'flop': [],
 #         'turn': [],
@@ -94,8 +92,6 @@ class expectedValueCPU(BasePokerPlayer):
         self.street: Optional[str] = None
         self.community_cards: List[Card] = []
         self.opponent_actions: List[Dict[str, Any]] = []
-        self.games_played = 0
-        self.games_won = 0
     
     def add_hole_card(self, cards: List[Card]):
         if len(self.hole_cards) != 0:
