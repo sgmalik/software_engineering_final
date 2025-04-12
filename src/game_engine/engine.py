@@ -34,7 +34,7 @@ It needs to return information that the GUI needs
         """
         #get the players stacks and cards
         community_cards = self.dealer.table.community_cards
-
+        max_raise =  self.dealer.table.players[0].stack - self.dealer.betting_manager.current_bet
 
         players = [
         {
@@ -45,6 +45,7 @@ It needs to return information that the GUI needs
         } for player in self.dealer.table.players]
    
         state = {
+            "player_max_raise": max_raise,
             "is_showdown": self.dealer.is_showdown(),
             "pot": self.dealer.table.pot.value,
             "game_over": self._is_game_over(),

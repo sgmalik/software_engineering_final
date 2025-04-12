@@ -77,6 +77,8 @@ class BettingManager:
         self.table.pot.add_to_pot(raise_amount)
         self._add_betters(current_player)
 
+        
+
     def _call(self, current_player):
         """
         pay current bet
