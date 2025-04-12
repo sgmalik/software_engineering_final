@@ -43,28 +43,18 @@ from typing import List, Union, Dict, Any, Optional
 def parse_card_str(card_str: str) -> Card:
     """
     Helper function to parse card strings into Card objects.
-    Card strings are in format like 'H2', 'DA', 'CK', etc.
-    where first char is suit and second char is rank.
-    Also handles 'H10' format for ten.
+    Card strings are in format like '2H', 'AD', 'KC', etc.
+    where first char is rank and second char is suit.
+    Also handles '10H' format for ten.
     """
     # Get suit and rank from the string
-    if len(card_str) == 3:  # Handle 'H10' format
-        suit = card_str[0].upper()  # 'H'
-        rank = card_str[1:]  # '10'
-    else:  # Handle 'H2' format
-        suit = card_str[0].upper()
-        rank = card_str[1]
-        # Convert face cards to proper values
-        if rank == 'A':
-            rank = '14'
-        elif rank == 'K':
-            rank = '13'
-        elif rank == 'Q':
-            rank = '12'
-        elif rank == 'J':
-            rank = '11'
-        elif rank == 'T':
-            rank = '10'
+    if len(card_str) == 3:  # Handle '10H' format
+        suit = card_str[2].upper()  # 'H'
+        rank = card_str[0:2]  # '10'
+    else:  # Handle '2H' format
+        suit = card_str[1].upper()
+        rank = card_str[0]
+    
     return Card(suit=suit, card_val=rank)
 
 class baselineCPU(BasePokerPlayer):
@@ -150,6 +140,7 @@ class baselineCPU(BasePokerPlayer):
             last_pay = pay_history[-1] if len(pay_history) != 0 else None
             last_pay_amount = last_pay["paid"] if last_pay else 0
             history = {
+                "name": self.name,
                 "action": action,
                 "amount": chip_amount,
                 "paid": chip_amount - last_pay_amount,
@@ -163,6 +154,7 @@ class baselineCPU(BasePokerPlayer):
             last_pay = pay_history[-1] if len(pay_history) != 0 else None
             last_pay_amount = last_pay["paid"] if last_pay else 0
             history = {
+                "name": self.name,
                 "action": action,
                 "amount": chip_amount,
                 "paid": chip_amount - last_pay_amount,
@@ -171,14 +163,14 @@ class baselineCPU(BasePokerPlayer):
         elif action == Action.SMALL_BLIND:
             assert sb_amount is not None
             add_amount = sb_amount
-            history = {"action": action, "amount": sb_amount, "add_amount": add_amount}
+            history = {"action": action, "amount": sb_amount, "add_amount": add_amount, "name": self.name}
         elif action == Action.BIG_BLIND:
             assert bb_amount is not None
             add_amount = bb_amount
-            history = {"action": action, "amount": bb_amount, "add_amount": add_amount}
+            history = {"action": action, "amount": bb_amount, "add_amount": add_amount, "name": self.name}
         elif action == Action.ANTE:
             assert chip_amount > 0 if chip_amount is not None else True
-            history = {"action": action, "amount": chip_amount}
+            history = {"action": action, "amount": chip_amount, "name": self.name}
         self.action_histories.append(history)
 
     def save_round_action_histories(self, street: Street):
@@ -209,7 +201,10 @@ class baselineCPU(BasePokerPlayer):
         high_cards = [10, 11, 12, 13, 14]
         has_high_card = any(card.get_card_rank() in high_cards for card in hole_cards)
         
-        if has_high_card:
+        if len([card for card in hole_cards if card.get_card_rank() in high_cards]) == 2:
+            # if we have 2 high cards, raise 2x the call amount
+            return 'raise', call_amount
+        elif has_high_card:
             return 'call', call_amount
         else:
             return 'fold', 0

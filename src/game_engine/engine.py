@@ -27,7 +27,6 @@ It needs to return information that the GUI needs
         self.initial_stack = initial_stack
         self.dealer = Dealer(self.initial_stack, self.blind)
         self.cpu_player = None  # Single CPU player
-        
         # Initialize game_info
         self.game_info = {
             'player_num': self.num_players,
@@ -64,6 +63,13 @@ It needs to return information that the GUI needs
         # Set the name of the CPU player in the table
         self.dealer.table.players[1].name = cpu_player.__class__.__name__
         
+        # Update the game_info seats with the CPU player's name
+        self.game_info['seats'][1]['name'] = cpu_player.__class__.__name__
+        
+        # Send game start message to CPU
+        self.cpu_player.receive_game_start_message(self.game_info)
+
+
         # Update the game_info seats with the CPU player's name
         self.game_info['seats'][1]['name'] = cpu_player.__class__.__name__
         
@@ -172,14 +178,12 @@ It needs to return information that the GUI needs
             "seats": seats,
             "action_histories": action_histories
         }
-        
         return round_state
             
     def start_next_street(self):
         """
         function that will be called when the street is over.
         """
-        # check if round is over, if so, call start_next_round
         if self.dealer.is_round_over():
             self.start_next_round()
         else:
@@ -309,7 +313,6 @@ It needs to return information that the GUI needs
         #calling showdown will change player stack values
         if self.dealer.is_showdown():
             self.dealer.showdown()
-
 
     def _is_game_over(self) -> bool:
         """

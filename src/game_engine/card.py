@@ -70,4 +70,3 @@ class Card:
         """
         assert self.card_val in self.CARD_RANK_MAP
         return self.CARD_RANK_MAP[self.card_val]
-

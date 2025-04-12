@@ -10,7 +10,7 @@ from game_engine.card import Card
 @pytest.fixture
 def dummy_round_state():
     return {
-        "community_card": ["HA", "D5", "C9"],
+        "community_card": ["AH", "5D", "9C"],
         "pot": {"main": 200, "side": []},
         "action_histories": {},
         "seats": [
@@ -31,7 +31,7 @@ def dummy_valid_actions():
 
 @pytest.fixture
 def dummy_hole_cards():
-    return ["H2", "H7"]
+    return ["2H", "7H"]
 
 
 @pytest.fixture
@@ -55,7 +55,7 @@ def dummy_game_info():
 def dummy_round_start():
     return {
         "round_count": 1,
-        "hole_card": ["H2", "H7"],
+        "hole_card": ["2H", "7H"],
         "seats": [
             {"name": "player1", "stack": 1000, "state": "participating"},
             {"name": "cpu", "stack": 1000, "state": "participating"}
@@ -68,7 +68,7 @@ def dummy_street_start():
     return {
         "street": "flop",
         "round_state": {
-            "community_card": ["HA", "D5", "C9"],
+            "community_card": ["AH", "5D", "9C"],
             "pot": {"main": 200, "side": []},
             "action_histories": {},
             "seats": [
@@ -88,7 +88,7 @@ def dummy_game_update():
             "amount": 50
         },
         "round_state": {
-            "community_card": ["HA", "D5", "C9"],
+            "community_card": ["AH", "5D", "9C"],
             "pot": {"main": 200, "side": []},
             "action_histories": {},
             "seats": [
@@ -104,11 +104,11 @@ def dummy_round_result():
     return {
         "winners": [{"name": "cpu"}],
         "hand_info": {
-            "player1": {"hand": ["H2", "H7"], "hand_rank": "high_card"},
-            "cpu": {"hand": ["HA", "D5"], "hand_rank": "pair"}
+            "player1": {"hand": ["2H", "7H"], "hand_rank": "high_card"},
+            "cpu": {"hand": ["AH", "5D"], "hand_rank": "pair"}
         },
         "round_state": {
-            "community_card": ["HA", "D5", "C9"],
+            "community_card": ["AH", "5D", "9C"],
             "pot": {"main": 200, "side": []},
             "action_histories": {},
             "seats": [
