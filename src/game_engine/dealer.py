@@ -117,6 +117,7 @@ class Dealer:
             return True
 
         return False
+        
     
     def is_showdown(self) -> bool:
         """
@@ -139,8 +140,7 @@ class Dealer:
 
         return False
             
-
-                
+     
     def apply_action(self, action: Action, raise_amount: Optional[int] = None):
         """
             wrapper for betting manager 

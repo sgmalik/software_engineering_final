@@ -26,6 +26,7 @@ Game Evaluator will:
         #get each hand 
         hands = {}
         
+        
         for player in table.players:
             hand_info = HandEvaluator.hand_eval(player.hole_cards, table.community_cards)
             hands[player.name] = hand_info
@@ -73,6 +74,7 @@ Game Evaluator will:
                 
                 #if pot is odd give the extra chip to player
                 #NOTE: whole set of rules for this, but for now just give it to player 1
+                #NOTE: this deletes money rn 
                 player.stack += int(table.pot.value / len(winners))
             
            
@@ -83,7 +85,7 @@ Game Evaluator will:
         To be called in determine, winners, to get the players that are still in the hand
         """
         #eligible players are active players and players that are all in
-        
+
 
     @classmethod
     def _get_side_pots(cls):

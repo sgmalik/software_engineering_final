@@ -4,6 +4,8 @@ betting_manager is adapted from pypokerengine's RoundManager class,
 from .constants import Action
 from .table import Table
 from .constants import PlayerState
+from .game_evaluator import GameEvaluator
+
 
 
 class BettingManager: 
@@ -61,8 +63,11 @@ class BettingManager:
     def _fold(self, current_player):
         """
         change playerState, remove from pending betters
+        NOTE: since its 1v1 can just add pot to opposite player's stack
         """
         current_player.state = PlayerState.FOLDED
+        winner = [player for player in self.table.players if player.state != PlayerState.FOLDED]
+        GameEvaluator.add_money_to_winners(self.table, winner) 
         self._remove_better(current_player)
 
     def _raise(self, current_player, raise_amount):
