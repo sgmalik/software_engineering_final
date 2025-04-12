@@ -92,6 +92,10 @@ class Dealer:
         """
         self.table.deal_community_cards(1)
 
+    def _start_showdown(self):
+        pass
+
+
     def is_round_over(self) -> bool:
         """
         the round is over when betting is over on the
@@ -121,7 +125,7 @@ class Dealer:
                 players_all_in += 1
         
         #if there's only 1 player that's not all_in at end of betting round, showdown
-        if players_all_in >= len(self.table.players):
+        if players_all_in >= len(self.table.players) - 1:
             return True
 
         #if river betting is over showdown
