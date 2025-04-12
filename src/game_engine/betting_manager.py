@@ -46,9 +46,7 @@ class BettingManager:
         elif action == Action.BIG_BLIND:
             self.current_bet = self.blind*2
             self._blind(current_player, self.blind*2)
-
-        #check all_in so all_in player doesn't get added to pending betters
-        self._check_all_in(current_player)
+        self._set_all_in(current_player)
         self.table.next_player()
         
         
@@ -82,14 +80,12 @@ class BettingManager:
         self.table.pot.add_to_pot(raise_amount)
         self._add_betters(current_player)
 
-    
-    def _check_all_in(self, current_player):
-        """
-        change to all_in state when player's stack hits 0
-        """
-        #if players stack is 0, they are all in
+       
+    def _set_all_in(self, current_player):
+         #if no money they are all in 
         if current_player.stack == 0:
             current_player.state = PlayerState.ALLIN
+
         
     def _call(self, current_player):
         """
@@ -108,7 +104,6 @@ class BettingManager:
         if current_player.contribuition < self.current_bet:
             raise ValueError("Cannot check when facing a bet.")
         self._remove_better(current_player)
-
 
     def is_betting_over(self) -> bool:
         """

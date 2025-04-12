@@ -12,6 +12,7 @@ class Action(Enum):
     FOLD  = "fold"
     CALL  = "call"
     RAISE = "raise"
+    ALLIN = "allin"
     CHECK = "check"
     SMALL_BLIND = "sb"
     BIG_BLIND = "bb"

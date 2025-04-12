@@ -82,6 +82,8 @@ Game Evaluator will:
         """
         To be called in determine, winners, to get the players that are still in the hand
         """
+        #eligible players are active players and players that are all in
+        
 
     @classmethod
     def _get_side_pots(cls):

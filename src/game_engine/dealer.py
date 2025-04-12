@@ -117,10 +117,8 @@ class Dealer:
         if len(active_players) == 1:
             return True
 
-        # Condition 2: If all active players except one are ALLIN,
-        # then there’s no more betting action possible.
-        non_allin_players = [player for player in active_players if player.state != PlayerState.ALLIN]
-        if len(non_allin_players) <= 1:
+        # Condiiton 2: there's more than 1 player who hasn't gone all_in
+        if len(self.table.not_all_in_players) >= 1:
             return True
 
         # Condition 3: If the betting round is over on the river, then the round is complete.
