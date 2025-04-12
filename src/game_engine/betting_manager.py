@@ -33,9 +33,6 @@ class BettingManager:
         """
         declare action for the current player
         """
-        #check all_in so all_in player doesn't get added to pending betters
-        self._check_all_in(current_player)
-
         if action == Action.CALL:
             self._call(current_player)
         elif action == Action.CHECK:
@@ -49,7 +46,11 @@ class BettingManager:
         elif action == Action.BIG_BLIND:
             self.current_bet = self.blind*2
             self._blind(current_player, self.blind*2)
+
+        #check all_in so all_in player doesn't get added to pending betters
+        self._check_all_in(current_player)
         self.table.next_player()
+        
         
 
     def _blind(self, current_player, blind):
@@ -87,8 +88,8 @@ class BettingManager:
         change to all_in state when player's stack hits 0
         """
         #if players stack is 0, they are all in
-        if current_player.stack == self.get_max_raise(current_player):
-            current_player.is_allin()
+        if current_player.stack == 0:
+            current_player.state = PlayerState.ALLIN
         
     def _call(self, current_player):
         """

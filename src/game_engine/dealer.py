@@ -97,36 +97,38 @@ class Dealer:
         draw the remaining cards (if any)
         """
         cards_needed = 5 - len(self.table.community_cards)
+
+        if cards_needed == 0:
+            return
+        
         self.table.deal_community_cards(cards_needed)
 
 
     def is_round_over(self) -> bool:
         """
-        the round is over when betting is over on the
-        river street 
-
-        or
-
-        all but one players have folded 
+        The round is over when:
+        - Betting is over on the river street,
+        - All but one player have folded, or
+        - Everyone is all in or only one player is not all in.
         """
-        if self.is_showdown():
+        active_players = self.table.active_players()
+
+        # Condition 1: If only one player remains active (everyone else folded)
+        if len(active_players) == 1:
             return True
-        if len(self.table.active_players()) == 1:
+
+        # Condition 2: If all active players except one are ALLIN,
+        # then there’s no more betting action possible.
+        non_allin_players = [player for player in active_players if player.state != PlayerState.ALLIN]
+        if len(non_allin_players) <= 1:
             return True
+
+        # Condition 3: If the betting round is over on the river, then the round is complete.
+        if self.current_street == Street.RIVER and self.betting_manager.is_betting_over():
+            return True
+
         return False
-
-    def is_showdown(self):
-        """
-        check if the round is over and we need to do showdown logic
-        """
-        if self.betting_manager.is_betting_over() is not True:
-            return False
-        
-        #if river betting is over showdown
-        if self.current_street == Street.RIVER:
-            return True
-        
-        return False
+     
                 
     def apply_action(self, action: Action, raise_amount: Optional[int] = None):
         """
@@ -148,6 +150,8 @@ class Dealer:
         """
         this will be called when the round is over and we need to determine the winner/winners
         """
+        #draw more cards if needed
+        self._start_showdown()
 
         winners = GameEvaluator.determine_winners(self.table)
         print("THIS IS WINNERS", winners)

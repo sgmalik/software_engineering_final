@@ -46,7 +46,6 @@ It needs to return information that the GUI needs
    
         state = {
             "player_max_raise": self.dealer.betting_manager.get_max_raise(pc),
-            "is_showdown": self.dealer.is_showdown(),
             "pot": self.dealer.table.pot.value,
             "game_over": self._is_game_over(),
             "players_turn": self.dealer.table.is_players_turn(),
@@ -91,8 +90,8 @@ It needs to return information that the GUI needs
 
         #after we apply the action need to check if the round is over so can do showdown logic
         #calling showdown will change player stack values
-        if self.dealer.is_showdown():
-            self.dealer.showdown()
+        if self.dealer.is_round_over():
+            self.dealer.is_round_over()
 
         
     def cpu_action(self):
@@ -104,8 +103,8 @@ It needs to return information that the GUI needs
         #CPU is just going to call for now 
         self.dealer.apply_action(Action.CALL)
 
-        if self.dealer.is_showdown():
-            self.dealer.showdown()
+        if self.dealer.is_round_over():
+            self.dealer.is_round_over()
 
 
     def _is_game_over(self) -> bool:
