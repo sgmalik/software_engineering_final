@@ -23,7 +23,7 @@ from typing import List, Union, Dict, Any, Optional
 #             'state': 'participating',  # 'participating', 'folded', 'allin'
 #         },
 #         {
-#             'name': 'AI',
+#             'name': 'cpu',
 #             'stack': 1200,
 #             'state': 'participating'
 #         }
@@ -82,7 +82,7 @@ class potOddsCPU(BasePokerPlayer):
         
         # Game state tracking
         self.game_info: Optional[Dict[str, Any]] = None
-        self.name = "ai"  # Set name to "ai" for testing
+        self.name = "cpu"  # Set name to "ai" for testing
         self.round_count = 0
         self.seats: List[Dict[str, Any]] = []
         self.street: Optional[str] = None
@@ -322,7 +322,7 @@ class potOddsCPU(BasePokerPlayer):
         Called after any player takes an action.
         """
         # Track opponent actions
-        if new_action['player_name'] != self.name:
+        if new_action.get('player_name') != self.name:
             self.opponent_actions.append(new_action)
         
         # Update community cards

@@ -147,7 +147,7 @@ All CPU implementations share these core methods:
 - **Purpose**: Initializes the CPU when a new game begins
 - **Parameters**:
   - `game_info`: Dictionary containing game settings and player information
-- **Implementation**: Stores initial game settings and sets the player's name to "ai"
+- **Implementation**: Stores initial game settings and sets the player's name to "cpu"
 
 #### `receive_round_start_message(round_count, hole_card, seats)`
 - **Purpose**: Handles the start of a new round

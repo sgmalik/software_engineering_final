@@ -27,7 +27,7 @@ from game_engine.constants import Action, PlayerState, Street
 #             'state': 'participating',  # 'participating', 'folded', 'allin'
 #         },
 #         {
-#             'name': 'AI',
+#             'name': 'cpu',
 #             'stack': 1200,
 #             'state': 'participating'
 #         }
@@ -330,7 +330,7 @@ class expectedValueCPU(BasePokerPlayer):
         Called after any player takes an action.
         """
         # Track opponent actions
-        if new_action['player_name'] != self.name:
+        if new_action.get('player_name') != self.name:
             self.opponent_actions.append(new_action)
         
         # Update community cards

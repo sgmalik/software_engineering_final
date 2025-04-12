@@ -77,8 +77,6 @@ It needs to return information that the GUI needs
         #get the players stacks and cards
         community_cards = self.dealer.table.community_cards
 
-
-        
         players = [
         {
                 "name": player.name,
@@ -245,7 +243,7 @@ It needs to return information that the GUI needs
         # Send game update message to CPU if one is set
         if self.cpu_player is not None:
             new_action = {
-                'player_uuid': "pc-uuid",  # UUID for human player
+                'player_name': "pc",  # Name for human player
                 'action': action,
                 'amount': raise_amount if raise_amount is not None else 0
             }
@@ -296,6 +294,16 @@ It needs to return information that the GUI needs
         
         # Apply the action
         self.dealer.apply_action(action_enum, amount if action == "raise" else None)
+        
+        # Send game update message to CPU if one is set
+        if self.cpu_player is not None:
+            new_action = {
+                'player_name': cpu_player.name,  # Name for CPU player
+                'action': action,
+                'amount': amount if action == "raise" else 0
+            }
+            round_state = self.build_round_state()
+            self.cpu_player.receive_game_update_message(new_action, round_state)
         
         #after we apply the action need to check if the round is over so can do showdown logic
         #calling showdown will change player stack values
