@@ -34,7 +34,7 @@ It needs to return information that the GUI needs
         """
         #get the players stacks and cards
         community_cards = self.dealer.table.community_cards
-        max_raise =  self.dealer.table.players[0].stack - self.dealer.betting_manager.current_bet
+        max_raise =  self.dealer.table.players[0].stack - (self.dealer.betting_manager.current_bet - self.dealer.table.players[0].contribuition)
 
         players = [
         {
