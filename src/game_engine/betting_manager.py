@@ -36,6 +36,8 @@ class BettingManager:
         #TODO: need all_in action
         if action == Action.CALL:
             self._call(current_player)
+        elif action == Action.CHECK:
+            self._check(current_player)
         elif action == Action.RAISE:
             self._raise(current_player, raise_amount)
         elif action == Action.FOLD:
@@ -86,6 +88,15 @@ class BettingManager:
 
         self.table.pot.add_to_pot(call_amount)
         self._remove_better(current_player)
+        
+    def _check(self, current_player):
+        """
+        Player checks if there is no bet to call
+        """
+        if current_player.contribuition < self.current_bet:
+            raise ValueError("Cannot check when facing a bet.")
+        self._remove_better(current_player)
+
 
     def is_betting_over(self) -> bool:
         """

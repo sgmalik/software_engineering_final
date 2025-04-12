@@ -184,22 +184,35 @@ def change_to_game(scale, engine):
 
         if name == "raise":
             button = Button(SPRITESHEET_PATH, pos, (scale, scale), 23, 9, name,
-                            callback=lambda: confirm_bid(scale, engine))
+                        callback=lambda: confirm_bid(scale, engine))
 
         elif name in percentage_map:
             pct = percentage_map[name]
             button = Button(SPRITESHEET_PATH, pos, (scale, scale), 23, 9, name,
-                            callback=(lambda pct_val:
-                                    lambda: bet_percentage(scale, pct_val))(pct))
+                        callback=(lambda pct_val: 
+                                  lambda: bet_percentage(scale, pct_val))(pct_val=pct))
+
+        elif name == "fold":
+            button = Button(SPRITESHEET_PATH, pos, (scale, scale), 23, 9, name,
+                        callback=lambda: send_action(Action.FOLD, engine))
+
+        elif name == "call":
+            button = Button(SPRITESHEET_PATH, pos, (scale, scale), 23, 9, name,
+                        callback=lambda: send_action(Action.CALL, engine))
+
+        elif name == "check":
+            button = Button(SPRITESHEET_PATH, pos, (scale, scale), 23, 9, name,
+                        callback=lambda: send_action(Action.CHECK, engine))
+
         else:
             button = Button(SPRITESHEET_PATH, pos, (scale, scale), 23, 9, name)
 
         gui_state["buttons"].append(button)
     
-    for i in range(len(button_names)):
-        button = Button(SPRITESHEET_PATH, button_positions[i],
-                        (scale, scale), 23, 9, button_names[i])
-        gui_state["buttons"].append(button)
+    #for i in range(len(button_names)):
+        #button = Button(SPRITESHEET_PATH, button_positions[i],
+                        #(scale, scale), 23, 9, button_names[i])
+        #gui_state["buttons"].append(button)
 
     # Create slider
     gui_state["sliders"].append(Slider(SPRITESHEET_PATH, (183 * scale, 101 * scale),
@@ -418,6 +431,14 @@ def confirm_bid(scale, engine):
             num.set_number(gui_state["pot_stack"])
         elif getattr(num, "label", "") == "bid_amount":
             num.set_number(0)
+
+def send_action(action, engine):
+    """
+    Sends a fold, call, or check action to the engine.
+    Params: action: action player or CPU makes
+            engine: game engine object
+    """
+    engine.player_action(action)
 
 
 def slider_bet_callback(scale):

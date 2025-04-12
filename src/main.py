@@ -5,7 +5,6 @@ import pygame
 from gui.util import change_to_main_menu, Screen, gui_state, update_game, update_slider_info
 from game_engine.engine import Engine 
 
-
 # Connect Gui & Engine
 # Gain acess to current state of game, player action, and cpu action from engine
 engine = Engine(num_players=2, initial_stack=500, blind=10)
