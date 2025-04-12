@@ -19,7 +19,6 @@ from typing import List, Union, Dict, Any, Optional
 #     'seats': [
 #         {
 #             'name': 'Player1',
-#             'uuid': 'player1-uuid',
 #             'stack': 800,  # Chips left
 #             'state': 'participating',  # 'participating', 'folded', 'allin'
 #         },
@@ -46,18 +45,29 @@ from typing import List, Union, Dict, Any, Optional
 def parse_card_str(card_str: str) -> Card:
     """
     Helper function to parse card strings into Card objects.
-    Card strings are in format like 'As', 'Kh', '2d', etc.
-    where first char is rank and second char is suit.
-    Also handles '10s' format for ten.
+    Card strings are in format like 'H2', 'DA', 'CK', etc.
+    where first char is suit and second char is rank.
+    Also handles 'H10' format for ten.
     """
-    # Get rank and suit from the string
-    if len(card_str) == 3:  # Handle '10s' format
-        rank = card_str[:-1]  # '10'
-        suit = card_str[-1].upper()  # 'S'
-    else:  # Handle 'Ts' format
-        rank = '10' if card_str[0] == 'T' else card_str[0]
-        suit = card_str[1].upper()
-    return Card(suit, rank)
+    # Get suit and rank from the string
+    if len(card_str) == 3:  # Handle 'H10' format
+        suit = card_str[0].upper()  # 'H'
+        rank = card_str[1:]  # '10'
+    else:  # Handle 'H2' format
+        suit = card_str[0].upper()
+        rank = card_str[1]
+        # Convert face cards to proper values
+        if rank == 'A':
+            rank = '14'
+        elif rank == 'K':
+            rank = '13'
+        elif rank == 'Q':
+            rank = '12'
+        elif rank == 'J':
+            rank = '11'
+        elif rank == 'T':
+            rank = '10'
+    return Card(suit=suit, card_val=rank)
 
 class potOddsCPU(BasePokerPlayer):
     """
@@ -74,7 +84,7 @@ class potOddsCPU(BasePokerPlayer):
         # Game state tracking
         self.game_info: Optional[Dict[str, Any]] = None
         self.uuid: Optional[str] = None
-        self.name = self.__class__.__name__
+        self.name = "ai"  # Set name to "ai" for testing
         self.round_count = 0
         self.seats: List[Dict[str, Any]] = []
         self.street: Optional[str] = None
@@ -187,81 +197,46 @@ class potOddsCPU(BasePokerPlayer):
     @staticmethod
     def count_outs(hole_cards, community_cards):
         """
-        Calculate the number of outs for AI without using PyPokerEngine's evaluate_hand().
+        Count the number of outs for the current hand.
         """
-        suits = {"S": 0, "H": 0, "D": 0, "C": 0}
-        ranks = {str(i): 0 for i in range(2, 10)}  # Numeric ranks
-        ranks.update({"T": 0, "J": 0, "Q": 0, "K": 0, "A": 0})  # Face cards
-
-        # Count suits and ranks
-        all_cards = hole_cards + community_cards
-        for card in all_cards:
-            suits[card.suit] += 1  # Count suits
-            ranks[card.card_val] += 1  # Count ranks
-
-        outs = 0  # Track number of outs
-
-        # ---- FLUSH DRAW CHECK ----
+        # Initialize counters for suits and ranks
+        suits = {'H': 0, 'D': 0, 'C': 0, 'S': 0}
+        ranks = {2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0}
+        
+        # Count occurrences of each suit and rank
+        for card in hole_cards:
+            suits[card.suit] += 1
+            rank = int(card.card_val) if card.card_val.isdigit() else {'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}[card.card_val]
+            ranks[rank] += 1
+            
+        for card in community_cards:
+            suits[card.suit] += 1
+            rank = int(card.card_val) if card.card_val.isdigit() else {'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}[card.card_val]
+            ranks[rank] += 1
+            
+        # Check for flush draw
+        flush_outs = 0
         for suit, count in suits.items():
-            if count == 4:  # 4 cards of the same suit present
-                outs += 9  # 9 remaining suited cards
-
-        # ---- STRAIGHT DRAW CHECK ----
-        sorted_ranks = sorted(
-            [
-                int(
-                    rank.replace("T", "10")
-                    .replace("J", "11")
-                    .replace("Q", "12")
-                    .replace("K", "13")
-                    .replace("A", "14")
-                )
-                for rank, count in ranks.items()
-                if count > 0
-            ]
-        )
-
-        # Open-ended straight draw (e.g., 5-6-7-8 needs a 4 or 9)
-        for i in range(len(sorted_ranks) - 3):
-            if sorted_ranks[i + 3] - sorted_ranks[i] == 3:  # Consecutive
-                outs += 8  # 8 outs for open-ended straight draw
-                break
+            if count == 4:
+                flush_outs = 9  # 9 cards of the same suit remaining
                 
-        # Gutshot straight draw (e.g., 5-6-8-9 needs a 7)
-        for i in range(len(sorted_ranks) - 2):
-            if (
-                sorted_ranks[i + 2] - sorted_ranks[i] == 2
-                and sorted_ranks[i + 1] - sorted_ranks[i] > 1
-            ):
-                outs += 4  # Only 1 missing rank
-
-        # ---- PAIR TO TRIPS / SET TO FULL HOUSE ----
-        for rank, count in ranks.items():
-            if count == 2:  # AI has a pair
-                outs += 2  # 2 more cards in the deck to make trips
-            elif count == 3:  # AI has trips
-                outs += 3  # 3 more cards to make a full house
-
-        # ---- OVERCARD IMPROVEMENT ----
-        # If AI holds high cards (A-K, A-Q, etc.) but no pair, outs may exist.
-        hole_ranks = [hole[1] for hole in hole_cards]
-        max_hole_rank = max(
-            [
-                int(
-                    r.replace("T", "10")
-                    .replace("J", "11")
-                    .replace("Q", "12")
-                    .replace("K", "13")
-                    .replace("A", "14")
-                )
-                for r in hole_ranks
-            ]
-        )
-
-        # If no pair and AI holds high cards, assume 6 outs (3 for each overcard)
-        if ranks[hole_ranks[0]] == 1 and ranks[hole_ranks[1]] == 1:
-            outs += 6  # Overcards improving
-        return outs
+        # Check for straight draw
+        straight_outs = 0
+        for i in range(2, 11):
+            if ranks[i] > 0 and ranks[i+1] > 0 and ranks[i+2] > 0 and ranks[i+3] > 0:
+                straight_outs = 8  # 8 cards to complete the straight
+                
+        # Check for overcards
+        overcard_outs = 0
+        if len(hole_cards) == 2:
+            hole_ranks = [int(card.card_val) if card.card_val.isdigit() else {'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}[card.card_val] for card in hole_cards]
+            max_hole_rank = max(hole_ranks)
+            for rank in range(max_hole_rank + 1, 15):
+                if ranks[rank] == 0:
+                    overcard_outs += 1
+                    
+        # Return total outs
+        return flush_outs + straight_outs + overcard_outs
 
     def declare_action(self, valid_actions: List[Dict[str, Any]], hole_card: List[str], round_state: Dict[str, Any]) -> tuple[str, Union[int, float]]:
         """
@@ -304,10 +279,9 @@ class potOddsCPU(BasePokerPlayer):
         self.game_info = game_info
         self.stack = game_info['rule']['initial_stack']
         
-        # Find our seat and set UUID
+        # Find our seat
         for seat in game_info['seats']:
             if seat['name'] == self.name:
-                self.uuid = seat['uuid']
                 break
 
     def receive_round_start_message(self, round_count: int, hole_card: List[str], seats: List[Dict[str, Any]]) -> None:
@@ -352,7 +326,7 @@ class potOddsCPU(BasePokerPlayer):
         Called after any player takes an action.
         """
         # Track opponent actions
-        if new_action['player_uuid'] != self.uuid:
+        if new_action['player_name'] != self.name:
             self.opponent_actions.append(new_action)
         
         # Update community cards
@@ -360,18 +334,16 @@ class potOddsCPU(BasePokerPlayer):
 
     def receive_round_result_message(self, winners: List[Dict[str, Any]], hand_info: Dict[str, Any], round_state: Dict[str, Any]) -> None:
         """
-        Called at the end of each round with results.
+        Called when the round is over and winners are determined.
         """
-        self.games_played += 1
-        
         # Check if we won
         for winner in winners:
-            if winner['uuid'] == self.uuid:
-                self.games_won += 1
+            if isinstance(winner, dict) and winner.get('name') == self.name:
+                self.state = PlayerState.WINNER
                 break
-        
-        # Update our stack size
+
+        # Update stack sizes
         for seat in round_state['seats']:
-            if seat['uuid'] == self.uuid:
+            if seat.get('name') == self.name:
                 self.stack = seat['stack']
                 break
