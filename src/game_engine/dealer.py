@@ -93,7 +93,11 @@ class Dealer:
         self.table.deal_community_cards(1)
 
     def _start_showdown(self):
-        pass
+        """
+        draw the remaining cards (if any)
+        """
+        cards_needed = 5 - len(self.table.community_cards)
+        self.table.deal_community_cards(cards_needed)
 
 
     def is_round_over(self) -> bool:
@@ -155,6 +159,7 @@ class Dealer:
         """
         this will be called when the round is over and we need to determine the winner/winners
         """
+
         winners = GameEvaluator.determine_winners(self.table)
         print("THIS IS WINNERS", winners)
         GameEvaluator.add_money_to_winners(self.table, winners)
