@@ -117,7 +117,7 @@ class Dealer:
         
         players_all_in = 0
         for player in self.table.players:
-            if player.state == PlayerState.ALLIN:
+            if player.is_allin():
                 players_all_in += 1
         
         #if there's only 1 player that's not all_in at end of betting round, showdown

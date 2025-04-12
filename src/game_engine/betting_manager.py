@@ -45,6 +45,7 @@ class BettingManager:
         elif action == Action.BIG_BLIND:
             self.current_bet = self.blind*2
             self._blind(current_player, self.blind*2)
+        self._check_all_in(current_player)
         self.table.next_player()
         
 
@@ -77,8 +78,15 @@ class BettingManager:
         self.table.pot.add_to_pot(raise_amount)
         self._add_betters(current_player)
 
+    
+    def _check_all_in(self, current_player):
+        """
+        change to all_in state when player's stack hits 0
+        """
+        #if players stack is 0, they are all in
+        if current_player.stack == 0:
+            current_player.is_all_in()
         
-
     def _call(self, current_player):
         """
         pay current bet
