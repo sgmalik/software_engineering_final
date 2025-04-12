@@ -117,3 +117,9 @@ class BettingManager:
         raise the current bet by the amount (this is so we can keep track of the current bet)
         """
         self.current_bet += amount
+
+    def get_max_raise(self, current_player):
+        """
+        gets the maximum amount the current player can raise by
+        """
+        return current_player.stack - (self.current_bet - current_player.contribuition)
