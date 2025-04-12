@@ -86,7 +86,7 @@ class expectedValueCPU(BasePokerPlayer):
         
         # Game state tracking
         self.game_info: Optional[Dict[str, Any]] = None
-        self.name = "ai"  # Set name to "ai" for testing
+        self.name = "cpu"  # Set name to "ai" for testing
         self.round_count = 0
         self.seats: List[Dict[str, Any]] = []
         self.street: Optional[str] = None
@@ -348,6 +348,6 @@ class expectedValueCPU(BasePokerPlayer):
 
         # Update stack sizes
         for seat in round_state['seats']:
-            if seat.get('name') == self.name:
+            if seat.get('name') == "cpu":
                 self.stack = seat['stack']
                 break

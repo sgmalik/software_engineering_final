@@ -15,7 +15,7 @@ def dummy_round_state():
         "action_histories": {},
         "seats": [
             {"name": "player1", "stack": 800, "state": "participating"},
-            {"name": "ai", "stack": 1200, "state": "participating"},
+            {"name": "cpu", "stack": 1200, "state": "participating"},
         ],
     }
 
@@ -46,7 +46,7 @@ def dummy_game_info():
         },
         "seats": [
             {"name": "player1", "stack": 1000},
-            {"name": "ai", "stack": 1000}
+            {"name": "cpu", "stack": 1000}
         ]
     }
 
@@ -58,7 +58,7 @@ def dummy_round_start():
         "hole_card": ["H2", "H7"],
         "seats": [
             {"name": "player1", "stack": 1000, "state": "participating"},
-            {"name": "ai", "stack": 1000, "state": "participating"}
+            {"name": "cpu", "stack": 1000, "state": "participating"}
         ]
     }
 
@@ -73,7 +73,7 @@ def dummy_street_start():
             "action_histories": {},
             "seats": [
                 {"name": "player1", "stack": 800, "state": "participating"},
-                {"name": "ai", "stack": 1200, "state": "participating"},
+                {"name": "cpu", "stack": 1200, "state": "participating"},
             ],
         }
     }
@@ -93,7 +93,7 @@ def dummy_game_update():
             "action_histories": {},
             "seats": [
                 {"name": "player1", "stack": 800, "state": "participating"},
-                {"name": "ai", "stack": 1200, "state": "participating"},
+                {"name": "cpu", "stack": 1200, "state": "participating"},
             ],
         }
     }
@@ -102,18 +102,18 @@ def dummy_game_update():
 @pytest.fixture
 def dummy_round_result():
     return {
-        "winners": [{"name": "ai"}],
+        "winners": [{"name": "cpu"}],
         "hand_info": {
             "player1": {"hand": ["H2", "H7"], "hand_rank": "high_card"},
-            "ai": {"hand": ["HA", "D5"], "hand_rank": "pair"}
+            "cpu": {"hand": ["HA", "D5"], "hand_rank": "pair"}
         },
         "round_state": {
             "community_card": ["HA", "D5", "C9"],
             "pot": {"main": 200, "side": []},
             "action_histories": {},
             "seats": [
-                {"name": "player1", "stack": 800, "state": "participating"},
-                {"name": "ai", "stack": 1200, "state": "participating"},
+                {"name": "player1", "stack": 800, "state": "active"},
+                {"name": "cpu", "stack": 1200, "state": "winner"},
             ],
         }
     }
