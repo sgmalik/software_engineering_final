@@ -92,6 +92,14 @@ class Dealer:
         """
         self.table.deal_community_cards(1)
 
+    def _start_showdown(self):
+        """
+        draw the remaining cards (if any)
+        """
+        cards_needed = 5 - len(self.table.community_cards)
+        self.table.deal_community_cards(cards_needed)
+
+
     def is_round_over(self) -> bool:
         """
         the round is over when betting is over on the
@@ -111,8 +119,15 @@ class Dealer:
         """
         check if the round is over and we need to do showdown logic
         """
-        return self.betting_manager.is_betting_over() and self.current_street == Street.RIVER
-
+        if self.betting_manager.is_betting_over() is not True:
+            return False
+        
+        #if river betting is over showdown
+        if self.current_street == Street.RIVER:
+            return True
+        
+        return False
+                
     def apply_action(self, action: Action, raise_amount: Optional[int] = None):
         """
             wrapper for betting manager 
@@ -133,5 +148,9 @@ class Dealer:
         """
         this will be called when the round is over and we need to determine the winner/winners
         """
+
         winners = GameEvaluator.determine_winners(self.table)
+        print("THIS IS WINNERS", winners)
         GameEvaluator.add_money_to_winners(self.table, winners)
+    
+

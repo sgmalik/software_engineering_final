@@ -33,7 +33,9 @@ class BettingManager:
         """
         declare action for the current player
         """
-        #TODO: need all_in action
+        #check all_in so all_in player doesn't get added to pending betters
+        self._check_all_in(current_player)
+
         if action == Action.CALL:
             self._call(current_player)
         elif action == Action.CHECK:
@@ -79,6 +81,15 @@ class BettingManager:
         self.table.pot.add_to_pot(raise_amount)
         self._add_betters(current_player)
 
+    
+    def _check_all_in(self, current_player):
+        """
+        change to all_in state when player's stack hits 0
+        """
+        #if players stack is 0, they are all in
+        if current_player.stack == self.get_max_raise(current_player):
+            current_player.is_allin()
+        
     def _call(self, current_player):
         """
         pay current bet
@@ -126,3 +137,9 @@ class BettingManager:
         raise the current bet by the amount (this is so we can keep track of the current bet)
         """
         self.current_bet += amount
+
+    def get_max_raise(self, current_player):
+        """
+        gets the maximum amount the current player can raise by
+        """
+        return current_player.stack - (self.current_bet - current_player.contribuition)

@@ -8,6 +8,7 @@ from gui.chip import Chip
 from gui.numtext import NumText
 from game_engine.engine import Engine
 from game_engine.constants import Action
+import pygame
 
 SPRITESHEET_PATH = "../assets/poker-spritesheet.png"
 
@@ -343,13 +344,14 @@ def update_game(scale, engine):
         update_gui_state(engine)
 
     elif not state["players_turn"]:
+        pygame.time.wait(2000)
         engine.cpu_action()
         update_gui_state(engine)
 
 
 def update_gui_state(engine):
     state = engine.current_state_of_game()
-
+    print("state", state)
     gui_state["pot_stack"] = state["pot"]
     gui_state["ply_stack"] = state["players"][0]["stack"]
     gui_state["cpu_stack"] = state["players"][1]["stack"]
@@ -418,9 +420,7 @@ def confirm_bid(scale, engine):
     # call the engine to pass it the raise 
     engine.player_action(Action.RAISE, raise_amount=bet)
 
-    # Transfer bet to pot
-    gui_state["ply_stack"] -= bet
-    gui_state["pot_stack"] += bet
+
     gui_state["previewed_bet"] = 0  # Reset previewed bet
 
     # Update numtexts

@@ -68,9 +68,14 @@ Game Evaluator will:
         Once winners are determine, add money to winners stacks based on pot.
         NOTE: doesn't handle side pots rn 
         """
-        for winner in winners:
-            winner.stack += (table.pot.value / len(winners))
-
+        for player in table.players:
+            if player in winners:
+                
+                #if pot is odd give the extra chip to player
+                #NOTE: whole set of rules for this, but for now just give it to player 1
+                player.stack += int(table.pot.value / len(winners))
+            
+           
     #NOTE: these will be unimplemented for now, because just 1v1
     @classmethod
     def _eligible_players(cls, table):
@@ -81,5 +86,5 @@ Game Evaluator will:
     @classmethod
     def _get_side_pots(cls):
         """
-        handle side pots
+        handle side pots 
         """

@@ -52,6 +52,8 @@ class TestGameEval():
         #check if pot is correct after add_winners. pot would be 4
         assert engine.dealer.table.pot.value == 4
 
+        #NOTE: can't really assert stacks because can tie, or 1 player wins
+
         #can't assert stacks because pc or cpu1 could win
     def test_determine_winners(self):
         """

@@ -34,9 +34,8 @@ It needs to return information that the GUI needs
         """
         #get the players stacks and cards
         community_cards = self.dealer.table.community_cards
+        pc = self.dealer.table.players[0]
 
-
-        
         players = [
         {
                 "name": player.name,
@@ -46,6 +45,8 @@ It needs to return information that the GUI needs
         } for player in self.dealer.table.players]
    
         state = {
+            "player_max_raise": self.dealer.betting_manager.get_max_raise(pc),
+            "is_showdown": self.dealer.is_showdown(),
             "pot": self.dealer.table.pot.value,
             "game_over": self._is_game_over(),
             "players_turn": self.dealer.table.is_players_turn(),
@@ -103,19 +104,23 @@ It needs to return information that the GUI needs
         #CPU is just going to call for now 
         self.dealer.apply_action(Action.CALL)
 
+        if self.dealer.is_showdown():
+            self.dealer.showdown()
+
 
     def _is_game_over(self) -> bool:
         """
         check if the game is over (one of the players stack is 0)
         """
         #check if any of the players stack is 0 
-        for player in self.dealer.table.players:
-            if player.stack == 0:
-                return True
+        #if round is over and player didn't win
+        if self.dealer.is_round_over():
+            for player in self.dealer.table.players:
+                if player.stack == 0:
+                    return True
         return False
 
 
-        
 
 
 
