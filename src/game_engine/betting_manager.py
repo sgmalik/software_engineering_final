@@ -86,7 +86,7 @@ class BettingManager:
         """
         #if players stack is 0, they are all in
         if current_player.stack == self.get_max_raise(current_player):
-            current_player.is_all_in()
+            current_player.is_allin()
         
     def _call(self, current_player):
         """

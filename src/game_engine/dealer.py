@@ -119,7 +119,6 @@ class Dealer:
         """
         check if the round is over and we need to do showdown logic
         """
-        
         if self.betting_manager.is_betting_over() is not True:
             return False
         
@@ -128,11 +127,7 @@ class Dealer:
             return True
         
         return False
-        
-        
-    
-        
-
+                
     def apply_action(self, action: Action, raise_amount: Optional[int] = None):
         """
             wrapper for betting manager 
