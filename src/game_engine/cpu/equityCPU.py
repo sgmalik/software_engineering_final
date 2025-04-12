@@ -1,7 +1,7 @@
 from game_engine.constants import Action, PlayerState, Street
 from pypokerengine.players import BasePokerPlayer
 from game_engine.deck import Card
-from typing import List, Union, Dict, Any, Optional
+from typing import List, Union, Dict, Any, Optional, cast
 
 # assuming that round_state is a dictionary with the following structure:
 
@@ -130,15 +130,15 @@ class equityCPU(BasePokerPlayer):
         """
         history = None
         if action == Action.FOLD:
-            history = {"action": action}
+            history = {"action": action, "name": self.name}
         elif action == Action.CALL:
             pay_history = [
                 h
                 for h in self.action_histories
-                if h["action"].value != Action.FOLD or h["action"].value != Action.ANTE
+                if h["action"] != Action.FOLD and h["action"] != Action.ANTE
             ]
             last_pay = pay_history[-1] if len(pay_history) != 0 else None
-            last_pay_amount = last_pay["paid"] if last_pay else 0
+            last_pay_amount = last_pay.get("paid", 0) if last_pay else 0
             history = {
                 "name": self.name,
                 "action": action,
@@ -149,10 +149,10 @@ class equityCPU(BasePokerPlayer):
             pay_history = [
                 h
                 for h in self.action_histories
-                if h["action"].value != Action.FOLD or h["action"].value != Action.ANTE
+                if h["action"] != Action.FOLD and h["action"] != Action.ANTE
             ]
             last_pay = pay_history[-1] if len(pay_history) != 0 else None
-            last_pay_amount = last_pay["paid"] if last_pay else 0
+            last_pay_amount = last_pay.get("paid", 0) if last_pay else 0
             history = {
                 "name": self.name,
                 "action": action,
@@ -163,18 +163,43 @@ class equityCPU(BasePokerPlayer):
         elif action == Action.SMALL_BLIND:
             assert sb_amount is not None
             add_amount = sb_amount
-            history = {"action": action, "amount": sb_amount, "add_amount": add_amount, "name": self.name}
+            history = {
+                "action": action,
+                "amount": sb_amount,
+                "add_amount": add_amount,
+                "name": self.name,
+                "paid": sb_amount
+            }
         elif action == Action.BIG_BLIND:
             assert bb_amount is not None
             add_amount = bb_amount
-            history = {"action": action, "amount": bb_amount, "add_amount": add_amount, "name": self.name}
+            history = {
+                "action": action,
+                "amount": bb_amount,
+                "add_amount": add_amount,
+                "name": self.name,
+                "paid": bb_amount
+            }
         elif action == Action.ANTE:
             assert chip_amount > 0 if chip_amount is not None else True
-            history = {"action": action, "amount": chip_amount, "name": self.name}
+            history = {
+                "action": action,
+                "amount": chip_amount,
+                "name": self.name,
+                "paid": chip_amount
+            }
         self.action_histories.append(history)
 
     def save_round_action_histories(self, street: Street):
-        self.round_action_histories[street.value] = self.action_histories
+        """
+        Save the current action histories to the round action histories for the given street.
+        If there are already histories for this street, append to them instead of overwriting.
+        """
+        if self.round_action_histories[street.value] is None:
+            self.round_action_histories[street.value] = []
+        
+        histories = cast(List[dict], self.round_action_histories[street.value])
+        histories.extend(self.action_histories)
         self.action_histories = []
 
     def clear_action_histories(self):

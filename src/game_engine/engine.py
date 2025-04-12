@@ -91,6 +91,29 @@ It needs to return information that the GUI needs
                 "state": player.state.value
         } for player in self.dealer.table.players]
    
+        # Create action histories structure
+        action_histories = {
+            "preflop": [],
+            "flop": [],
+            "turn": [],
+            "river": []
+        }
+        
+        # Populate action histories from each player
+        for player in self.dealer.table.players:
+            for i, history in enumerate(player.round_action_histories):
+                if history is not None:
+                    street_name = list(action_histories.keys())[i]
+                    for action in history:
+                        action_entry = {
+                            "name": action["name"],
+                            "action": action["action"].value,
+                            "amount": action.get("amount", 0),
+                            "add_amount": action.get("add_amount", 0),
+                            "paid": action.get("paid", 0)
+                        }
+                        action_histories[street_name].append(action_entry)
+   
         state = {
             "pot": self.dealer.table.pot.value,
             "game_over": self._is_game_over(),
@@ -98,7 +121,8 @@ It needs to return information that the GUI needs
             "betting_over": self.dealer.betting_manager.is_betting_over(),
             "round_over": self.dealer.is_round_over(),
             "community_cards": [str(card) for card in community_cards],
-            "players": players
+            "players": players,
+            "action_histories": action_histories
         }
         
         return state
@@ -162,9 +186,11 @@ It needs to return information that the GUI needs
                     street_name = list(action_histories.keys())[i]
                     for action in history:
                         action_entry = {
-                            "uuid": f"{player.name}-uuid",
-                            "action": action["action"].value,
-                            "amount": action.get("amount", 0)
+                            "name": action["name"],
+                            "action": action["action"],
+                            "amount": action.get("amount", 0),
+                            "add_amount": action.get("add_amount", 0),
+                            "paid": action.get("paid", 0)
                         }
                         action_histories[street_name].append(action_entry)
         
@@ -187,6 +213,10 @@ It needs to return information that the GUI needs
         if self.dealer.is_round_over():
             self.start_next_round()
         else:
+            # Save action histories for all players before moving to next street
+            for player in self.dealer.table.players:
+                player.save_round_action_histories(self.dealer.current_street)
+            
             self.dealer.next_street()
             self.dealer.start_street()
         
@@ -244,6 +274,10 @@ It needs to return information that the GUI needs
         action_enum = Action(action)
         self.dealer.apply_action(action_enum, raise_amount)
 
+        # Save action histories for all players after the action
+        for player in self.dealer.table.players:
+            player.save_round_action_histories(self.dealer.current_street)
+
         # Send game update message to CPU if one is set
         if self.cpu_player is not None:
             new_action = {
@@ -298,6 +332,10 @@ It needs to return information that the GUI needs
         
         # Apply the action
         self.dealer.apply_action(action_enum, amount if action == "raise" else None)
+        
+        # Save action histories for all players after the action
+        for player in self.dealer.table.players:
+            player.save_round_action_histories(self.dealer.current_street)
         
         # Send game update message to CPU if one is set
         if self.cpu_player is not None:

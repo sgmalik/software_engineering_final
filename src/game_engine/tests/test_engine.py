@@ -136,6 +136,8 @@ class TestEngine:
         assert state["round_over"] is False
         assert state["players"][0]["stack"] == 978
         assert state["players"][1]["stack"] == 978
+        
+        round_state = engine.build_round_state()
 
     def test_set_cpu_player(self):
         """
@@ -211,3 +213,46 @@ class TestEngine:
         assert state["players_turn"] is True  # It should be player's turn again
         assert state["pot"] > 14  # Pot should have increased
         assert state["players"][1]["stack"] < 998  # CPU's stack should have decreased
+
+    def test_action_histories_in_round_state(self):
+        """
+        Test that action histories are properly added to the round state
+        """
+        # Initialize game
+        engine = Engine(num_players=2, initial_stack=1000, blind=1)
+        engine.start_next_round()
+        
+        # Perform some actions in preflop
+        engine.player_action("raise", 10)
+        engine.cpu_action()  # CPU should call or raise
+        
+        # Get the round state
+        round_state = engine.build_round_state()
+        
+        # Check that action histories are included in the round state
+        assert "action_histories" in round_state
+        assert "preflop" in round_state["action_histories"]
+        
+        # Check that the preflop actions are recorded
+        preflop_actions = round_state["action_histories"]["preflop"]
+        assert len(preflop_actions) >= 2  # At least the blinds and our raise
+        
+        # Check that the actions have the correct structure
+        for action in preflop_actions:
+            assert "name" in action
+            assert "action" in action
+            assert "amount" in action
+        
+        # Move to the next street (flop)
+        engine.start_next_street()
+        
+        # Get the round state again
+        round_state = engine.build_round_state()
+        
+        # Check that preflop actions are still in the round state
+        assert "preflop" in round_state["action_histories"]
+        assert len(round_state["action_histories"]["preflop"]) >= 2
+        
+        # Check that flop actions are empty (since we just started flop)
+        assert "flop" in round_state["action_histories"]
+        assert len(round_state["action_histories"]["flop"]) == 0

@@ -4,7 +4,7 @@ This module contains the Player class
 
 from .constants import Action, Street, PlayerState
 from .card import Card
-from typing import Union, List, Optional
+from typing import Union, List, Optional, cast
 
 
 class Player:
@@ -88,49 +88,63 @@ class Player:
         """
         history = None
         if action == Action.FOLD:
-            history = {"action": action}
+            history = {"action": action, "name": self.name}
         elif action == Action.CALL:
-            pay_history = [
-                h
-                for h in self.action_histories
-                if h["action"].value != Action.FOLD or h["action"].value != Action.ANTE
-            ]
-            last_pay = pay_history[-1] if len(pay_history) != 0 else None
-            last_pay_amount = last_pay["paid"] if last_pay else 0
             history = {
+                "name": self.name,
                 "action": action,
-                "amount": chip_amount,
-                "paid": chip_amount - last_pay_amount,
+                "amount": self.contribuition,
+                "paid": self.contribuition,
             }
         elif action == Action.RAISE:
-            pay_history = [
-                h
-                for h in self.action_histories
-                if h["action"].value != Action.FOLD or h["action"].value != Action.ANTE
-            ]
-            last_pay = pay_history[-1] if len(pay_history) != 0 else None
-            last_pay_amount = last_pay["paid"] if last_pay else 0
             history = {
+                "name": self.name,
                 "action": action,
                 "amount": chip_amount,
-                "paid": chip_amount - last_pay_amount,
+                "paid": self.contribuition,
                 "add_amount": add_amount,
             }
         elif action == Action.SMALL_BLIND:
             assert sb_amount is not None
             add_amount = sb_amount
-            history = {"action": action, "amount": sb_amount, "add_amount": add_amount}
+            history = {
+                "action": action,
+                "amount": sb_amount,
+                "add_amount": add_amount,
+                "name": self.name,
+                "paid": sb_amount
+            }
         elif action == Action.BIG_BLIND:
             assert bb_amount is not None
             add_amount = bb_amount
-            history = {"action": action, "amount": bb_amount, "add_amount": add_amount}
+            history = {
+                "action": action,
+                "amount": bb_amount,
+                "add_amount": add_amount,
+                "name": self.name,
+                "paid": bb_amount
+            }
         elif action == Action.ANTE:
             assert chip_amount > 0 if chip_amount is not None else True
-            history = {"action": action, "amount": chip_amount}
+            history = {
+                "action": action,
+                "amount": chip_amount,
+                "name": self.name,
+                "paid": chip_amount
+            }
+        print(history)
         self.action_histories.append(history)
 
     def save_round_action_histories(self, street: Street):
-        self.round_action_histories[street.value] = self.action_histories
+        """
+        Save the current action histories to the round action histories for the given street.
+        If there are already histories for this street, append to them instead of overwriting.
+        """
+        if self.round_action_histories[street.value] is None:
+            self.round_action_histories[street.value] = []
+        
+        histories = cast(List[dict], self.round_action_histories[street.value])
+        histories.extend(self.action_histories)
         self.action_histories = []
 
     def clear_action_histories(self):
