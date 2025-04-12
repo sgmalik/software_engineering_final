@@ -123,20 +123,14 @@ class Dealer:
         if self.betting_manager.is_betting_over() is not True:
             return False
         
-        players_all_in = 0
-        for player in self.table.players:
-            if player.is_allin():
-                players_all_in += 1
-        
-        #if there's only 1 player that's not all_in at end of betting round, showdown
-        if players_all_in >= len(self.table.players) - 1:
-            return True
-
         #if river betting is over showdown
         if self.current_street == Street.RIVER:
             return True
         
         return False
+        
+        
+    
         
 
     def apply_action(self, action: Action, raise_amount: Optional[int] = None):
