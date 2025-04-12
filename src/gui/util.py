@@ -392,7 +392,7 @@ def bet_percentage(scale, percent):
         amount_to_bet = 1  # minimum bet if there's money
 
     gui_state["previewed_bet"] = amount_to_bet
-    gui_state["sliders"][0].set_thumb(gui_state["player_max_raise"], gui_state["previewed_bet"])
+    gui_state["sliders"][0].set_thumb(gui_state["ply_stack"], gui_state["previewed_bet"])
 
     # Update display
     """

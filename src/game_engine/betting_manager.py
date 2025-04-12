@@ -52,7 +52,6 @@ class BettingManager:
         self.table.next_player()
         
         
-
     def _blind(self, current_player, blind):
         """
         blind player action

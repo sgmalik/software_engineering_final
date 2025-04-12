@@ -126,7 +126,7 @@ class Dealer:
         """
 
         #check if betting is over
-        if self.betting_manager.is_betting_over():
+        if not self.betting_manager.is_betting_over():
             return False
 
         #if river is over showdown 
