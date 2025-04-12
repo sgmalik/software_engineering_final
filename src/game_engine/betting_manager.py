@@ -110,7 +110,7 @@ class BettingManager:
         check if betting is over (to be used in dealer),
         if betting is over than the street is over
         """
-        return len(self.pending_betters) == 0 or len(self.table.active_players()) == 1
+        return len(self.pending_betters) == 0
 
     def _remove_better(self, current_player):
         """

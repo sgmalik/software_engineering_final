@@ -90,8 +90,8 @@ It needs to return information that the GUI needs
 
         #after we apply the action need to check if the round is over so can do showdown logic
         #calling showdown will change player stack values
-        if self.dealer.is_round_over():
-            self.dealer.is_round_over()
+        if self.dealer.is_showdown():
+            self.dealer.showdown()
 
         
     def cpu_action(self):
@@ -103,8 +103,8 @@ It needs to return information that the GUI needs
         #CPU is just going to call for now 
         self.dealer.apply_action(Action.CALL)
 
-        if self.dealer.is_round_over():
-            self.dealer.is_round_over()
+        if self.dealer.is_showdown():
+            self.dealer.showdown()
 
 
     def _is_game_over(self) -> bool:
@@ -113,14 +113,8 @@ It needs to return information that the GUI needs
         """
         #check if any of the players stack is 0 
         #if round is over and player didn't win
-        if self.dealer.is_round_over():
-            for player in self.dealer.table.players:
-                if player.stack == 0:
-                    return True
+        #if self.dealer.is_round_over():
+         #   for player in self.dealer.table.players:
+          #      if player.stack == 0:
+           #         return True
         return False
-
-
-
-
-
-   
