@@ -4,6 +4,8 @@ betting_manager is adapted from pypokerengine's RoundManager class,
 from .constants import Action
 from .table import Table
 from .constants import PlayerState
+from .game_evaluator import GameEvaluator
+
 
 
 class BettingManager: 
@@ -33,9 +35,7 @@ class BettingManager:
         """
         declare action for the current player
         """
-        #check all_in so all_in player doesn't get added to pending betters
-        self._check_all_in(current_player)
-
+        
         if action == Action.CALL:
             self._call(current_player)
         elif action == Action.CHECK:
@@ -51,63 +51,79 @@ class BettingManager:
             self._blind(current_player, self.blind*2)
         self.table.next_player()
         
-
+        
     def _blind(self, current_player, blind):
         """
         blind player action
         """
-        current_player.collect_bet(blind)
-        self.table.pot.add_to_pot(blind)
+        if self._is_all_in(current_player, blind):
+            all_in_amount = current_player.stack
+            current_player.collect_bet(all_in_amount)
+            self.table.pot.add_to_pot(all_in_amount)
+            current_player.state = PlayerState.ALLIN
+            self._remove_better(current_player)
+        else: 
+            current_player.collect_bet(blind)
+            self.table.pot.add_to_pot(blind)
 
     def _fold(self, current_player):
         """
         change playerState, remove from pending betters
+        NOTE: since its 1v1 can just add pot to opposite player's stack
         """
         current_player.state = PlayerState.FOLDED
+        winner = [player for player in self.table.players if player.state != PlayerState.FOLDED]
+        GameEvaluator.add_money_to_winners(self.table, winner) 
         self._remove_better(current_player)
 
     def _raise(self, current_player, raise_amount):
         """
         pay current bet, raise bet 
         """
-        # Handle the call portion
-        call_amount = max(0, self.current_bet - current_player.contribuition)
-        actual_call = min(call_amount, current_player.stack)
+        
+        call_amount = self.current_bet - current_player.contribuition
 
-        current_player.collect_bet(actual_call)
-        self.table.pot.add_to_pot(actual_call)
+        if self._is_all_in(current_player, call_amount + raise_amount):
+            all_in_amount = current_player.stack
+        
+            self._raise_bet(all_in_amount)
+            current_player.state = PlayerState.ALLIN
+            self.table.pot.add_to_pot(all_in_amount)
+            current_player.collect_bet(all_in_amount)
+            self._remove_better(current_player)
+        else:
+            # need to pay current bet first
+            current_player.collect_bet(call_amount)
+            self.table.pot.add_to_pot(call_amount)
 
-        #Determine raise cap
-        remaining_stack = current_player.stack
-        actual_raise = min(raise_amount, remaining_stack)
-        # Execute raise
+            # do the raise action
+            self._raise_bet(raise_amount)
+            current_player.collect_bet(raise_amount)
+            self.table.pot.add_to_pot(raise_amount)
+            self._add_betters(current_player)
 
-        self._raise_bet(actual_raise)
-        current_player.collect_bet(actual_raise)
-        self.table.pot.add_to_pot(actual_raise)
-        self._add_betters(current_player)
-
-    
-    def _check_all_in(self, current_player):
-        """
-        change to all_in state when player's stack hits 0
-        """
-        #if players stack is 0, they are all in
-        if current_player.stack == self.get_max_raise(current_player):
-            current_player.is_allin()
+       
+    def _is_all_in(self, current_player, amount):
+        #if no money they are all in
+        return current_player.stack <= amount
         
     def _call(self, current_player):
         """
         pay current bet
         """
-        # Calculate how much is needed to call
-        call_amount = max(0, self.current_bet - current_player.contribuition)
-        actual_call = min(call_amount, current_player.stack)
-
-        current_player.collect_bet(actual_call)
-        self.table.pot.add_to_pot(actual_call)
+        call_amount = self.current_bet - current_player.contribuition
+        #if you can't pay full raise all_in
+        if self._is_all_in(current_player, call_amount):
+            all_in_amount = current_player.stack
+            current_player.collect_bet(all_in_amount)
+            self.table.pot.add_to_pot(all_in_amount)
+            current_player.state = PlayerState.ALLIN
+        else:
+            current_player.collect_bet(call_amount)
+            self.table.pot.add_to_pot(call_amount)
         self._remove_better(current_player)
-        
+    
+
     def _check(self, current_player):
         """
         Player checks if there is no bet to call
@@ -116,13 +132,12 @@ class BettingManager:
             raise ValueError("Cannot check when facing a bet.")
         self._remove_better(current_player)
 
-
     def is_betting_over(self) -> bool:
         """
         check if betting is over (to be used in dealer),
         if betting is over than the street is over
         """
-        return len(self.pending_betters) == 0 or len(self.table.active_players()) == 1
+        return len(self.pending_betters) == 0
 
     def _remove_better(self, current_player):
         """
@@ -150,14 +165,4 @@ class BettingManager:
         """
         gets the maximum amount the current player can raise by
         """
-        call_amount = max(0, self.current_bet - current_player.contribuition)
-        max_raise_after_call = current_player.stack - call_amount
-
-        opponents = [p for p in self.table.players if p != current_player and p.is_active()]
-        if not opponents:
-            return max_raise_after_call
-
-        opponent = opponents[0] 
-        opponent_matchable = opponent.stack + opponent.contribuition - current_player.contribuition
-
-        return max(0, min(max_raise_after_call, opponent_matchable))
+        return current_player.stack - (self.current_bet - current_player.contribuition)

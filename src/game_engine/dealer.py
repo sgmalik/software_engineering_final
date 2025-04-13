@@ -50,7 +50,7 @@ class Dealer:
 
         # reset betting round information
         self.betting_manager.reset_betting_round()
-
+        
         if self.current_street == Street.PREFLOP:
             self._start_preflop()
         elif self.current_street == Street.FLOP:
@@ -68,11 +68,11 @@ class Dealer:
         self.table.deal_hole_cards()
 
         # blinds
-        self.betting_manager.apply_player_action(
-            self.table.current_player, Action.SMALL_BLIND)
+        #self.betting_manager.apply_player_action(
+            #self.table.current_player, Action.SMALL_BLIND)
 
-        self.betting_manager.apply_player_action(
-            self.table.current_player, Action.BIG_BLIND)
+        #self.betting_manager.apply_player_action(
+            #self.table.current_player, Action.BIG_BLIND)
 
     def _start_flop(self):
         """
@@ -97,37 +97,50 @@ class Dealer:
         draw the remaining cards (if any)
         """
         cards_needed = 5 - len(self.table.community_cards)
+
+        if cards_needed == 0:
+            return
+        
         self.table.deal_community_cards(cards_needed)
 
 
     def is_round_over(self) -> bool:
         """
-        the round is over when betting is over on the
-        river street 
-
-        or
-
-        all but one players have folded 
+        ignoring not 1v1 for now. 
         """
+        # a player folded
+        if len(self.table.players_in_hand()) == 1:
+            return True
+        
+        #showdown conditions met
         if self.is_showdown():
             return True
-        if len(self.table.active_players()) == 1:
-            return True
-        return False
 
-    def is_showdown(self):
-        """
-        check if the round is over and we need to do showdown logic
-        """
-        if self.betting_manager.is_betting_over() is not True:
-            return False
+        return False
         
-        #if river betting is over showdown
+    
+    def is_showdown(self) -> bool:
+        """
+        showdown happens when betting round is over, and its end of river
+        or a player is all in and river is over
+        """
+
+        #check if betting is over
+        if not self.betting_manager.is_betting_over():
+            return False
+
+        #if river is over showdown 
         if self.current_street == Street.RIVER:
             return True
-        
+            
+        #if a player is all in + betting over showdown
+        if len(self.table.players_in_hand()) == 2:
+            if any(player.state == PlayerState.ALLIN for player in self.table.players_in_hand()):
+                return True
+
         return False
-                
+            
+     
     def apply_action(self, action: Action, raise_amount: Optional[int] = None):
         """
             wrapper for betting manager 
@@ -148,9 +161,10 @@ class Dealer:
         """
         this will be called when the round is over and we need to determine the winner/winners
         """
+        #draw more cards if needed
+        self._start_showdown()
 
         winners = GameEvaluator.determine_winners(self.table)
-        print("THIS IS WINNERS", winners)
         GameEvaluator.add_money_to_winners(self.table, winners)
     
 

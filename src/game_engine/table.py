@@ -100,6 +100,12 @@ class Table:
         return list of active players
         """
         return [player for player in self.players if player.is_active()]
+    
+    def not_all_in_players(self):
+        return [player for player in self.players if player.state != player.is_allin()]
+    
+    def players_in_hand(self):
+        return [player for player in self.players if player.is_active() or player.is_allin()]
 
     def reset_contribution(self):
         """

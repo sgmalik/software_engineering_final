@@ -38,6 +38,7 @@ while RUNNING:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 change_to_main_menu(SCALE, engine)
+                
 
         # Pass events to buttons and other GUI elements
         for button in list(gui_state["buttons"]):
