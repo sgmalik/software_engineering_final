@@ -35,6 +35,7 @@ class BettingManager:
         """
         declare action for the current player
         """
+        
         if action == Action.CALL:
             self._call(current_player)
         elif action == Action.CHECK:
@@ -48,7 +49,6 @@ class BettingManager:
         elif action == Action.BIG_BLIND:
             self.current_bet = self.blind*2
             self._blind(current_player, self.blind*2)
-        self._set_all_in(current_player)
         self.table.next_player()
         
         
@@ -73,22 +73,35 @@ class BettingManager:
         """
         pay current bet, raise bet 
         """
-        # need to pay current bet first
+        
         call_amount = self.current_bet - current_player.contribuition
-        current_player.collect_bet(call_amount)
-        self.table.pot.add_to_pot(call_amount)
 
-        # do the raise action
-        self._raise_bet(raise_amount)
-        current_player.collect_bet(raise_amount)
-        self.table.pot.add_to_pot(raise_amount)
-        self._add_betters(current_player)
+        if self._is_all_in(current_player, call_amount + raise_amount):
+            self._all_in(current_player)
+        else:
+            # need to pay current bet first
+            current_player.collect_bet(call_amount)
+            self.table.pot.add_to_pot(call_amount)
+
+            # do the raise action
+            self._raise_bet(raise_amount)
+            current_player.collect_bet(raise_amount)
+            self.table.pot.add_to_pot(raise_amount)
+            self._add_betters(current_player)
 
        
-    def _set_all_in(self, current_player):
-         #if no money they are all in 
-        if current_player.stack == 0:
-            current_player.state = PlayerState.ALLIN
+    def _is_all_in(self, current_player, amount):
+        #if no money they are all in 
+        if current_player.stack <= amount:
+            return True
+
+    def _all_in(self, current_player):
+        #maybe remove raise bet 
+        self._raise_bet(current_player.stack)
+        current_player.state = PlayerState.ALLIN
+        self.table.pot.add_to_pot(current_player.stack)
+        current_player.collect_bet(current_player.stack)
+        self._remove_better(current_player)
 
         
     def _call(self, current_player):
@@ -96,10 +109,13 @@ class BettingManager:
         pay current bet
         """
         call_amount = self.current_bet - current_player.contribuition
-        current_player.collect_bet(call_amount)
-
-        self.table.pot.add_to_pot(call_amount)
-        self._remove_better(current_player)
+        #if you can't pay full raise all_in
+        if self._is_all_in(current_player, call_amount):
+            self._all_in(current_player)
+        else: 
+            current_player.collect_bet(call_amount)
+            self.table.pot.add_to_pot(call_amount)
+            self._remove_better(current_player)
         
     def _check(self, current_player):
         """

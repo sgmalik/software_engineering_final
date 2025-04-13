@@ -336,6 +336,7 @@ def update_game(scale, engine):
 
     # Update to next phase of round depending on state
     if state["round_over"]:
+       
         engine.start_next_round()
         update_gui_state(engine)
 
