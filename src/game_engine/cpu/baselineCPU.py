@@ -180,13 +180,10 @@ class baselineCPU(BasePokerPlayer):
                 "name": self.name,
                 "paid": bb_amount
             }
-        elif action == Action.ANTE:
-            assert chip_amount > 0 if chip_amount is not None else True
+        elif action == Action.CHECK:
             history = {
                 "action": action,
-                "amount": chip_amount,
                 "name": self.name,
-                "paid": chip_amount
             }
         if history is not None:
             self.action_histories.append(history)
