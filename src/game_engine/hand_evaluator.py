@@ -158,34 +158,6 @@ class HandEvaluator():
 
     # pypoker uses bit mask which is probably better
     #there's a lot of overlapping logic. 
-    @classmethod
-    def _is_royal_flush(cls, suit_map) -> bool:
-        pass
-
-    @classmethod
-    def _is_straight_flush(cls, suit_map) -> bool:
-        pass
-
-    @classmethod
-    def _is_four_of_a_kind(cls, card_match_map) -> bool:
-        pass
-
-    @classmethod
-    def _is_full_house(cls, card_match_map) -> bool:
-        pass
-
-    @classmethod
-    def _is_flush(cls, card_match_map) -> bool:
-        pass
-
-    @classmethod
-    def _is_straight(cls, card_match_map) -> bool:
-        pass
-
-    @classmethod
-    def _is_three_of_a_kind(cls, card_match_map) -> bool:
-        pass
-    
     @classmethod 
     def _check_matches(cls, card_match_map):
         pairs = [0, []]
@@ -218,44 +190,6 @@ class HandEvaluator():
         
         return cls.STRENGTH_MAP["high_card"], []
     
-
-    @classmethod
-    def _is_two_pair(cls, card_match_map) -> bool:
-        pairs = 0
-        cards_to_add = []
-        print("card_match_map", card_match_map)
-        for cards in card_match_map.values():
-            if len(cards) == 2:
-                cards_to_add.append(cards[0])
-                cards_to_add.append(cards[1])
-                pairs += 1
-
-        if pairs == 2:
-            cls._add_primary_cards(cards_to_add)
-            return True
-        return False
-
-    @classmethod
-    def _is_pair(cls, card_match_map) -> bool:
-        """
-        find if two cards have the same rank
-        """
-        for cards in card_match_map.values():
-            if len(cards) == 2:
-                cls._primary_cards = cards
-                return True
-        return False
-
-
     @classmethod
     def _highest_five(cls, sorted_cards):
         return sorted_cards[0:5]
-
-
-    @classmethod
-    def _add_primary_cards(cls, cards):
-        """
-        add the primary cards to the hand evaluator
-        """
-        for card in cards:
-            cls._primary_cards.append(card)
