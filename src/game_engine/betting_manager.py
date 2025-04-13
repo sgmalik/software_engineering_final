@@ -35,7 +35,6 @@ class BettingManager:
         """
         declare action for the current player
         """
-        
         if action == Action.CALL:
             self._call(current_player)
         elif action == Action.CHECK:
@@ -61,7 +60,6 @@ class BettingManager:
             current_player.collect_bet(all_in_amount)
             self.table.pot.add_to_pot(all_in_amount)
             current_player.state = PlayerState.ALLIN
-            self._remove_better(current_player)
         else: 
             current_player.collect_bet(blind)
             self.table.pot.add_to_pot(blind)
