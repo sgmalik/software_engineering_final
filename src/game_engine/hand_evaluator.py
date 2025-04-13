@@ -72,36 +72,23 @@ class HandEvaluator():
         card_match_map = cls._create_card_match_map(sorted_cards)
         suit_map = cls._create_suit_map(sorted_cards)
 
-        # check and update strength
-        if cls._is_royal_flush(suit_map):
-            pass
-        elif cls._is_straight_flush(suit_map):
-            pass
-        elif cls._is_four_of_a_kind(card_match_map):
-            pass
-        elif cls._is_full_house(card_match_map):
-            pass
-        elif cls._is_flush(suit_map):
-            pass
-        elif cls._is_straight(suit_map):
-            pass
-        elif cls._is_three_of_a_kind(card_match_map):
-            pass
-        elif cls._is_two_pair(card_match_map):
-            hand_rank = cls.STRENGTH_MAP["two_pair"]
-        elif cls._is_pair(card_match_map):
-            hand_rank = cls.STRENGTH_MAP["pair"]
-        else:
-            # highcard
-            cls._highest_five(sorted_cards)
-            hand_rank = cls.STRENGTH_MAP["high_card"]
+        
+        hand_rank, primary_cards = cls._check_matches(card_match_map)
+        cls._primary_cards = primary_cards
+        
+
+        if hand_rank == 1:
+       
+        # highcard
+        #cls._highest_five(sorted_cards)
+        #hand_rank = cls.STRENGTH_MAP["high_card"]
 
         cls._set_kickers(sorted_cards)
 
         #to use information about the hand rank in the future
         return {
             "hand_rank": hand_rank,
-            "primary_cards_rank": cls._primary_cards,
+            "primary_cards_rank": primary_cards,
             "kickers": cls._kicker_cards
         }
     
@@ -198,6 +185,39 @@ class HandEvaluator():
     @classmethod
     def _is_three_of_a_kind(cls, card_match_map) -> bool:
         pass
+    
+    @classmethod 
+    def _check_matches(cls, card_match_map):
+        pairs = [0, []]
+        triples = [0, []]
+
+        # this will be used to check for pair, two pair, three of a kind, full house
+        for cards in card_match_map.values():
+            if len(cards) == 2:
+                for card in cards:
+                    pairs[1].append(card)
+                pairs[0] += 1
+            elif len(cards) == 3:
+                for card in cards:
+                    triples[1].append(card)
+                triples[0] += 1
+            elif len(cards) == 4:
+                return cls.STRENGTH_MAP["four_of_a_kind"], cards
+        
+        pair_cards = Deck.sort_cards_by_rank(pairs[1])
+        triple_cards = Deck.sort_cards_by_rank(triples[1])[:3]
+
+        if triples[0] >= 1 and pairs[0] >= 1:
+            return cls.STRENGTH_MAP["full_house"], [*triple_cards, *pair_cards[:2]]
+        elif triples[0] >= 1:
+            return cls.STRENGTH_MAP["three_of_a_kind"], [*triple_cards]
+        elif pairs[0] >= 2:
+            return cls.STRENGTH_MAP["two_pair"], [*pair_cards]
+        elif pairs[0] == 1:
+            return cls.STRENGTH_MAP["pair"], [*pair_cards[:2]]
+        
+        return cls.STRENGTH_MAP["high_card"], []
+    
 
     @classmethod
     def _is_two_pair(cls, card_match_map) -> bool:
@@ -229,7 +249,7 @@ class HandEvaluator():
 
     @classmethod
     def _highest_five(cls, sorted_cards):
-        cls._primary_cards = sorted_cards[0:5]
+        return sorted_cards[0:5]
 
 
     @classmethod
