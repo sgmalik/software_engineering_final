@@ -70,15 +70,21 @@ class BettingManager:
         """
         pay current bet, raise bet 
         """
-        # need to pay current bet first
-        call_amount = self.current_bet - current_player.contribuition
-        current_player.collect_bet(call_amount)
-        self.table.pot.add_to_pot(call_amount)
+        # Handle the call portion
+        call_amount = max(0, self.current_bet - current_player.contribuition)
+        actual_call = min(call_amount, current_player.stack)
 
-        # do the raise action
-        self._raise_bet(raise_amount)
-        current_player.collect_bet(raise_amount)
-        self.table.pot.add_to_pot(raise_amount)
+        current_player.collect_bet(actual_call)
+        self.table.pot.add_to_pot(actual_call)
+
+        #Determine raise cap
+        remaining_stack = current_player.stack
+        actual_raise = min(raise_amount, remaining_stack)
+        # Execute raise
+
+        self._raise_bet(actual_raise)
+        current_player.collect_bet(actual_raise)
+        self.table.pot.add_to_pot(actual_raise)
         self._add_betters(current_player)
 
     
@@ -94,10 +100,12 @@ class BettingManager:
         """
         pay current bet
         """
-        call_amount = self.current_bet - current_player.contribuition
-        current_player.collect_bet(call_amount)
+        # Calculate how much is needed to call
+        call_amount = max(0, self.current_bet - current_player.contribuition)
+        actual_call = min(call_amount, current_player.stack)
 
-        self.table.pot.add_to_pot(call_amount)
+        current_player.collect_bet(actual_call)
+        self.table.pot.add_to_pot(actual_call)
         self._remove_better(current_player)
         
     def _check(self, current_player):
@@ -142,4 +150,14 @@ class BettingManager:
         """
         gets the maximum amount the current player can raise by
         """
-        return current_player.stack - (self.current_bet - current_player.contribuition)
+        call_amount = max(0, self.current_bet - current_player.contribuition)
+        max_raise_after_call = current_player.stack - call_amount
+
+        opponents = [p for p in self.table.players if p != current_player and p.is_active()]
+        if not opponents:
+            return max_raise_after_call
+
+        opponent = opponents[0] 
+        opponent_matchable = opponent.stack + opponent.contribuition - current_player.contribuition
+
+        return max(0, min(max_raise_after_call, opponent_matchable))

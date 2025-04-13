@@ -191,7 +191,7 @@ def change_to_game(scale, engine):
             pct = percentage_map[name]
             button = Button(SPRITESHEET_PATH, pos, (scale, scale), 23, 9, name,
                         callback=(lambda pct_val: 
-                                  lambda: bet_percentage(scale, pct_val))(pct_val=pct))
+                                  lambda: bet_percentage(scale, pct_val, engine))(pct_val=pct))
 
         elif name == "fold":
             button = Button(SPRITESHEET_PATH, pos, (scale, scale), 23, 9, name,
@@ -252,11 +252,11 @@ def update_game(scale, engine):
                     (scale, scale), ply_cards[1][:-1], ply_cards[1][-1], True)
     gui_state["cards"].append(card)
     
-    card = GUI_Card(SPRITESHEET_PATH, (80 * scale, 7 * scale),
-                    (scale, scale), cpu_cards[0][:-1], cpu_cards[0][-1], False)
+    show_cpu = state["round_over"] or state["is_showdown"]
+
+    card = GUI_Card(SPRITESHEET_PATH, (80 * scale, 7 * scale), (scale, scale), cpu_cards[0][:-1], cpu_cards[0][-1], show_cpu)
     gui_state["cards"].append(card)
-    card = GUI_Card(SPRITESHEET_PATH, (103 * scale, 7 * scale),
-                    (scale, scale), cpu_cards[1][:-1], cpu_cards[1][-1], False)
+    card = GUI_Card(SPRITESHEET_PATH, (103 * scale, 7 * scale), (scale, scale), cpu_cards[1][:-1], cpu_cards[1][-1], show_cpu)
     gui_state["cards"].append(card)
 
     # Update community cards
@@ -369,7 +369,7 @@ def update_slider_info():
             num.set_number(bid_amount)
 
 
-def bet_percentage(scale, percent):
+def bet_percentage(scale, percent, engine):
     """
     Handles betting logic triggered by the 25%, 50%, 75%, and All In buttons.
 
@@ -384,15 +384,18 @@ def bet_percentage(scale, percent):
         scale (int): The global screen scaling factor.
         numtexts (list): List of all NumText elements to update.
     """
-    if gui_state["ply_stack"] <= 0:
+    state = engine.current_state_of_game()
+    max_bet = state["players"][0]["max_bet"]
+
+    if max_bet <= 0:
         return
 
-    amount_to_bet = int(gui_state["ply_stack"] * percent)
-    if amount_to_bet == 0 and gui_state["ply_stack"] > 0:
+    amount_to_bet = int(max_bet * percent)
+    if amount_to_bet == 0 and max_bet > 0:
         amount_to_bet = 1  # minimum bet if there's money
 
     gui_state["previewed_bet"] = amount_to_bet
-    gui_state["sliders"][0].set_thumb(gui_state["ply_stack"], gui_state["previewed_bet"])
+    gui_state["sliders"][0].set_thumb(max_bet, gui_state["previewed_bet"])
 
     # Update display
     """
@@ -411,19 +414,17 @@ def confirm_bid(scale, engine):
     """
     slider = gui_state["sliders"][0]
     percent = slider.get_value()
-    bet = int(gui_state["ply_stack"] * percent)
 
-    # Safety checks
-    if bet <= 0 or bet > gui_state["ply_stack"]:
+    state = engine.current_state_of_game()
+    max_bet = state["players"][0]["max_bet"]
+    bet = int(max_bet * percent)
+
+    if bet <= 0:
         return
 
-    # call the engine to pass it the raise 
     engine.player_action(Action.RAISE, raise_amount=bet)
+    gui_state["previewed_bet"] = 0
 
-
-    gui_state["previewed_bet"] = 0  # Reset previewed bet
-
-    # Update numtexts
     for num in gui_state["numtexts"]:
         if getattr(num, "label", "") == "player_balance":
             num.set_number(gui_state["ply_stack"])

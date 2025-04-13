@@ -115,6 +115,7 @@ class Button:
 
         :param event: The Pygame event to handle.
         """
+
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.rect.collidepoint(event.pos):
                 # IF BUTTON IS CLICKED, DO WHATEVER WE NEED TO DO HERE

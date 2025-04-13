@@ -36,13 +36,17 @@ It needs to return information that the GUI needs
         community_cards = self.dealer.table.community_cards
         pc = self.dealer.table.players[0]
 
-        players = [
-        {
+        players = []
+        for player in self.dealer.table.players:
+            max_bet = self.dealer.betting_manager.get_max_raise(player)
+
+            players.append({
                 "name": player.name,
                 "stack": player.stack,
                 "hole_cards": [str(card) for card in player.hole_cards],
-                "state": player.state.value
-        } for player in self.dealer.table.players]
+                "state": player.state.value,
+                "max_bet": max_bet
+            })
    
         state = {
             "player_max_raise": self.dealer.betting_manager.get_max_raise(pc),
