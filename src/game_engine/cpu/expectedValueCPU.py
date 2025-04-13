@@ -193,7 +193,8 @@ class expectedValueCPU(BasePokerPlayer):
                 "name": self.name,
                 "paid": chip_amount
             }
-        self.action_histories.append(history)
+        if history is not None:
+            self.action_histories.append(history)
 
     def save_round_action_histories(self, street: Street):
         """
