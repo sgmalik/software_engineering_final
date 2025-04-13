@@ -56,8 +56,11 @@ class BettingManager:
         """
         blind player action
         """
-        current_player.collect_bet(blind)
-        self.table.pot.add_to_pot(blind)
+        if self._is_all_in(current_player, blind):
+            self._all_in(current_player)
+        else: 
+            current_player.collect_bet(blind)
+            self.table.pot.add_to_pot(blind)
 
     def _fold(self, current_player):
         """
