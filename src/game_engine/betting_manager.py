@@ -63,6 +63,8 @@ class BettingManager:
         else: 
             current_player.collect_bet(blind)
             self.table.pot.add_to_pot(blind)
+       
+            
 
     def _fold(self, current_player):
         """
@@ -88,7 +90,7 @@ class BettingManager:
             current_player.state = PlayerState.ALLIN
             self.table.pot.add_to_pot(all_in_amount)
             current_player.collect_bet(all_in_amount)
-            self._remove_better(current_player)
+            self._add_betters(current_player)
         else:
             # need to pay current bet first
             current_player.collect_bet(call_amount)
