@@ -1,5 +1,19 @@
 """Class and methods for the Card GUI element"""
 import pygame
+from enum import Enum
+
+
+class CardType(Enum):
+    """
+    Represents the type of GUI card to use
+    """
+    RED = 0
+    BLUE = 1
+    GREEN = 2
+    BLACK = 3
+
+
+card_type = [CardType.RED]
 
 
 class GUI_Card:
@@ -29,8 +43,7 @@ class GUI_Card:
         self.card_width = 19
         self.card_height = 31
 
-        # Load the back card sprite (used when the card is unrevealed)
-        self.back_sprite = self.get_sprite(19, 0, self.card_width, self.card_height)
+        self.set_card_color()
 
         # Load the open card sprite (base of the card when revealed)
         self.open_sprite = self.get_sprite(0, 0, self.card_width, self.card_height)
@@ -40,6 +53,18 @@ class GUI_Card:
 
         # Load the rank sprite (e.g., Ace, King)
         self.rank_sprite = self.get_rank_sprite()
+
+
+    def set_card_color(self):
+        match card_type[0]:
+            case CardType.RED:
+                self.back_sprite = self.get_sprite(19, 0, self.card_width, self.card_height)
+            case CardType.BLUE:
+                self.back_sprite = self.get_sprite(38, 0, self.card_width, self.card_height)
+            case CardType.GREEN:
+                self.back_sprite = self.get_sprite(57, 0, self.card_width, self.card_height)
+            case CardType.BLACK:
+                self.back_sprite = self.get_sprite(76, 0, self.card_width, self.card_height)
 
 
     def get_sprite(self, x, y, width, height):

@@ -2,7 +2,7 @@
 
 import sys
 import pygame
-from gui.util import change_to_main_menu, Screen, gui_state, update_game, update_slider_info
+from gui.util import change_to_main_menu, Screen, CardType, Difficulty, gui_state, update_game, update_slider_info
 from game_engine.engine import Engine 
 
 # Connect Gui & Engine

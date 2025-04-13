@@ -3,7 +3,7 @@
 from enum import Enum
 from gui.button import Button
 from gui.slider import Slider
-from gui.gui_card import GUI_Card
+from gui.gui_card import GUI_Card, CardType, card_type
 from gui.chip import Chip
 from gui.numtext import NumText
 from game_engine.engine import Engine
@@ -11,7 +11,6 @@ from game_engine.constants import Action
 import pygame
 
 SPRITESHEET_PATH = "../assets/poker-spritesheet.png"
-
 
 class Screen(Enum):
     """
@@ -22,6 +21,16 @@ class Screen(Enum):
     GAME = 2
 
 
+class Difficulty(Enum):
+    """
+    Represents the difficulty of the CPU
+    """
+    EASY = 0
+    MEDIUM = 1
+    HARD = 2
+
+
+difficulty = [Difficulty.EASY]
 gui_state = {
         "screen": Screen.HOME,
         "buttons": [],
@@ -130,12 +139,24 @@ def change_to_settings(scale):
     gui_state["numtexts"].clear()
     gui_state["spritetexts"].clear()
 
-    difficulty = Button(SPRITESHEET_PATH, (25 * scale, 83 * scale),
-                        (scale, scale), 67, 13, "difficulty")
+    difficulty_button = Button(SPRITESHEET_PATH, (25 * scale, 83 * scale),
+                        (scale, scale), 67, 13, "difficulty", callback=lambda: toggle_difficulty(scale, difficulty))
     change_card = Button(SPRITESHEET_PATH, (25 * scale, 109 * scale),
-                         (scale, scale), 67, 13, "change card")
+                         (scale, scale), 67, 13, "change card", callback=lambda: toggle_card_type(scale, card_type))
 
-    gui_state["buttons"].append(difficulty)
+    card = GUI_Card(SPRITESHEET_PATH, (96 * scale, 109 * scale), (scale, scale), "A", "S")
+    gui_state["cards"].append(card)
+
+    diff_string = "easy"
+    match difficulty[0]:
+        case Difficulty.MEDIUM:
+            diff_string = "medium"
+        case Difficulty.HARD:
+            diff_string = "hard"
+    difficulty_display = Button(SPRITESHEET_PATH, (96 * scale, 83 * scale), (scale, scale), 41, 13, diff_string)
+    gui_state["buttons"].append(difficulty_display)
+
+    gui_state["buttons"].append(difficulty_button)
     gui_state["buttons"].append(change_card)
 
 
@@ -451,3 +472,22 @@ def slider_bet_callback(scale):
         return
     percent = gui_state["sliders"][0].get_value()
     bet_percentage(scale, percent)
+
+
+def toggle_card_type(scale, card_type):
+    enum_type = type(card_type[0])
+    members = list(enum_type)
+    index = members.index(card_type[0])
+    next_index = (index + 1) % len(members)
+    card_type[0] = members[next_index]
+
+    change_to_settings(scale)
+
+def toggle_difficulty(scale, difficulty):
+    enum_type = type(difficulty[0])
+    members = list(enum_type)
+    index = members.index(difficulty[0])
+    next_index = (index + 1) % len(members)
+    difficulty[0] = members[next_index]
+
+    change_to_settings(scale)

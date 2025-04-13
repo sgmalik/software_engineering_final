@@ -91,6 +91,15 @@ class Button:
             case "change card":
                 self.unpressed_sprite = self.get_sprite(0, 175)
                 self.pressed_sprite = self.get_sprite(67, 175)
+            case "easy":
+                self.unpressed_sprite = self.get_sprite(0, 188)
+                self.pressed_sprite = self.get_sprite(0, 188)
+            case "medium":
+                self.unpressed_sprite = self.get_sprite(41, 188)
+                self.pressed_sprite = self.get_sprite(41, 188)
+            case "hard":
+                self.unpressed_sprite = self.get_sprite(82, 188)
+                self.pressed_sprite = self.get_sprite(82, 188)
 
 
     def get_sprite(self, x, y):
