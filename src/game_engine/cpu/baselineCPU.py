@@ -1,8 +1,8 @@
 from pypokerengine.players import BasePokerPlayer
 from game_engine.deck import Card
-from enum import Enum
 from game_engine.constants import Action, PlayerState, Street
 from typing import List, Union, Dict, Any, Optional, cast
+from game_engine.constants import Action, PlayerState
 # assunuing that round_state is a dictionary with the following structure:
 
 # {
@@ -130,7 +130,7 @@ class baselineCPU(BasePokerPlayer):
         """
         history = None
         if action == Action.FOLD:
-            history = {"action": action, "name": self.name}
+            history = {"action": action, "name": self.name, "stack": self.stack}
         elif action == Action.CALL:
             pay_history = [
                 h
@@ -144,6 +144,7 @@ class baselineCPU(BasePokerPlayer):
                 "action": action,
                 "amount": chip_amount,
                 "paid": chip_amount - last_pay_amount,
+                "stack": self.stack
             }
         elif action == Action.RAISE:
             pay_history = [
@@ -159,6 +160,7 @@ class baselineCPU(BasePokerPlayer):
                 "amount": chip_amount,
                 "paid": chip_amount - last_pay_amount,
                 "add_amount": add_amount,
+                "stack": self.stack
             }
         elif action == Action.SMALL_BLIND:
             assert sb_amount is not None
@@ -168,7 +170,8 @@ class baselineCPU(BasePokerPlayer):
                 "amount": sb_amount,
                 "add_amount": add_amount,
                 "name": self.name,
-                "paid": sb_amount
+                "paid": sb_amount,
+                "stack": self.stack
             }
         elif action == Action.BIG_BLIND:
             assert bb_amount is not None
@@ -178,13 +181,16 @@ class baselineCPU(BasePokerPlayer):
                 "amount": bb_amount,
                 "add_amount": add_amount,
                 "name": self.name,
-                "paid": bb_amount
+                "paid": bb_amount,
+                "stack": self.stack
             }
         elif action == Action.CHECK:
             history = {
                 "action": action,
                 "name": self.name,
+                "stack": self.stack
             }
+
         if history is not None:
             self.action_histories.append(history)
 
@@ -224,10 +230,12 @@ class baselineCPU(BasePokerPlayer):
         high_cards = [10, 11, 12, 13, 14]
         has_high_card = any(card.get_card_rank() in high_cards for card in hole_cards)
         
-        if len([card for card in hole_cards if card.get_card_rank() in high_cards]) == 2:
-            # if we have 2 high cards, raise 2x the call amount
+        if valid_actions[3]['action'] == 'check' and call_amount == 0:
+            return 'check', 0
+        elif len([card for card in hole_cards if card.get_card_rank() in high_cards]) == 2 or len([card for card in hole_cards if card in community_cards]) > 0:
+            # if we have 2 high cards or a card in the community cards, raise 2x the call amount
             return 'raise', call_amount
-        elif has_high_card:
+        elif has_high_card and call_amount < 150:
             return 'call', call_amount
         else:
             return 'fold', 0

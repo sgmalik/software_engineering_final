@@ -87,7 +87,6 @@ It needs to return information that the GUI needs
         players = []
         for player in self.dealer.table.players:
             max_bet = self.dealer.betting_manager.get_max_raise(player)
-
             players.append({
                 "name": player.name,
                 "stack": player.stack,
@@ -115,7 +114,8 @@ It needs to return information that the GUI needs
                             "action": action["action"].value,
                             "amount": action.get("amount", 0),
                             "add_amount": action.get("add_amount", 0),
-                            "paid": action.get("paid", 0)
+                            "paid": action.get("paid", 0),
+                            "stack": action.get("stack", player.stack)  # Include stack value from action history
                         }
                         action_histories[street_name].append(action_entry)
    
@@ -197,7 +197,8 @@ It needs to return information that the GUI needs
                             "action": action["action"],
                             "amount": action.get("amount", 0),
                             "add_amount": action.get("add_amount", 0),
-                            "paid": action.get("paid", 0)
+                            "paid": action.get("paid", 0),
+                            "stack": action.get("stack", 0)
                         }
                         action_histories[street_name].append(action_entry)
         
@@ -218,6 +219,7 @@ It needs to return information that the GUI needs
         function that will be called when the street is over.
         """
         if self.dealer.is_round_over():
+            print("round over")
             self.start_next_round()
         else:
             # Save action histories for all players before moving to next street
@@ -240,7 +242,7 @@ It needs to return information that the GUI needs
         function that will be called when the round is over
         (so call this when river is done)
         """
-        
+        print("starting next round")
         # Send round start message to CPU if one is set
         if self.cpu_player is not None:
             # Get hole cards for CPU player
@@ -322,7 +324,8 @@ It needs to return information that the GUI needs
         valid_actions = [
             {"action": "fold", "amount": 0},
             {"action": "call", "amount": self.dealer.betting_manager.current_bet - cpu_player.contribuition},
-            {"action": "raise", "amount": {"min": self.dealer.betting_manager.current_bet * 2, "max": cpu_player.stack}}
+            {"action": "raise", "amount": {"min": self.dealer.betting_manager.current_bet * 2, "max": cpu_player.stack}}, 
+            {"action": "check", "amount": 0}
         ]
         
         # Check if we have a CPU player set
@@ -353,6 +356,10 @@ It needs to return information that the GUI needs
             }
             round_state = self.build_round_state()
             self.cpu_player.receive_game_update_message(new_action, round_state)
+            
+            # If the CPU folded, update its stack immediately
+            if action == "fold":
+                self.cpu_player.stack = self.dealer.table.players[1].stack
         
         #after we apply the action need to check if the round is over so can do showdown logic
         #calling showdown will change player stack values

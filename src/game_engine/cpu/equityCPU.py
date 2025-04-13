@@ -130,7 +130,7 @@ class equityCPU(BasePokerPlayer):
         """
         history = None
         if action == Action.FOLD:
-            history = {"action": action, "name": self.name}
+            history = {"action": action, "name": self.name, "stack": self.stack}
         elif action == Action.CALL:
             pay_history = [
                 h
@@ -144,6 +144,7 @@ class equityCPU(BasePokerPlayer):
                 "action": action,
                 "amount": chip_amount,
                 "paid": chip_amount - last_pay_amount,
+                "stack": self.stack
             }
         elif action == Action.RAISE:
             pay_history = [
@@ -159,6 +160,7 @@ class equityCPU(BasePokerPlayer):
                 "amount": chip_amount,
                 "paid": chip_amount - last_pay_amount,
                 "add_amount": add_amount,
+                "stack": self.stack
             }
         elif action == Action.SMALL_BLIND:
             assert sb_amount is not None
@@ -168,7 +170,8 @@ class equityCPU(BasePokerPlayer):
                 "amount": sb_amount,
                 "add_amount": add_amount,
                 "name": self.name,
-                "paid": sb_amount
+                "paid": sb_amount,
+                "stack": self.stack
             }
         elif action == Action.BIG_BLIND:
             assert bb_amount is not None
@@ -178,13 +181,16 @@ class equityCPU(BasePokerPlayer):
                 "amount": bb_amount,
                 "add_amount": add_amount,
                 "name": self.name,
-                "paid": bb_amount
+                "paid": bb_amount,
+                "stack": self.stack
             }
         elif action == Action.CHECK:
             history = {
                 "action": action,
                 "name": self.name,
+                "stack": self.stack
             }
+
         if history is not None:
             self.action_histories.append(history)
 

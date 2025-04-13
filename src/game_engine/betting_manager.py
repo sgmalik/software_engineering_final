@@ -173,4 +173,8 @@ class BettingManager:
         """
         gets the maximum amount the current player can raise by
         """
+        # If player has folded, they can't raise
+        if current_player.state == PlayerState.FOLDED:
+            return 0
+            
         return current_player.stack - (self.current_bet - current_player.contribuition)
