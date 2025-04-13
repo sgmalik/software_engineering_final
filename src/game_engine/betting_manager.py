@@ -104,10 +104,6 @@ class BettingManager:
             current_player.collect_bet(all_in_amount)
             self._add_betters(current_player)
         else:
-            # need to pay current bet first
-            current_player.collect_bet(call_amount)
-            self.table.pot.add_to_pot(call_amount)
-
             # do the raise action
             self._raise_bet(raise_amount)
             current_player.collect_bet(raise_amount)
