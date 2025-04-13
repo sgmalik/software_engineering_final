@@ -90,7 +90,7 @@ class HandEvaluator():
         elif cls._is_two_pair(card_match_map):
             pass
         elif cls._is_pair(card_match_map):
-            pass
+            hand_rank = cls.STRENGTH_MAP["pair"]
         else:
             # highcard
             cls._highest_five(sorted_cards)
@@ -131,7 +131,7 @@ class HandEvaluator():
         }
 
         for card in sorted_cards:
-            card_rank = card.get_rank()
+            card_rank = card.get_card_rank()
             card_match_map[card_rank].append(card)
         
         return card_match_map
