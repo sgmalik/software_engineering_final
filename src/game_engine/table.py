@@ -120,6 +120,6 @@ class Table:
         """
 
         # TODO: replace with is active player func
-        return self.current_player.name == "pc" and self.current_player.state == PlayerState.ACTIVE
+        return self.current_player is not None and self.current_player.name == "pc" and self.current_player.state == PlayerState.ACTIVE
     
     

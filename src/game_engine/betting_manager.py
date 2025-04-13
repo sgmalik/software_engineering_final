@@ -36,18 +36,27 @@ class BettingManager:
         declare action for the current player
         """
         if action == Action.CALL:
+            call_amount = self.current_bet - current_player.contribuition
             self._call(current_player)
+            current_player.add_action_history(action, chip_amount=call_amount)
         elif action == Action.CHECK:
             self._check(current_player)
+            current_player.add_action_history(action, chip_amount=0)
         elif action == Action.RAISE:
+            if raise_amount is None:
+                raise ValueError("Raise amount cannot be None for a raise action")
             self._raise(current_player, raise_amount)
+            current_player.add_action_history(action, chip_amount=self.current_bet, add_amount=raise_amount)
         elif action == Action.FOLD:
             self._fold(current_player)
+            current_player.add_action_history(action)
         elif action == Action.SMALL_BLIND:
             self._blind(current_player, self.blind)
+            current_player.add_action_history(action, sb_amount=self.blind)
         elif action == Action.BIG_BLIND:
             self.current_bet = self.blind*2
             self._blind(current_player, self.blind*2)
+            current_player.add_action_history(action, bb_amount=self.blind*2)
         self.table.next_player()
         
         
@@ -82,6 +91,9 @@ class BettingManager:
         """
         
         call_amount = self.current_bet - current_player.contribuition
+        print(f"call_amount for player {current_player.name}: {call_amount}")
+        current_player.collect_bet(call_amount)
+        self.table.pot.add_to_pot(call_amount)
 
         if self._is_all_in(current_player, call_amount + raise_amount):
             all_in_amount = current_player.stack

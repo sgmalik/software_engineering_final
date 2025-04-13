@@ -1,12 +1,11 @@
-
 """
 engine.py is written by us, and loosely based on how pypoker 
 keeps track of state. As well as how the game is initialzied. 
 """
 
 from .dealer import Dealer
-from .constants import Action
-from typing import Optional
+from .constants import Action, PlayerState
+from typing import Optional, Dict, Any
 
 class Engine():
     """
@@ -27,7 +26,56 @@ It needs to return information that the GUI needs
         self.blind = blind
         self.initial_stack = initial_stack
         self.dealer = Dealer(self.initial_stack, self.blind)
+        self.cpu_player = None  # Single CPU player
+        # Initialize game_info
+        self.game_info = {
+            'player_num': self.num_players,
+            'rule': {
+                'initial_stack': self.initial_stack,
+                'small_blind': self.blind,
+                'max_round': None,  # No limit by default
+                'ante': 0  # No ante by default
+            },
+            'seats': []
+        }
         
+        # Initialize seats information
+        for i, player in enumerate(self.dealer.table.players):
+            seat_info = {
+                'name': player.name,
+                'uuid': f"{player.name}-uuid",  # Simple UUID generation
+                'initial_stack': self.initial_stack
+            }
+            self.game_info['seats'].append(seat_info)
+
+    def set_cpu_player(self, cpu_player):
+        """
+        Set the CPU player for the game.
+        
+        Args:
+            cpu_player: An instance of a CPU player class
+        """
+        self.cpu_player = cpu_player
+        
+        # Initialize the CPU player with the initial stack
+        cpu_player.stack = self.initial_stack
+        
+        # Set the name of the CPU player in the table
+        self.dealer.table.players[1].name = cpu_player.__class__.__name__
+        
+        # Update the game_info seats with the CPU player's name
+        self.game_info['seats'][1]['name'] = cpu_player.__class__.__name__
+        
+        # Send game start message to CPU
+        self.cpu_player.receive_game_start_message(self.game_info)
+
+
+        # Update the game_info seats with the CPU player's name
+        self.game_info['seats'][1]['name'] = cpu_player.__class__.__name__
+        
+        # Send game start message to CPU
+        self.cpu_player.receive_game_start_message(self.game_info)
+
     def current_state_of_game(self):
         """
         create a data structure so that the GUI can display the current state of the game
@@ -48,6 +96,29 @@ It needs to return information that the GUI needs
                 "max_bet": max_bet
             })
    
+        # Create action histories structure
+        action_histories = {
+            "preflop": [],
+            "flop": [],
+            "turn": [],
+            "river": []
+        }
+        
+        # Populate action histories from each player
+        for player in self.dealer.table.players:
+            for i, history in enumerate(player.round_action_histories):
+                if history is not None:
+                    street_name = list(action_histories.keys())[i]
+                    for action in history:
+                        action_entry = {
+                            "name": action["name"],
+                            "action": action["action"].value,
+                            "amount": action.get("amount", 0),
+                            "add_amount": action.get("add_amount", 0),
+                            "paid": action.get("paid", 0)
+                        }
+                        action_histories[street_name].append(action_entry)
+   
         state = {
             "player_max_raise": self.dealer.betting_manager.get_max_raise(pc),
             "showdown": self.dealer.is_showdown(),
@@ -57,27 +128,144 @@ It needs to return information that the GUI needs
             "betting_over": self.dealer.betting_manager.is_betting_over(),
             "round_over": self.dealer.is_round_over(),
             "community_cards": [str(card) for card in community_cards],
-            "players": players
+            "players": players,
+            "action_histories": action_histories
         }
         
         return state
     
+    def build_round_state(self):
+        """
+        Create a round_state dictionary that matches the format expected by CPU players.
+        This is used to provide information to CPU players for decision making.
+        """
+        # Get the current street name
+        street_name = self.dealer.current_street.name.lower()
+        
+        # Get the index of the next player to act
+        next_player_index = 0
+        for i, player in enumerate(self.dealer.table.players):
+            if player == self.dealer.table.current_player:
+                next_player_index = i
+                break
+        
+        # Get the blind position
+        blind_pos = self.dealer.table.blind_pos
+
+        # Format community cards
+        community_cards = [str(card) for card in self.dealer.table.community_cards]
+        
+        # Create pot structure
+        pot = {
+            "main": self.dealer.table.pot.value,
+            "side": []  # Side pots not implemented yet
+        }
+        
+        # Create seats information
+        seats = []
+        for player in self.dealer.table.players:
+            # Map PlayerState to string representation
+            state_str = "active"
+            if player.state == PlayerState.FOLDED:
+                state_str = "folded"
+            elif player.state == PlayerState.ALLIN:
+                state_str = "allin"
+            
+            seat = {
+                "name": player.name,
+                "stack": player.stack,
+                "state": state_str
+            }
+            seats.append(seat)
+        
+        # Create action histories
+        action_histories = {
+            "preflop": [],
+            "flop": [],
+            "turn": [],
+            "river": []
+        }
+        
+        # Populate action histories from each player
+        for player in self.dealer.table.players:
+            for i, history in enumerate(player.round_action_histories):
+                if history is not None:
+                    street_name = list(action_histories.keys())[i]
+                    for action in history:
+                        action_entry = {
+                            "name": action["name"],
+                            "action": action["action"],
+                            "amount": action.get("amount", 0),
+                            "add_amount": action.get("add_amount", 0),
+                            "paid": action.get("paid", 0)
+                        }
+                        action_histories[street_name].append(action_entry)
+        
+        # Build the complete round_state dictionary
+        round_state = {
+            "street": street_name,
+            "next_player": next_player_index,
+            "blind_pos": blind_pos,
+            "community_card": community_cards,
+            "pot": pot,
+            "seats": seats,
+            "action_histories": action_histories
+        }
+        return round_state
             
     def start_next_street(self):
         """
         function that will be called when the street is over.
         """
-        self.dealer.next_street()
-        self.dealer.start_street()
-        #TODO: check if round is over, if so, call start_next_round
+        if self.dealer.is_round_over():
+            self.start_next_round()
+        else:
+            # Save action histories for all players before moving to next street
+            for player in self.dealer.table.players:
+                player.save_round_action_histories(self.dealer.current_street)
+            
+            self.dealer.next_street()
+            self.dealer.start_street()
         
+        # Send street start message to CPU if one is set
+        if self.cpu_player is not None:
+            round_state = self.build_round_state()
+            self.cpu_player.receive_street_start_message(
+                street=self.dealer.current_street.name.lower(),
+                round_state=round_state
+            )
 
     def start_next_round(self):
         """
         function that will be called when the round is over
         (so call this when river is done)
         """
-        #maybe just call this in _showdown 
+        
+        # Send round start message to CPU if one is set
+        if self.cpu_player is not None:
+            # Get hole cards for CPU player
+            cpu_hole_cards = [str(card) for card in self.dealer.table.players[1].hole_cards]
+            
+            # Get current seats information
+            seats = []
+            for player in self.dealer.table.players:
+                seat_info = {
+                    'name': player.name,
+                    'uuid': f"{player.name}-uuid",
+                    'stack': player.stack,
+                    'state': player.state.value
+                }
+                seats.append(seat_info)
+            
+            # Send the message
+            self.cpu_player.receive_round_start_message(
+                round_count=1,  # You might want to track this
+                hole_card=cpu_hole_cards,
+                seats=seats
+            )
+        
+        # Update CPU player with the results of the previous round
+        self.update_cpu_player_with_round_result()
         self.dealer.set_up_next_round()
         self.dealer.start_street()
     
@@ -90,8 +278,22 @@ It needs to return information that the GUI needs
         """
         
         #convert string to Action enum
-        action = Action(action)
-        self.dealer.apply_action(action, raise_amount)
+        action_enum = Action(action)
+        self.dealer.apply_action(action_enum, raise_amount)
+
+        # Save action histories for all players after the action
+        for player in self.dealer.table.players:
+            player.save_round_action_histories(self.dealer.current_street)
+
+        # Send game update message to CPU if one is set
+        if self.cpu_player is not None:
+            new_action = {
+                'player_name': "pc",  # Name for human player
+                'action': action,
+                'amount': raise_amount if raise_amount is not None else 0
+            }
+            round_state = self.build_round_state()
+            self.cpu_player.receive_game_update_message(new_action, round_state)
 
         #after we apply the action need to check if the round is over so can do showdown logic
         #calling showdown will change player stack values
@@ -103,11 +305,98 @@ It needs to return information that the GUI needs
         """
         function that will be called when its the cpu's turn
         """
-        #here is where you would get the action from the cpu players
-        #then you would call apply_action with that call 
-        #CPU is just going to call for now 
-        self.dealer.apply_action(Action.CALL)
-
+        # Build the round_state dictionary for the CPU
+        round_state = self.build_round_state()
+        
+        # Get the current CPU player
+        cpu_player = self.dealer.table.current_player
+        
+        # Check if there is a current player
+        if cpu_player is None:
+            return
+        
+        # Get the CPU's hole cards
+        hole_cards = [str(card) for card in cpu_player.hole_cards]
+        
+        # Define valid actions (simplified for now)
+        valid_actions = [
+            {"action": "fold", "amount": 0},
+            {"action": "call", "amount": self.dealer.betting_manager.current_bet - cpu_player.contribuition},
+            {"action": "raise", "amount": {"min": self.dealer.betting_manager.current_bet * 2, "max": cpu_player.stack}}
+        ]
+        
+        # Check if we have a CPU player set
+        if self.cpu_player is not None:
+            # Use the CPU player's declare_action method
+            action, amount = self.cpu_player.declare_action(valid_actions, hole_cards, round_state)
+        else:
+            # Default behavior if no CPU player is set
+            action = "call"
+            amount = valid_actions[1]["amount"]
+        
+        # Convert string action to Action enum
+        action_enum = Action(action)
+        
+        # Apply the action
+        self.dealer.apply_action(action_enum, amount if action == "raise" else None)
+        
+        # Save action histories for all players after the action
+        for player in self.dealer.table.players:
+            player.save_round_action_histories(self.dealer.current_street)
+        
+        # Send game update message to CPU if one is set
+        if self.cpu_player is not None:
+            new_action = {
+                'player_name': cpu_player.name,  # Name for CPU player
+                'action': action,
+                'amount': amount if action == "raise" else 0
+            }
+            round_state = self.build_round_state()
+            self.cpu_player.receive_game_update_message(new_action, round_state)
+        
+        #after we apply the action need to check if the round is over so can do showdown logic
+        #calling showdown will change player stack values
         if self.dealer.is_showdown():
             self.dealer.showdown()
 
+    def _is_game_over(self) -> bool:
+        """
+        check if the game is over (one of the players stack is 0)
+        """
+        #check if any of the players stack is 0 
+        for player in self.dealer.table.players:
+            if player.stack == 0:
+                return True
+        return False
+
+    def update_cpu_player_with_round_result(self):
+        """
+        Update the CPU player with the results of a round.
+        This should be called after a round is over and the pot has been distributed.
+        """
+        if self.cpu_player is None:
+            return
+            
+        # Build the round_state dictionary
+        round_state = self.build_round_state()
+        
+        # Get the winners
+        winners = []
+        for player in self.dealer.table.players:
+            if player.state == PlayerState.WINNER:
+                winners.append(player)
+        
+        # Create hand_info dictionary
+        hand_info = {}
+        for player in self.dealer.table.players:
+            if player.state != PlayerState.FOLDED:
+                hand_info[player.name] = {
+                    "hand": [str(card) for card in player.hole_cards],
+                    "hand_rank": "high_card"  # This would be determined by HandEvaluator in a real implementation
+                }
+        
+        # Call the CPU's receive_round_result_message method
+        self.cpu_player.receive_round_result_message(winners, hand_info, round_state)
+        
+        # Update the CPU's stack to match the player's stack
+        self.cpu_player.stack = self.dealer.table.players[1].stack
