@@ -28,6 +28,9 @@ class Dealer:
 
         self.betting_manager = BettingManager(self.table, self.blind)
 
+        self.game_over = False
+
+
     def next_street(self):
         """
         changes the current street to the next street,
@@ -68,11 +71,11 @@ class Dealer:
         self.table.deal_hole_cards()
 
         # blinds
-        #self.betting_manager.apply_player_action(
-            #self.table.current_player, Action.SMALL_BLIND)
+        self.betting_manager.apply_player_action(
+            self.table.current_player, Action.SMALL_BLIND)
 
-        #self.betting_manager.apply_player_action(
-            #self.table.current_player, Action.BIG_BLIND)
+        self.betting_manager.apply_player_action(
+            self.table.current_player, Action.BIG_BLIND)
 
     def _start_flop(self):
         """
@@ -102,7 +105,6 @@ class Dealer:
             return
         
         self.table.deal_community_cards(cards_needed)
-
 
     def is_round_over(self) -> bool:
         """
@@ -166,5 +168,10 @@ class Dealer:
 
         winners = GameEvaluator.determine_winners(self.table)
         GameEvaluator.add_money_to_winners(self.table, winners)
+
+        #think blinds are getting through first so negative stack happens
+        for player in self.table.players:
+            if player.stack <= 0:
+                self.game_over = True
     
 
