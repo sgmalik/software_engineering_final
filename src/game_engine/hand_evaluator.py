@@ -43,6 +43,7 @@ class HandEvaluator():
         "high_card": 1,
     }
 
+    
     def __init__(self):
         # these are the highest cards (in a 5 card hand)
         # that aren't used to make up the strength (need for tie breaking)
@@ -51,6 +52,32 @@ class HandEvaluator():
         # cards that are used for tie breaking similar strength hands
         # Ex. two pair = ["4S", "4H", "3S", "3H"]
         self._primary_cards = []
+        
+        #this map will be used to check pair, two pair, three of a kind, fullhouse
+        self.card_match_map = {
+            1:[],
+            2:[],
+            3:[],
+            4:[],
+            5:[],
+            6:[],
+            7:[],
+            8:[],
+            9:[],
+            10:[],
+            11:[],
+            12:[],
+            13:[],
+            14:[],
+        }
+
+        #this map will used to check royal flush, flush, straight flush
+        self.suit_map = {
+            "H": [],
+            "D": [],
+            "C": [],
+            "S": []
+        }
 
     @classmethod
     def hand_eval(cls, hole_cards, community_cards):
@@ -94,8 +121,21 @@ class HandEvaluator():
             "primary_cards_rank": cls._primary_cards,
             "kickers": cls._kicker_cards
         }
-
+    
     # gets the kickers based on the cards used to make up hand rank
+    @classmethod
+    def _create_card_match_map(cls, sorted_cards):
+        """
+        create a map of the cards and their ranks
+        """
+        
+
+    @classmethod
+    def _create_suit_map(cls, sorted_cards):
+        """
+        create a map of the cards and their suits
+        """
+        
 
     @classmethod
     def _set_kickers(cls, sorted_cards):
