@@ -53,31 +53,10 @@ class HandEvaluator():
         # Ex. two pair = ["4S", "4H", "3S", "3H"]
         self._primary_cards = []
         
-        #this map will be used to check pair, two pair, three of a kind, fullhouse
-        self.card_match_map = {
-            1:[],
-            2:[],
-            3:[],
-            4:[],
-            5:[],
-            6:[],
-            7:[],
-            8:[],
-            9:[],
-            10:[],
-            11:[],
-            12:[],
-            13:[],
-            14:[],
-        }
+       
+        
 
-        #this map will used to check royal flush, flush, straight flush
-        self.suit_map = {
-            "H": [],
-            "D": [],
-            "C": [],
-            "S": []
-        }
+       
 
     @classmethod
     def hand_eval(cls, hole_cards, community_cards):
@@ -89,24 +68,28 @@ class HandEvaluator():
         sorted_cards = Deck.sort_cards_by_rank(hole_cards + community_cards)
         hand_rank: str = ""
 
+        #init maps
+        card_match_map = cls._create_card_match_map(sorted_cards)
+        suit_map = cls._create_suit_map(sorted_cards)
+
         # check and update strength
-        if cls._is_royal_flush(sorted_cards):
+        if cls._is_royal_flush(suit_map):
             pass
-        elif cls._is_straight_flush(sorted_cards):
+        elif cls._is_straight_flush(suit_map):
             pass
-        elif cls._is_four_of_a_kind(sorted_cards):
+        elif cls._is_four_of_a_kind(card_match_map):
             pass
-        elif cls._is_full_house(sorted_cards):
+        elif cls._is_full_house(card_match_map):
             pass
-        elif cls._is_flush(sorted_cards):
+        elif cls._is_flush(suit_map):
             pass
-        elif cls._is_straight(sorted_cards):
+        elif cls._is_straight(suit_map):
             pass
-        elif cls._is_three_of_a_kind(sorted_cards):
+        elif cls._is_three_of_a_kind(card_match_map):
             pass
-        elif cls._is_two_pair(sorted_cards):
+        elif cls._is_two_pair(card_match_map):
             pass
-        elif cls._is_pair(sorted_cards):
+        elif cls._is_pair(card_match_map):
             pass
         else:
             # highcard
@@ -123,19 +106,54 @@ class HandEvaluator():
         }
     
     # gets the kickers based on the cards used to make up hand rank
+    
     @classmethod
     def _create_card_match_map(cls, sorted_cards):
         """
         create a map of the cards and their ranks
         """
+        #this map will be used to check pair, two pair, three of a kind, fullhouse
+        card_match_map = {
+            1:[],
+            2:[],
+            3:[],
+            4:[],
+            5:[],
+            6:[],
+            7:[],
+            8:[],
+            9:[],
+            10:[],
+            11:[],
+            12:[],
+            13:[],
+            14:[],
+        }
+
+        for card in sorted_cards:
+            card_rank = card.get_rank()
+            card_match_map[card_rank].append(card)
         
+        return card_match_map
+
 
     @classmethod
     def _create_suit_map(cls, sorted_cards):
         """
         create a map of the cards and their suits
         """
+         #this map will used to check royal flush, flush, straight flush
+        suit_map = {
+            "H": [],
+            "D": [],
+            "C": [],
+            "S": []
+        }
+
+        for card in sorted_cards:
+            suit_map[card.suit].append(card)
         
+        return suit_map
 
     @classmethod
     def _set_kickers(cls, sorted_cards):
@@ -154,45 +172,48 @@ class HandEvaluator():
     # pypoker uses bit mask which is probably better
     #there's a lot of overlapping logic. 
     @classmethod
-    def _is_royal_flush(cls, sorted_cards) -> bool:
+    def _is_royal_flush(cls, suit_map) -> bool:
         pass
 
     @classmethod
-    def _is_straight_flush(cls, sorted_cards) -> bool:
+    def _is_straight_flush(cls, suit_map) -> bool:
         pass
 
     @classmethod
-    def _is_four_of_a_kind(cls, sorted_cards) -> bool:
+    def _is_four_of_a_kind(cls, card_match_map) -> bool:
         pass
 
     @classmethod
-    def _is_full_house(cls, sorted_cards) -> bool:
+    def _is_full_house(cls, card_match_map) -> bool:
         pass
 
     @classmethod
-    def _is_flush(cls, sorted_cards) -> bool:
+    def _is_flush(cls, card_match_map) -> bool:
         pass
 
     @classmethod
-    def _is_straight(cls, sorted_cards) -> bool:
+    def _is_straight(cls, card_match_map) -> bool:
         pass
 
     @classmethod
-    def _is_three_of_a_kind(cls, sorted_cards) -> bool:
+    def _is_three_of_a_kind(cls, card_match_map) -> bool:
         pass
 
     @classmethod
-    def _is_two_pair(cls, sorted_cards) -> bool:
+    def _is_two_pair(cls, card_match_map) -> bool:
         pass
 
     @classmethod
-    def _is_pair(cls, sorted_cards) -> bool:
+    def _is_pair(cls, card_match_map) -> bool:
         """
         find if two cards have the same rank
         """
-        #make into hash map then count keys?
+        for cards in card_match_map.values():
+            if len(cards) == 2:
+                cls._primary_cards = cards
+                return True
+        return False
 
-        pass
 
     @classmethod
     def _highest_five(cls, sorted_cards):
