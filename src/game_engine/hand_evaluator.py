@@ -88,7 +88,7 @@ class HandEvaluator():
         elif cls._is_three_of_a_kind(card_match_map):
             pass
         elif cls._is_two_pair(card_match_map):
-            pass
+            hand_rank = cls.STRENGTH_MAP["two_pair"]
         elif cls._is_pair(card_match_map):
             hand_rank = cls.STRENGTH_MAP["pair"]
         else:
@@ -201,7 +201,19 @@ class HandEvaluator():
 
     @classmethod
     def _is_two_pair(cls, card_match_map) -> bool:
-        pass
+        pairs = 0
+        cards_to_add = []
+        print("card_match_map", card_match_map)
+        for cards in card_match_map.values():
+            if len(cards) == 2:
+                cards_to_add.append(cards[0])
+                cards_to_add.append(cards[1])
+                pairs += 1
+
+        if pairs == 2:
+            cls._add_primary_cards(cards_to_add)
+            return True
+        return False
 
     @classmethod
     def _is_pair(cls, card_match_map) -> bool:
@@ -218,3 +230,12 @@ class HandEvaluator():
     @classmethod
     def _highest_five(cls, sorted_cards):
         cls._primary_cards = sorted_cards[0:5]
+
+
+    @classmethod
+    def _add_primary_cards(cls, cards):
+        """
+        add the primary cards to the hand evaluator
+        """
+        for card in cards:
+            cls._primary_cards.append(card)
