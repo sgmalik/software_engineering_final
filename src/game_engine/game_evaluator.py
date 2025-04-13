@@ -69,13 +69,15 @@ Game Evaluator will:
         Once winners are determine, add money to winners stacks based on pot.
         NOTE: doesn't handle side pots rn 
         """
-        for player in table.players:
-            if player in winners:
-                
-                #if pot is odd give the extra chip to player
-                #NOTE: whole set of rules for this, but for now just give it to player 1
-                #NOTE: this deletes money rn 
-                player.stack += int(table.pot.value / len(winners))
+        share_of_pot = table.pot.value // len(winners)
+        remainder = table.pot.value % len(winners)
+        #add the pot to the winners stacks  
+        for winner in winners:
+            winner.stack += share_of_pot
+        
+        if remainder > 0:
+            #give remainder to p1
+            winners[0].stack += remainder
             
            
     #NOTE: these will be unimplemented for now, because just 1v1
