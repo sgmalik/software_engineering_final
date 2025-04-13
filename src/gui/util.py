@@ -252,7 +252,7 @@ def update_game(scale, engine):
                     (scale, scale), ply_cards[1][:-1], ply_cards[1][-1], True)
     gui_state["cards"].append(card)
     
-    show_cpu = state["round_over"] or state["is_showdown"]
+    show_cpu = state["round_over"] or state["showdown"]
 
     card = GUI_Card(SPRITESHEET_PATH, (80 * scale, 7 * scale), (scale, scale), cpu_cards[0][:-1], cpu_cards[0][-1], show_cpu)
     gui_state["cards"].append(card)
@@ -336,6 +336,7 @@ def update_game(scale, engine):
 
     # Update to next phase of round depending on state
     if state["round_over"]:
+       
         engine.start_next_round()
         update_gui_state(engine)
 
@@ -344,7 +345,7 @@ def update_game(scale, engine):
         update_gui_state(engine)
 
     elif not state["players_turn"]:
-        pygame.time.wait(2000)
+        pygame.time.wait(1500)
         engine.cpu_action()
         update_gui_state(engine)
 
