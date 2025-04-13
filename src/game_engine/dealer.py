@@ -50,7 +50,7 @@ class Dealer:
 
         # reset betting round information
         self.betting_manager.reset_betting_round()
-
+        
         if self.current_street == Street.PREFLOP:
             self._start_preflop()
         elif self.current_street == Street.FLOP:
@@ -163,10 +163,8 @@ class Dealer:
         """
         #draw more cards if needed
         self._start_showdown()
-        
 
         winners = GameEvaluator.determine_winners(self.table)
-        print("THIS IS WINNERS", winners)
         GameEvaluator.add_money_to_winners(self.table, winners)
     
 

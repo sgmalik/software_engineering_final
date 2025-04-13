@@ -27,6 +27,7 @@ It needs to return information that the GUI needs
         self.blind = blind
         self.initial_stack = initial_stack
         self.dealer = Dealer(self.initial_stack, self.blind)
+        self.game_over = False
 
     def current_state_of_game(self):
         """
@@ -47,7 +48,7 @@ It needs to return information that the GUI needs
         state = {
             "player_max_raise": self.dealer.betting_manager.get_max_raise(pc),
             "pot": self.dealer.table.pot.value,
-            "game_over": self._is_game_over(),
+            "game_over": self.game_over,
             "players_turn": self.dealer.table.is_players_turn(),
             "betting_over": self.dealer.betting_manager.is_betting_over(),
             "round_over": self.dealer.is_round_over(),
@@ -111,10 +112,9 @@ It needs to return information that the GUI needs
         """
         check if the game is over (one of the players stack is 0)
         """
-        #check if any of the players stack is 0 
-        #if round is over and player didn't win
+        #if at start of game, a player's stack is 0
         #if self.dealer.is_round_over():
-         #   for player in self.dealer.table.players:
-          #      if player.stack == 0:
-           #         return True
+            #for player in self.dealer.table.players:
+                #if player.stack == 0:
+                    #return True
         return False
