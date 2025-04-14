@@ -8,7 +8,6 @@ from game_engine.engine import Engine
 # Connect Gui & Engine
 # Gain acess to current state of game, player action, and cpu action from engine
 engine = Engine(num_players=2, initial_stack=500, blind=10)
-#engine.start_next_round()
 
 
 # Initialize Pygame

@@ -1,7 +1,6 @@
 
 """
-    hand_evaluator.py is an adaptation of 
-    https://github.com/ishikota/PyPokerEngine/blob/master/pypokerengine/engine/deck.py
+   not based on pypoker, will look to refactor in future 
 """
 
 from .deck import Deck
@@ -19,11 +18,10 @@ class HandEvaluator():
 
         its output will look like this:
         {
-            "strength": {
+      
                 "hand_rank": TWO_PAIR (which would be strength = 3),
                 "primary_cards_rank": [5, 3]
-            },
-            "kickers": [7]
+                "kickers": [7]
         }
 
         NOTE: primary_cards are the cards that make up the hand rank (in this case, the pairs)
@@ -43,15 +41,6 @@ class HandEvaluator():
         "high_card": 1,
     }
 
-    def __init__(self):
-        # these are the highest cards (in a 5 card hand)
-        # that aren't used to make up the strength (need for tie breaking)
-        self._kicker_cards = []
-
-        # cards that are used for tie breaking similar strength hands
-        # Ex. two pair = ["4S", "4H", "3S", "3H"]
-        self._primary_cards = []
-
     @classmethod
     def hand_eval(cls, hole_cards, community_cards):
         """
@@ -61,15 +50,18 @@ class HandEvaluator():
         # sort the cards in decensding order
         sorted_cards = Deck.sort_cards_by_rank(hole_cards + community_cards)
         hand_rank: str = ""
+        primary_cards = []
 
         # init maps
         card_match_map = cls._create_card_match_map(sorted_cards)
         suit_map = cls._create_suit_map(sorted_cards)
 
         match_rank, match_primary_cards = cls._check_matches(card_match_map)
-        suits_rank, suit_primary_cards = cls._check_suits(suit_map, sorted_cards)
-        primary_cards = []
-
+        suits_rank, suit_primary_cards = cls._check_suits(
+            suit_map, sorted_cards)
+        
+        
+        #set strongest hand 
         if match_rank > suits_rank:
             hand_rank = match_rank
             primary_cards = match_primary_cards
@@ -77,6 +69,7 @@ class HandEvaluator():
             hand_rank = suits_rank
             primary_cards = suit_primary_cards
         else:
+            primary_cards = sorted_cards[:5]
             hand_rank = cls.STRENGTH_MAP["high_card"]
 
         kickers = cls._set_kickers(sorted_cards, primary_cards)
@@ -94,6 +87,7 @@ class HandEvaluator():
     def _create_card_match_map(cls, sorted_cards):
         """
         create a map of the cards and their ranks
+
         """
         # this map will be used to check pair, two pair, three of a kind, fullhouse
         card_match_map = {
@@ -142,6 +136,7 @@ class HandEvaluator():
     def _set_kickers(cls, sorted_cards, primary_cards):
         """
         gets the kickers based on the cards used to make up hand rank
+        kickers = highest cards not used in primary cards that make up 5 card hand
         """
 
         kickers = [
@@ -152,6 +147,13 @@ class HandEvaluator():
 
     @classmethod
     def _check_suits(cls, card_suit_map, sorted_cards):
+        """
+        use card_suit_map to check for 5 consecutive cards of a suit
+            if this is true, check if its a royal flush, straight_flush 
+        returns flush if cards are not consecutive but >= 5 of a suit
+
+        this also checks for straight.
+        """
         straight_counter = 0
         straight_cards = []
 
@@ -175,8 +177,8 @@ class HandEvaluator():
                 return cls.STRENGTH_MAP["royal_flush"], straight_cards[:5]
 
             return cls.STRENGTH_MAP["straight_flush"], straight_cards[:5]
-        
-        #check for straight
+
+        # check for straight
         straight_cards = []
         for i in range(len(sorted_cards) - 1):
             next_card = sorted_cards[i + 1]
@@ -187,20 +189,22 @@ class HandEvaluator():
         if len(straight_cards) >= 5:
             return cls.STRENGTH_MAP["straight"], straight_cards[:5]
 
-
         return cls.STRENGTH_MAP["high_card"], []
 
     # pypoker uses bit mask which is probably better
     # there's a lot of overlapping logic.
-
     @classmethod
     def _check_matches(cls, card_match_map):
-        pairs = [0, []]
-        triples = [0, []]
-        
+        """
+        uses card_match_map to check for pairs, triples, four of a kind
 
-        # TODO: use extend
-        # this will be used to check for pair, two pair, three of a kind, full house
+        returns:
+            strength: int, primary_cards (cards that make up the rank of the hand)
+        """
+        pairs = [0, []]  # cards in pairs[1], pair count pair[0]
+        triples = [0, []]
+
+        # add pairs, trips, and check for a four of a kind
         for cards in card_match_map.values():
             if len(cards) == 2:
                 for card in cards:
@@ -212,12 +216,12 @@ class HandEvaluator():
                 triples[0] += 1
             elif len(cards) == 4:
                 return cls.STRENGTH_MAP["four_of_a_kind"], cards
-            
-            
 
+        # sort cards so we get primary_cards with the highest rank only
         pair_cards = Deck.sort_cards_by_rank(pairs[1])
         triple_cards = Deck.sort_cards_by_rank(triples[1])[:3]
 
+        # check for full house, three of a kind, two pair, high_card
         if triples[0] >= 1 and pairs[0] >= 1:
             return cls.STRENGTH_MAP["full_house"], [*triple_cards, *pair_cards[:2]]
         elif triples[0] >= 1:
@@ -229,6 +233,3 @@ class HandEvaluator():
 
         return cls.STRENGTH_MAP["high_card"], []
 
-    @classmethod
-    def _highest_five(cls, sorted_cards):
-        return sorted_cards[0:5]
