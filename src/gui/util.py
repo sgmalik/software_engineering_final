@@ -132,12 +132,15 @@ def change_to_settings(scale, engine):
     gui_state["spritetexts"].clear()
 
     difficulty_button = Button(SPRITESHEET_PATH, (25 * scale, 83 * scale),
-                        (scale, scale), 67, 13, "difficulty", callback=lambda: toggle_difficulty(scale, difficulty))
+                        (scale, scale), 67, 13, "difficulty",
+                               callback=lambda: toggle_difficulty(scale, difficulty))
     change_card = Button(SPRITESHEET_PATH, (25 * scale, 109 * scale),
-                         (scale, scale), 67, 13, "change card", callback=lambda: toggle_card_type(scale, card_type))
+                         (scale, scale), 67, 13, "change card",
+                         callback=lambda: toggle_card_type(scale, card_type))
 
     back = Button(SPRITESHEET_PATH, (11 * scale, 12 * scale),
-                        (scale, scale), 13, 13, "back", callback=lambda: change_to_main_menu(scale, engine))
+                        (scale, scale), 13, 13, "back",
+                        callback=lambda: change_to_main_menu(scale, engine))
 
     card = GUI_Card(SPRITESHEET_PATH, (96 * scale, 109 * scale), (scale, scale), "A", "S")
     gui_state["cards"].append(card)
@@ -148,7 +151,8 @@ def change_to_settings(scale, engine):
             diff_string = "medium"
         case Difficulty.HARD:
             diff_string = "hard"
-    difficulty_display = Button(SPRITESHEET_PATH, (96 * scale, 83 * scale), (scale, scale), 41, 13, diff_string)
+    difficulty_display = Button(SPRITESHEET_PATH, (96 * scale, 83 * scale),
+                                (scale, scale), 41, 13, diff_string)
     gui_state["buttons"].append(difficulty_display)
 
     gui_state["buttons"].append(difficulty_button)
@@ -234,7 +238,8 @@ def change_to_game(scale, engine):
 
     # Back button
     back = Button(SPRITESHEET_PATH, (1 * scale, 1 * scale),
-                        (scale, scale), 13, 13, "back", callback=lambda: change_to_main_menu(scale, engine))
+                        (scale, scale), 13, 13, "back",
+                        callback=lambda: change_to_main_menu(scale, engine))
     gui_state["buttons"].append(back)
 
     # Create slider
@@ -282,9 +287,11 @@ def update_game(scale, engine):
     
     show_cpu = state["round_over"] or state["showdown"]
 
-    card = GUI_Card(SPRITESHEET_PATH, (80 * scale, 7 * scale), (scale, scale), cpu_cards[0][:-1], cpu_cards[0][-1], show_cpu)
+    card = GUI_Card(SPRITESHEET_PATH, (80 * scale, 7 * scale), (scale, scale),
+                    cpu_cards[0][:-1], cpu_cards[0][-1], show_cpu)
     gui_state["cards"].append(card)
-    card = GUI_Card(SPRITESHEET_PATH, (103 * scale, 7 * scale), (scale, scale), cpu_cards[1][:-1], cpu_cards[1][-1], show_cpu)
+    card = GUI_Card(SPRITESHEET_PATH, (103 * scale, 7 * scale), (scale, scale),
+                    cpu_cards[1][:-1], cpu_cards[1][-1], show_cpu)
     gui_state["cards"].append(card)
 
     # Update community cards
