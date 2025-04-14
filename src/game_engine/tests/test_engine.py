@@ -431,5 +431,7 @@ class TestEngine:
         assert hasattr(engine.cpu_player, "model_path")
         
         # Test invalid difficulty
-        with pytest.raises(ValueError):
-            engine.set_cpu_difficulty("invalid")
+        engine.set_cpu_difficulty("invalid")
+        assert isinstance(engine.cpu_player, baselineCPU)
+        assert engine.cpu_player.stack == 1000
+        assert engine.dealer.table.players[1].name == "baselineCPU"

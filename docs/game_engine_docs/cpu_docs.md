@@ -99,6 +99,132 @@ pot_odds = amount_to_call / (pot_size + amount_to_call)
 
 ---
 
+### mlCPU
+
+The `mlCPU` class implements a reinforcement learning-based poker player using Q-learning. This CPU player learns from experience and adapts its strategy over time, making it potentially the most sophisticated CPU player in the system.
+
+#### Architecture
+
+The `mlCPU` class inherits from `BasePokerPlayer` and implements the following key components:
+
+1. **Q-Learning Parameters**:
+   - `learning_rate`: Controls how quickly the CPU learns from new experiences (default: 0.1)
+   - `discount_factor`: Determines the importance of future rewards (default: 0.9)
+   - `epsilon`: Controls the exploration-exploitation trade-off (default: 0.1)
+   - `q_table`: Stores Q-values for state-action pairs using a nested defaultdict structure
+
+2. **State Management**:
+   - Tracks game state, round state, and player state
+   - Maintains history of actions and game outcomes
+   - Manages hole cards, community cards, and opponent actions
+
+3. **Feature Extraction**:
+   The CPU extracts the following features from the game state:
+   - Number of outs (potential winning cards)
+   - Pot odds
+   - Position (small blind or big blind)
+   - Current street (preflop, flop, turn, river)
+   - Stack to pot ratio
+   - Opponent aggression level
+
+4. **Action Selection**:
+   Uses an epsilon-greedy strategy:
+   - With probability ε: explores by choosing a random action
+   - With probability 1-ε: exploits by choosing the action with highest Q-value
+
+#### Learning Mechanism
+
+1. **Q-Value Updates**:
+   - Updates Q-values using the Q-learning update rule:
+     Q(s,a) = Q(s,a) + α[r + γ max Q(s',a') - Q(s,a)]
+   - α is the learning rate
+   - γ is the discount factor
+   - r is the immediate reward
+   - max Q(s',a') is the maximum Q-value for the next state
+
+2. **Reward Calculation**:
+   Rewards are based on:
+   - Stack changes (primary reward)
+   - Winning bonus (+10)
+   - Penalty for folding with strong hands (-5)
+   - Small negative rewards for intermediate actions (-0.1)
+
+3. **Model Persistence**:
+   - Saves the Q-table to disk every 10 rounds
+   - Can load a previously saved model to continue learning
+   - Uses pickle for serialization
+
+#### State Space Discretization
+
+To manage the large state space, the CPU discretizes continuous features:
+- Outs: Bucketed into 11 categories (0-20 outs)
+- Pot odds: Bucketed into 10 categories (0-1)
+- Stack to pot ratio: Bucketed into 11 categories (0-10+)
+- Opponent aggression: Bucketed into 6 categories (0-2.5+)
+
+#### Message Handling
+
+The CPU responds to various game events through message handlers:
+1. `receive_game_start_message`: Initializes game settings
+2. `receive_round_start_message`: Prepares for a new round
+3. `receive_street_start_message`: Updates street-specific information
+4. `receive_game_update_message`: Tracks opponent actions and updates Q-values
+5. `receive_round_result_message`: Processes round outcomes and updates learning
+
+#### Usage Example
+
+```python
+# Create an MLCPU instance
+ml_cpu = mlCPU(
+    initial_stack=1000,
+    model_path="models/ml_cpu_model.pkl",
+    learning_rate=0.1,
+    discount_factor=0.9,
+    epsilon=0.1
+)
+
+# The CPU will learn and improve its strategy over time
+# The model is automatically saved every 10 rounds
+```
+
+#### Advantages and Limitations
+
+Advantages:
+- Adapts to opponent strategies
+- Learns from experience
+- Can develop sophisticated playing patterns
+- Persists learning across sessions
+
+Limitations:
+- Requires significant training to become effective
+- May make suboptimal decisions during early learning
+- Memory usage grows with the number of unique states encountered
+- Performance depends on the quality of feature extraction
+
+#### Best Practices
+
+1. **Training**:
+   - Allow sufficient rounds for learning (100+ rounds recommended)
+   - Start with higher epsilon (0.3-0.5) for more exploration
+   - Gradually decrease epsilon as the CPU improves
+
+2. **Model Management**:
+   - Regularly backup model files
+   - Consider using different models for different game types
+   - Monitor model size and performance
+
+3. **Feature Engineering**:
+   - Consider adding more sophisticated features
+   - Fine-tune discretization buckets
+   - Add position-based features
+
+4. **Performance Optimization**:
+   - Monitor memory usage
+   - Consider periodic Q-table pruning
+   - Optimize feature extraction for speed
+
+---
+
 ## 🎓 Design Philosophy
 
 - These CPUs are intentionally designed to showcase progressively deeper poker logic.

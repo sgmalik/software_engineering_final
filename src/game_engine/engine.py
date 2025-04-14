@@ -58,6 +58,8 @@ It needs to return information that the GUI needs
         self.ml_model_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'models')
         if not os.path.exists(self.ml_model_dir):
             os.makedirs(self.ml_model_dir)
+            
+        # Define the path for the ML model file
         self.ml_model_path = os.path.join(self.ml_model_dir, 'ml_cpu_model.pkl')
 
     def set_cpu_player(self, cpu_player):
@@ -93,11 +95,23 @@ It needs to return information that the GUI needs
         elif difficulty == "medium":
             self.cpu_player = equityCPU(self.initial_stack)
         elif difficulty == "hard":
+            # Initialize MLCPU with the model path
             self.cpu_player = MLCPU(self.initial_stack, model_path=self.ml_model_path)
-        else:
-            raise ValueError(f"Unknown difficulty level: {difficulty}")
             
-        # Initialize the CPU player
+            # Try to load existing model
+            if os.path.exists(self.ml_model_path):
+                print(f"Loading model from {self.ml_model_path}")
+                self.cpu_player.load_model(self.ml_model_path)
+            else:
+                print(f"No model found at {self.ml_model_path}, training a new model...")
+                # Train the model - it will automatically save to self.ml_model_path
+                self.cpu_player.train_model(num_rounds=100, opponent_strategy="random")
+                print(f"Model trained and saved to {self.ml_model_path}")
+        else:
+            # Default to baseline CPU
+            self.cpu_player = baselineCPU(self.initial_stack)
+            
+        # Set the CPU player in the game
         self.set_cpu_player(self.cpu_player)
 
     def current_state_of_game(self):

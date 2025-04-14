@@ -11,6 +11,8 @@ from game_engine.cpu.mlCPU import parse_card_str
 import tempfile
 import os
 from game_engine.constants import Action, Street
+import pickle
+from collections import defaultdict
 
 @pytest.fixture
 def dummy_round_state():
@@ -578,51 +580,121 @@ def test_ml_cpu_decision_making():
             assert amount == 0, "Check action should have amount 0"
 
 def test_ml_cpu_load_model():
-    """Test that MLCPU can load a model from the models directory and it contains data."""
-    # Path to the model file
-    model_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), "models", "ml_cpu_model.pkl")
+    """
+    Test that the MLCPU can load a model from a file.
+    """
+    # Create a temporary model file
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        # Create a simple dictionary instead of using defaultdict with lambda
+        q_table = {}
+        q_table[(1, 2, 3, 4, 5, 6)] = {"call": 5.0}
+        pickle.dump(q_table, temp_file)
+        model_path = temp_file.name
     
-    # Check if the model file exists
-    if not os.path.exists(model_path):
-        pytest.skip("Model file does not exist. Run test_ml_cpu_model_creation first.")
+    # Create an MLCPU instance with the model path
+    ml_cpu = MLCPU(initial_stack=1000, model_path=model_path)
     
-    # Load the model
-    cpu = MLCPU(initial_stack=1000, model_path=model_path)
+    # Verify that the Q-table was loaded correctly
+    assert len(ml_cpu.q_table) > 0
     
-    # Verify the Q-table is loaded and contains data
-    assert len(cpu.q_table) > 0, "Q-table is empty"
+    # Clean up
+    os.unlink(model_path)
+
+def test_ml_cpu_train_model():
+    """
+    Test that the MLCPU can train its model using the train_model method.
+    """
+    # Create a temporary model file
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        model_path = temp_file.name
     
-    # Verify the Q-table has some non-zero values
-    has_non_zero_values = False
-    for state_action, q_value in cpu.q_table.items():
-        if q_value != 0:
-            has_non_zero_values = True
-            break
+    # Create an MLCPU instance with the model path
+    ml_cpu = MLCPU(initial_stack=1000, epsilon=0.1)
     
-    assert has_non_zero_values, "Q-table contains only zero values"
+    # Train the model with a small number of rounds
+    ml_cpu.train_model(num_rounds=10, opponent_strategy="random")
     
-    # Verify the model can make decisions
-    valid_actions = [
-        {'action': 'fold', 'amount': 0},
-        {'action': 'call', 'amount': 10},
-        {'action': 'raise', 'amount': {'min': 20, 'max': 1000}},
-        {'action': 'check', 'amount': 0}
-    ]
+    # Verify that the Q-table has been updated
+    assert len(ml_cpu.q_table) > 0
     
-    # Create a simple round state
-    round_state = {
-        'street': 'preflop',
-        'pot': {'main': 30},
-        'community_card': [],
-        'seats': [
-            {'name': 'pc', 'stack': 1000, 'state': 'participating'},
-            {'name': 'MLCPU', 'stack': 1000, 'state': 'participating'}
-        ]
-    }
+    # Save the model to the file
+    ml_cpu.save_model(model_path)
     
-    # Get an action from the model
-    action, amount = cpu.declare_action(valid_actions, ['AH', 'KH'], round_state)
+    # Verify that the model was saved to the file
+    assert os.path.exists(model_path)
+    assert os.path.getsize(model_path) > 0
     
-    # Verify the action is valid
-    assert action in ['fold', 'call', 'raise', 'check'], f"Invalid action: {action}"
-    assert amount >= 0, f"Invalid amount: {amount}"
+    # Load the model from the file to verify it was saved correctly
+    with open(model_path, 'rb') as f:
+        loaded_q_table = pickle.load(f)
+    
+    # Verify that the loaded Q-table has the same keys as the original
+    assert set(loaded_q_table.keys()) == set(ml_cpu.q_table.keys())
+    
+    # Clean up
+    os.unlink(model_path)
+    
+    # Test with different opponent strategies
+    ml_cpu = MLCPU(initial_stack=1000, epsilon=0.1)
+    
+    # Train with aggressive opponent
+    ml_cpu.train_model(num_rounds=5, opponent_strategy="aggressive")
+    assert len(ml_cpu.q_table) > 0
+    
+    # Train with passive opponent
+    ml_cpu.train_model(num_rounds=5, opponent_strategy="passive")
+    assert len(ml_cpu.q_table) > 0
+    
+    # Verify that epsilon is restored after training
+    assert ml_cpu.epsilon == 0.1
+
+def test_ml_cpu_load_and_train_model():
+    """
+    Test that the MLCPU can load an existing model and train it further.
+    This test creates a model, saves it, loads it into a new MLCPU instance,
+    and then trains that instance further.
+    """
+    # Create a temporary model file
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        model_path = temp_file.name
+    
+    # Create an MLCPU instance and train it initially
+    initial_ml_cpu = MLCPU(initial_stack=1000, epsilon=0.1)
+    initial_ml_cpu.train_model(num_rounds=20, opponent_strategy="random")
+    
+    # Save the initial model
+    initial_ml_cpu.save_model(model_path)
+    
+    # Get the initial Q-table size and some sample keys
+    initial_q_table_size = len(initial_ml_cpu.q_table)
+    initial_sample_keys = list(initial_ml_cpu.q_table.keys())[:5] if initial_q_table_size > 5 else list(initial_ml_cpu.q_table.keys())
+    
+    # Create a new MLCPU instance and load the model
+    loaded_ml_cpu = MLCPU(initial_stack=1000, model_path=model_path)
+    loaded_ml_cpu.load_model(model_path)
+    
+    # Verify that the Q-table was loaded correctly
+    assert len(loaded_ml_cpu.q_table) == initial_q_table_size, "Loaded Q-table size should match the original"
+    
+    # Train the loaded model further
+    loaded_ml_cpu.train_model(num_rounds=30, opponent_strategy="aggressive")
+    
+    # Verify that the Q-table has grown after additional training
+    assert len(loaded_ml_cpu.q_table) >= initial_q_table_size, "Q-table should not shrink after additional training"
+    
+    # Verify that the original keys are still in the Q-table
+    for key in initial_sample_keys:
+        assert key in loaded_ml_cpu.q_table, f"Original key {key} should still be in the Q-table after training"
+    
+    # Save the further trained model
+    loaded_ml_cpu.save_model(model_path)
+    
+    # Load the model again to verify it was saved correctly
+    final_ml_cpu = MLCPU(initial_stack=1000, model_path=model_path)
+    final_ml_cpu.load_model(model_path)
+    
+    # Verify that the final Q-table has the same size as the trained model
+    assert len(final_ml_cpu.q_table) == len(loaded_ml_cpu.q_table), "Final Q-table size should match the trained model"
+    
+    # Clean up
+    os.unlink(model_path)
