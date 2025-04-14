@@ -67,7 +67,7 @@ class HandEvaluator():
         suit_map = cls._create_suit_map(sorted_cards)
 
         match_rank, match_primary_cards = cls._check_matches(card_match_map)
-        suits_rank, suit_primary_cards = cls._check_suits(suit_map)
+        suits_rank, suit_primary_cards = cls._check_suits(suit_map, sorted_cards)
         primary_cards = []
 
         if match_rank > suits_rank:
@@ -78,10 +78,6 @@ class HandEvaluator():
             primary_cards = suit_primary_cards
         else:
             hand_rank = cls.STRENGTH_MAP["high_card"]
-
-        # highcard
-        # cls._highest_five(sorted_cards)
-        # hand_rank = cls.STRENGTH_MAP["high_card"]
 
         kickers = cls._set_kickers(sorted_cards, primary_cards)
 
@@ -121,6 +117,7 @@ class HandEvaluator():
             card_rank = card.get_card_rank()
             card_match_map[card_rank].append(card)
 
+        print("MAP", card_match_map)
         return card_match_map
 
     @classmethod
@@ -154,7 +151,7 @@ class HandEvaluator():
         return kickers[0:kickers_amount]
 
     @classmethod
-    def _check_suits(cls, card_suit_map):
+    def _check_suits(cls, card_suit_map, sorted_cards):
         straight_counter = 0
         straight_cards = []
 
@@ -178,6 +175,18 @@ class HandEvaluator():
                 return cls.STRENGTH_MAP["royal_flush"], straight_cards[:5]
 
             return cls.STRENGTH_MAP["straight_flush"], straight_cards[:5]
+        
+        #check for straight
+        straight_cards = []
+        for i in range(len(sorted_cards) - 1):
+            next_card = sorted_cards[i + 1]
+            curr_card = sorted_cards[i]
+            if curr_card.get_card_rank() - 1 == next_card.get_card_rank():
+                straight_cards.append(sorted_cards[i])
+
+        if len(straight_cards) >= 5:
+            return cls.STRENGTH_MAP["straight"], straight_cards[:5]
+
 
         return cls.STRENGTH_MAP["high_card"], []
 
@@ -188,6 +197,7 @@ class HandEvaluator():
     def _check_matches(cls, card_match_map):
         pairs = [0, []]
         triples = [0, []]
+        
 
         # TODO: use extend
         # this will be used to check for pair, two pair, three of a kind, full house
@@ -202,6 +212,8 @@ class HandEvaluator():
                 triples[0] += 1
             elif len(cards) == 4:
                 return cls.STRENGTH_MAP["four_of_a_kind"], cards
+            
+            
 
         pair_cards = Deck.sort_cards_by_rank(pairs[1])
         triple_cards = Deck.sort_cards_by_rank(triples[1])[:3]
