@@ -159,17 +159,17 @@ The high-level project structure for Poker Showdown can be seen below. Critical 
 software_engineering_final/
 ├── assets/               # Spritesheet and image assets
 
-├── src/                  # Source code: Holds Gui and Game logic code 
+-├── src/                  # Source code: Holds Gui and Game logic code 
 
-  ├── main.py             # Main python file to run program
+  -├── main.py             # Main python file to run program
   
-  ├── game_engine/        # Core game logic (engine, betting, player, pot)
+  -├── game_engine/        # Core game logic (engine, betting, player, pot)
   
-  ├── gui/                # GUI classes: buttons, sliders, numtext, etc.
+  -├── gui/                # GUI classes: buttons, sliders, numtext, etc.
   
-  ├── model/              # .pkl file for CPU AI model
+  -├── model/              # .pkl file for CPU AI model
   
-└── README.md             # You're here!
+-└── README.md             # You're here!
 
 ## Technologies Used 
 * Python 3.10
