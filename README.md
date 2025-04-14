@@ -128,7 +128,7 @@ A user of Poker Showdown will be welcomed to a retro, pixel-styled GUI showing a
 ✅ Pot distribution with edge-case handling (all-in, partial calls)  
 ✅ Chip graphics update based on actual stack  
 ✅ Visual state transitions between menu, settings, and gameplay
-
+Starting Board: <img width="398" alt="image" src="https://github.com/user-attachments/assets/a9d95b67-a283-4407-b56c-6637c3ab70c1" />
 ---
 
 ##  Getting Started
@@ -138,5 +138,5 @@ A user of Poker Showdown will be welcomed to a retro, pixel-styled GUI showing a
 Python 3.10+
 Pygame
 
-Starting Board: <img width="398" alt="image" src="https://github.com/user-attachments/assets/a9d95b67-a283-4407-b56c-6637c3ab70c1" />
+
 
