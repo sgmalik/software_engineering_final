@@ -6,7 +6,8 @@ from gui.slider import Slider
 from gui.gui_card import GUI_Card, CardType, card_type
 from gui.chip import Chip
 from gui.numtext import NumText
-from game_engine.engine import Engine
+from gui.spritetext import SpriteText, TEXT_COORDS
+from game_engine.engine import Engine, Difficulty
 from game_engine.constants import Action
 import pygame
 
@@ -20,14 +21,6 @@ class Screen(Enum):
     SETTINGS  = 1
     GAME = 2
 
-
-class Difficulty(Enum):
-    """
-    Represents the difficulty of the CPU
-    """
-    EASY = 0
-    MEDIUM = 1
-    HARD = 2
 
 
 difficulty = [Difficulty.EASY]
@@ -258,9 +251,15 @@ def update_game(scale, engine):
     """
     gui_state["cards"].clear()
     gui_state["chips"].clear()
+    gui_state["spritetexts"].clear()
 
     # Engine updating
     state = engine.current_state_of_game()
+
+    # Update spritetexts
+    action = get_last_cpu_action(state["action_histories"])
+    cpu_action = SpriteText(action, (162 * scale, 17 * scale), scale)
+    gui_state["spritetexts"].append(cpu_action)
 
     # Update cpu and player cards
     ply_cards = state["players"][0]["hole_cards"]
@@ -357,7 +356,6 @@ def update_game(scale, engine):
 
     # Update to next phase of round depending on state
     if state["round_over"]:
-       
         engine.start_next_round()
         update_gui_state(engine)
 
@@ -369,6 +367,9 @@ def update_game(scale, engine):
         pygame.time.wait(1500)
         engine.cpu_action()
         update_gui_state(engine)
+
+    elif state["game_over"]:
+        change_to_main_menu(scale, engine)
 
 
 def update_gui_state(engine):
@@ -484,6 +485,7 @@ def toggle_card_type(scale, card_type):
 
     change_to_settings(scale)
 
+
 def toggle_difficulty(scale, difficulty):
     enum_type = type(difficulty[0])
     members = list(enum_type)
@@ -492,3 +494,17 @@ def toggle_difficulty(scale, difficulty):
     difficulty[0] = members[next_index]
 
     change_to_settings(scale)
+
+
+def get_last_cpu_action(action_histories):
+    cpu_name = "baselineCPU"
+    rounds = ["river", "turn", "flop", "preflop"]
+
+    for round_name in rounds:
+        actions = action_histories.get(round_name, [])
+        for action in reversed(actions):
+            if action.get("name") == cpu_name:
+                return action["action"]
+
+    return "NA"  # No CPU action found
+

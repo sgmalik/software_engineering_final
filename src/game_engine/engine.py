@@ -3,6 +3,7 @@ engine.py is written by us, and loosely based on how pypoker
 keeps track of state. As well as how the game is initialzied. 
 """
 
+from enum import Enum
 from .dealer import Dealer
 from .constants import Action, PlayerState
 from typing import Optional, Dict, Any
@@ -12,6 +13,16 @@ from .cpu.potOddsCPU import potOddsCPU
 from .cpu.expectedValueCPU import expectedValueCPU
 from .cpu.mlCPU import MLCPU
 import os
+
+
+class Difficulty(Enum):
+    """
+    Represents the difficulty of the CPU
+    """
+    EASY = 0
+    MEDIUM = 1
+    HARD = 2
+
 
 class Engine():
     """
@@ -88,11 +99,11 @@ It needs to return information that the GUI needs
         Args:
             difficulty: String representing the difficulty level ("easy", "medium", "hard", "ml")
         """
-        if difficulty == "easy":
+        if difficulty == Difficulty.EASY:
             self.cpu_player = baselineCPU(self.initial_stack)
-        elif difficulty == "medium":
+        elif difficulty == Difficulty.MEDIUM:
             self.cpu_player = equityCPU(self.initial_stack)
-        elif difficulty == "hard":
+        elif difficulty == Difficulty.HARD:
             self.cpu_player = MLCPU(self.initial_stack, model_path=self.ml_model_path)
         else:
             raise ValueError(f"Unknown difficulty level: {difficulty}")
