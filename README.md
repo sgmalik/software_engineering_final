@@ -78,7 +78,7 @@
 
 # Poker Showdown: GUI + Game Engine Project
 
-> A full-featured Texas Hold’em Poker game featuring custom betting logic, AI opponent, and pixel-art GUI — built as part of a [your class/project/team].
+> A full-featured Texas Hold’em Poker game featuring custom betting logic, AI opponent, and pixel-art GUI — built as part of a Software Engineering course at the University of Vermont.
 
 ---
 
@@ -102,16 +102,24 @@ Poker Showdown is a 1v1 Texas Hold’em poker simulation game with:
 - A working poker engine with full game state transitions
 - An AI opponent that reacts intelligently to player moves
 - Pixel-style GUI with smooth transitions and spritesheet-based rendering
+A user of Poker Showdown will be welcomed to a retro, pixel-styled GUI showing a poker board, $500 in chips, and a CPU with the same amount of money. The goal is to win the opponent's money by creating the strongest possible five-card hand or getting them to fold. Once all money is in the Player or CPU's collection, the game is over.
 
 ---
 
 ##  Gameplay Features
 
-✅ Clickable betting buttons (`25%`, `50%`, `75%`, `All In`)  
-✅ Raise, Fold, Call, and Check logic  
-✅ Slider-based betting  
-✅ Card reveal at showdown  
-✅ CPU betting logic  
+✅ Clickable betting buttons (`25%`, `50%`, `75%`, `All In`)
+- Controls a slider to select bet amount
+✅ Raise, Fold, Call, and Check logic and buttons, selectable when appropriate within the game
+- Raise: place a bet based on the location of the slider
+- Fold: discard one's hand and forfeit interest in the current pot
+- Call: match the current bet
+- Check: chooses not to bet and remains in the hand if no one has bet before
+✅ Slider-based betting
+- Slider changes the amount the user will bet
+✅ Card reveal at showdown(all betting and card actions completed)  
+✅ CPU betting logic
+- AI-based betting logic
 ✅ Pot distribution with edge-case handling (all-in, partial calls)  
 ✅ Chip graphics update based on actual stack  
 ✅ Visual state transitions between menu, settings, and gameplay
@@ -124,3 +132,6 @@ Poker Showdown is a 1v1 Texas Hold’em poker simulation game with:
 ```bash
 Python 3.10+
 Pygame
+
+Starting Board: <img width="398" alt="image" src="https://github.com/user-attachments/assets/a9d95b67-a283-4407-b56c-6637c3ab70c1" />
+
