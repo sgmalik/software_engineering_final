@@ -80,6 +80,25 @@ It needs to return information that the GUI needs
         
         # Send game start message to CPU
         self.cpu_player.receive_game_start_message(self.game_info)
+    
+    def set_cpu_difficulty(self, difficulty):
+        """
+        Set the difficulty of the CPU player.
+        
+        Args:
+            difficulty: String representing the difficulty level ("easy", "medium", "hard", "ml")
+        """
+        if difficulty == "easy":
+            self.cpu_player = baselineCPU(self.initial_stack)
+        elif difficulty == "medium":
+            self.cpu_player = equityCPU(self.initial_stack)
+        elif difficulty == "hard":
+            self.cpu_player = MLCPU(self.initial_stack, model_path=self.ml_model_path)
+        else:
+            raise ValueError(f"Unknown difficulty level: {difficulty}")
+            
+        # Initialize the CPU player
+        self.set_cpu_player(self.cpu_player)
 
     def current_state_of_game(self):
         """
@@ -346,7 +365,7 @@ It needs to return information that the GUI needs
         action_enum = Action(action)
         
         # Apply the action
-        self.dealer.apply_action(action_enum, amount if action == "raise" else None)
+        self.dealer.apply_action(action_enum, int(amount) if action == "raise" else None)
         
         # Save action histories for all players after the action
         for player in self.dealer.table.players:

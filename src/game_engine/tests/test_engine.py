@@ -1,7 +1,11 @@
 from game_engine.engine import Engine
 from game_engine.constants import PlayerState, Action, Street
 from game_engine.cpu.baselineCPU import baselineCPU
+from game_engine.cpu.equityCPU import equityCPU
+from game_engine.cpu.mlCPU import MLCPU
 from game_engine.card import Card
+import pytest
+
 class TestEngine: 
     def test_start_game(self):
         """
@@ -397,4 +401,35 @@ class TestEngine:
         
         # PC should win the pot
         assert state["players"][0]["stack"] == 818 + 214  # Previous stack + pot
-        print(state)
+
+    def test_set_cpu_difficulty(self):
+        """
+        Test that the set_cpu_difficulty method correctly sets up different CPU types
+        based on the difficulty level.
+        """
+        # Create an engine instance
+        engine = Engine(num_players=2, initial_stack=1000, blind=10)
+        
+        # Test easy difficulty
+        engine.set_cpu_difficulty("easy")
+        assert isinstance(engine.cpu_player, baselineCPU)
+        assert engine.cpu_player.stack == 1000
+        assert engine.dealer.table.players[1].name == "baselineCPU"
+        
+        # Test medium difficulty
+        engine.set_cpu_difficulty("medium")
+        assert isinstance(engine.cpu_player, equityCPU)
+        assert engine.cpu_player.stack == 1000
+        assert engine.dealer.table.players[1].name == "equityCPU"
+        
+        # Test hard difficulty (MLCPU)
+        engine.set_cpu_difficulty("hard")
+        assert isinstance(engine.cpu_player, MLCPU)
+        assert engine.cpu_player.stack == 1000
+        assert engine.dealer.table.players[1].name == "MLCPU"
+        # Check that the model path is set correctly
+        assert hasattr(engine.cpu_player, "model_path")
+        
+        # Test invalid difficulty
+        with pytest.raises(ValueError):
+            engine.set_cpu_difficulty("invalid")
