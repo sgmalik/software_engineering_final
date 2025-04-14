@@ -132,11 +132,17 @@ Starting Board: <img width="398" alt="image" src="https://github.com/user-attach
 ---
 
 ##  Getting Started
+Poker Showdown is a game that runs on Python: a high-level, object-oriented, general-purpose programming language. The following instructions will get a copy of the project up and running on your local machine.
 
-###  Requirements
+###  Requirements needed to begin 
 ```bash
 Python 3.10+
 Pygame
+pip
+
+### Installation
+1. Clone the Respositroy on local machine
+
 
 
 
