@@ -59,13 +59,16 @@ Poker Showdown is a game that runs on Python: a high-level, object-oriented, gen
 ```bash
 Python 3.10+
 Pygame
+Pypokerengine
 pip
 ```
 ### Steps to run game on local machine
 1. Clone the Repository on local machine
 git clone https://github.com/sgmalik/software_engineering_final.git
 2. Install Dependencies listed above (use pip)
-pip install pygame
+```
+pip install-r requirements.txt
+```
 3. Run Poker Showdown
 python main.py
 
@@ -90,6 +93,8 @@ software_engineering_final/
   ├── gui/                # GUI classes: buttons, sliders, numtext, etc.
   
   ├── model/              # .pkl file for CPU AI model
+
+├── requirments.txt       # text file with required modules
   
 └── README.md             # You're here!
 ```
@@ -103,7 +108,8 @@ software_engineering_final/
 ## Game Images 
 <img width="399" alt="image" src="https://github.com/user-attachments/assets/0e587389-6df2-4ba6-a715-43e59485436b" />
 <img width="597" alt="image" src="https://github.com/user-attachments/assets/6bcdbc78-2587-45fb-8c11-8f45e2e03f02" />
-<img width="398" alt="image" src="https://github.com/user-attachments/assets/a9d95b67-a283-4407-b56c-6637c3ab70c1" />
+<img width="598" alt="image" src="https://github.com/user-attachments/assets/5147a25b-48e4-4fbd-af2f-fb2c4e43b7bc" />
+
 
 ## Team Members 
 
