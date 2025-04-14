@@ -1,14 +1,14 @@
 """Helper functions for the GUI"""
-
 from enum import Enum
+import pygame
+
 from gui.button import Button
 from gui.slider import Slider
 from gui.gui_card import GUI_Card, CardType, card_type
 from gui.chip import Chip
 from gui.numtext import NumText
-from game_engine.engine import Engine
 from game_engine.constants import Action
-import pygame
+
 
 SPRITESHEET_PATH = "../assets/poker-spritesheet.png"
 
