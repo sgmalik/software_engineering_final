@@ -6,6 +6,12 @@ keeps track of state. As well as how the game is initialzied.
 from .dealer import Dealer
 from .constants import Action, PlayerState
 from typing import Optional, Dict, Any
+from .cpu.baselineCPU import baselineCPU
+from .cpu.equityCPU import equityCPU
+from .cpu.potOddsCPU import potOddsCPU
+from .cpu.expectedValueCPU import expectedValueCPU
+from .cpu.mlCPU import MLCPU
+import os
 
 class Engine():
     """
@@ -47,6 +53,12 @@ It needs to return information that the GUI needs
                 'initial_stack': self.initial_stack
             }
             self.game_info['seats'].append(seat_info)
+            
+        # Create directory for ML model if it doesn't exist
+        self.ml_model_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'models')
+        if not os.path.exists(self.ml_model_dir):
+            os.makedirs(self.ml_model_dir)
+        self.ml_model_path = os.path.join(self.ml_model_dir, 'ml_cpu_model.pkl')
 
     def set_cpu_player(self, cpu_player):
         """
@@ -68,13 +80,25 @@ It needs to return information that the GUI needs
         
         # Send game start message to CPU
         self.cpu_player.receive_game_start_message(self.game_info)
-
-
-        # Update the game_info seats with the CPU player's name
-        self.game_info['seats'][1]['name'] = cpu_player.__class__.__name__
+    
+    def set_cpu_difficulty(self, difficulty):
+        """
+        Set the difficulty of the CPU player.
         
-        # Send game start message to CPU
-        self.cpu_player.receive_game_start_message(self.game_info)
+        Args:
+            difficulty: String representing the difficulty level ("easy", "medium", "hard", "ml")
+        """
+        if difficulty == "easy":
+            self.cpu_player = baselineCPU(self.initial_stack)
+        elif difficulty == "medium":
+            self.cpu_player = equityCPU(self.initial_stack)
+        elif difficulty == "hard":
+            self.cpu_player = MLCPU(self.initial_stack, model_path=self.ml_model_path)
+        else:
+            raise ValueError(f"Unknown difficulty level: {difficulty}")
+            
+        # Initialize the CPU player
+        self.set_cpu_player(self.cpu_player)
 
     def current_state_of_game(self):
         """
@@ -87,7 +111,6 @@ It needs to return information that the GUI needs
         players = []
         for player in self.dealer.table.players:
             max_bet = self.dealer.betting_manager.get_max_raise(player)
-
             players.append({
                 "name": player.name,
                 "stack": player.stack,
@@ -115,7 +138,8 @@ It needs to return information that the GUI needs
                             "action": action["action"].value,
                             "amount": action.get("amount", 0),
                             "add_amount": action.get("add_amount", 0),
-                            "paid": action.get("paid", 0)
+                            "paid": action.get("paid", 0),
+                            "stack": action.get("stack", player.stack)  # Include stack value from action history
                         }
                         action_histories[street_name].append(action_entry)
    
@@ -197,7 +221,8 @@ It needs to return information that the GUI needs
                             "action": action["action"],
                             "amount": action.get("amount", 0),
                             "add_amount": action.get("add_amount", 0),
-                            "paid": action.get("paid", 0)
+                            "paid": action.get("paid", 0),
+                            "stack": action.get("stack", 0)
                         }
                         action_histories[street_name].append(action_entry)
         
@@ -218,6 +243,7 @@ It needs to return information that the GUI needs
         function that will be called when the street is over.
         """
         if self.dealer.is_round_over():
+            print("round over")
             self.start_next_round()
         else:
             # Save action histories for all players before moving to next street
@@ -240,7 +266,7 @@ It needs to return information that the GUI needs
         function that will be called when the round is over
         (so call this when river is done)
         """
-        
+        print("starting next round")
         # Send round start message to CPU if one is set
         if self.cpu_player is not None:
             # Get hole cards for CPU player
@@ -322,7 +348,8 @@ It needs to return information that the GUI needs
         valid_actions = [
             {"action": "fold", "amount": 0},
             {"action": "call", "amount": self.dealer.betting_manager.current_bet - cpu_player.contribuition},
-            {"action": "raise", "amount": {"min": self.dealer.betting_manager.current_bet * 2, "max": cpu_player.stack}}
+            {"action": "raise", "amount": {"min": self.dealer.betting_manager.current_bet * 2, "max": cpu_player.stack}}, 
+            {"action": "check", "amount": 0}
         ]
         
         # Check if we have a CPU player set
@@ -338,7 +365,7 @@ It needs to return information that the GUI needs
         action_enum = Action(action)
         
         # Apply the action
-        self.dealer.apply_action(action_enum, amount if action == "raise" else None)
+        self.dealer.apply_action(action_enum, int(amount) if action == "raise" else None)
         
         # Save action histories for all players after the action
         for player in self.dealer.table.players:
@@ -353,6 +380,10 @@ It needs to return information that the GUI needs
             }
             round_state = self.build_round_state()
             self.cpu_player.receive_game_update_message(new_action, round_state)
+            
+            # If the CPU folded, update its stack immediately
+            if action == "fold":
+                self.cpu_player.stack = self.dealer.table.players[1].stack
         
         #after we apply the action need to check if the round is over so can do showdown logic
         #calling showdown will change player stack values

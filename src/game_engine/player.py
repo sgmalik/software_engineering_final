@@ -88,21 +88,37 @@ class Player:
         """
         history = None
         if action == Action.FOLD:
-            history = {"action": action, "name": self.name}
+            history = {"action": action, "name": self.name, "stack": self.stack}
         elif action == Action.CALL:
-            history = {
-                "name": self.name,
-                "action": action,
-                "amount": self.contribuition,
-                "paid": self.contribuition,
-            }
-        elif action == Action.RAISE:
+            pay_history = [
+                h
+                for h in self.action_histories
+                if h["action"] != Action.FOLD and h["action"] != Action.ANTE
+            ]
+            last_pay = pay_history[-1] if len(pay_history) != 0 else None
+            last_pay_amount = last_pay.get("paid", 0) if last_pay else 0
             history = {
                 "name": self.name,
                 "action": action,
                 "amount": chip_amount,
-                "paid": self.contribuition,
+                "paid": chip_amount - last_pay_amount,
+                "stack": self.stack
+            }
+        elif action == Action.RAISE:
+            pay_history = [
+                h
+                for h in self.action_histories
+                if h["action"] != Action.FOLD and h["action"] != Action.ANTE
+            ]
+            last_pay = pay_history[-1] if len(pay_history) != 0 else None
+            last_pay_amount = last_pay.get("paid", 0) if last_pay else 0
+            history = {
+                "name": self.name,
+                "action": action,
+                "amount": chip_amount,
+                "paid": chip_amount - last_pay_amount,
                 "add_amount": add_amount,
+                "stack": self.stack
             }
         elif action == Action.SMALL_BLIND:
             assert sb_amount is not None
@@ -112,7 +128,8 @@ class Player:
                 "amount": sb_amount,
                 "add_amount": add_amount,
                 "name": self.name,
-                "paid": sb_amount
+                "paid": sb_amount,
+                "stack": self.stack
             }
         elif action == Action.BIG_BLIND:
             assert bb_amount is not None
@@ -122,18 +139,18 @@ class Player:
                 "amount": bb_amount,
                 "add_amount": add_amount,
                 "name": self.name,
-                "paid": bb_amount
+                "paid": bb_amount,
+                "stack": self.stack
             }
-        elif action == Action.ANTE:
-            assert chip_amount > 0 if chip_amount is not None else True
+        elif action == Action.CHECK:
             history = {
                 "action": action,
-                "amount": chip_amount,
                 "name": self.name,
-                "paid": chip_amount
+                "stack": self.stack
             }
-        print(history)
-        self.action_histories.append(history)
+
+        if history is not None:
+            self.action_histories.append(history)
 
     def save_round_action_histories(self, street: Street):
         """

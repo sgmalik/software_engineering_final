@@ -127,6 +127,10 @@ class Dealer:
         or a player is all in and river is over
         """
 
+        # If any player has folded, don't do showdown (pot already distributed in _fold)
+        if any(player.state == PlayerState.FOLDED for player in self.table.players):
+            return False
+
         #check if betting is over
         if not self.betting_manager.is_betting_over():
             return False
@@ -174,4 +178,3 @@ class Dealer:
             if player.stack <= 0:
                 self.game_over = True
     
-

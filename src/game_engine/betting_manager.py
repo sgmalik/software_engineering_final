@@ -80,10 +80,13 @@ class BettingManager:
         change playerState, remove from pending betters
         NOTE: since its 1v1 can just add pot to opposite player's stack
         """
+        # Remove from pending betters first before changing state
+        if current_player in self.pending_betters:
+            self.pending_betters.remove(current_player)
+            
         current_player.state = PlayerState.FOLDED
         winner = [player for player in self.table.players if player.state != PlayerState.FOLDED]
-        GameEvaluator.add_money_to_winners(self.table, winner) 
-        self._remove_better(current_player)
+        GameEvaluator.add_money_to_winners(self.table, winner)
 
     def _raise(self, current_player, raise_amount):
         """
@@ -173,4 +176,8 @@ class BettingManager:
         """
         gets the maximum amount the current player can raise by
         """
+        # If player has folded, they can't raise
+        if current_player.state == PlayerState.FOLDED:
+            return 0
+            
         return current_player.stack - (self.current_bet - current_player.contribuition)

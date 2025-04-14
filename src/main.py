@@ -13,7 +13,6 @@ cpu = baselineCPU(500)
 engine.set_cpu_player(cpu_player=cpu)
 #engine.start_next_round()
 
-
 # Initialize Pygame
 pygame.init()
 SCALE = 4
@@ -32,6 +31,9 @@ game_background = pygame.transform.scale(pygame.image.load(
 
 # Initialize GUI elements
 change_to_main_menu(SCALE, engine)
+
+# # Set initial CPU difficulty
+# engine.set_cpu_difficulty(gui_state["difficulty"][0])
 
 RUNNING = True
 while RUNNING:

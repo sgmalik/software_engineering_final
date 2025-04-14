@@ -1,45 +1,12 @@
 from pypokerengine.players import BasePokerPlayer
 from game_engine.deck import Card
-from enum import Enum
 from game_engine.constants import Action, PlayerState, Street
 from typing import List, Union, Dict, Any, Optional, cast
-
-# assuming that round_state is a dictionary with the following structure:
-
-# {
-#     'street': 'preflop',  # Current phase (preflop, flop, turn, river)
-#     'next_player': 1,  # Index of the next player to act
-#     'small_blind_pos': 0,  # Position of small blind player
-#     'big_blind_pos': 1,  # Position of big blind player
-#     'community_card': ['H1', 'D5', 'C9'],  # Cards on the table
-#     'pot': {
-#         'main': 300,  # Total chips in the pot
-#         'side': []  # Side pots (if applicable)
-#     },
-#     'seats': [
-#         {
-#             'name': 'Player1',
-#             'stack': 800,  # Chips left
-#             'state': 'participating',  # 'participating', 'folded', 'allin'
-#         },
-#         {
-#             'name': 'cpu',
-#             'stack': 1200,
-#             'state': 'participating'
-#         }
-#     ],
-#     'action_histories': {
-#         'preflop': [
-#             {'name': 'player1', 'action': 'small_blind', 'amount': 10},
-#             {'name': 'ai', 'action': 'big_blind', 'amount': 20},
-#             {'name': 'player1', 'action': 'call', 'amount': 10},
-#             {'name': 'ai', 'action': 'check', 'amount': 0}
-#         ],
-#         'flop': [],
-#         'turn': [],
-#         'river': []
-#     }
-# }
+import numpy as np
+import pickle
+import os
+import random
+from collections import defaultdict
 
 def parse_card_str(card_str: str) -> Card:
     """
@@ -58,11 +25,12 @@ def parse_card_str(card_str: str) -> Card:
     
     return Card(suit=suit, card_val=rank)
 
-class potOddsCPU(BasePokerPlayer):
+class MLCPU(BasePokerPlayer):
     """
-    CPU that makes decisions based on pot odds vs equity
+    CPU that uses reinforcement learning to improve its poker strategy over time.
+    Implements Q-learning to learn optimal actions in different game states.
     """
-    def __init__(self, initial_stack):
+    def __init__(self, initial_stack, model_path=None, learning_rate=0.1, discount_factor=0.95, epsilon=0.1):
         self.hole_cards: List[Card] = []
         self.stack = initial_stack
         self.state = PlayerState.ACTIVE
@@ -72,12 +40,33 @@ class potOddsCPU(BasePokerPlayer):
         
         # Game state tracking
         self.game_info: Optional[Dict[str, Any]] = None
-        self.name = "cpu"  # Set name to "ai" for testing
+        self.name = "ml_cpu"
         self.round_count = 0
         self.seats: List[Dict[str, Any]] = []
         self.street: Optional[str] = None
         self.community_cards: List[Card] = []
         self.opponent_actions: List[Dict[str, Any]] = []
+        
+        # ML parameters
+        self.learning_rate = learning_rate
+        self.discount_factor = discount_factor
+        self.epsilon = epsilon  # Exploration rate
+        self.model_path = model_path
+        
+        # Q-table: maps state-action pairs to Q-values
+        self.q_table = defaultdict(lambda: defaultdict(float))
+        
+        # Load pre-trained model if available
+        if model_path and os.path.exists(model_path):
+            self.load_model(model_path)
+        
+        # Track current state and action for updating Q-values
+        self.current_state = None
+        self.current_action = None
+        
+        # Track game history for training
+        self.game_history = []
+        self.current_round_history = []
     
     def add_hole_card(self, cards: List[Card]):
         if len(self.hole_cards) != 0:
@@ -194,6 +183,12 @@ class potOddsCPU(BasePokerPlayer):
 
         if history is not None:
             self.action_histories.append(history)
+            # Add to current round history for training
+            self.current_round_history.append({
+                "state": self.current_state,
+                "action": self.current_action,
+                "reward": 0  # Will be updated at the end of the round
+            })
 
     def save_round_action_histories(self, street: Street):
         """
@@ -223,12 +218,12 @@ class potOddsCPU(BasePokerPlayer):
         # Count occurrences of each suit and rank
         for card in hole_cards:
             suits[card.suit] += 1
-            rank = card.get_card_rank()
+            rank = int(card.card_val) if card.card_val.isdigit() else {'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}[card.card_val]
             ranks[rank] += 1
             
         for card in community_cards:
             suits[card.suit] += 1
-            rank = card.get_card_rank()
+            rank = int(card.card_val) if card.card_val.isdigit() else {'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}[card.card_val]
             ranks[rank] += 1
             
         # Check for flush draw
@@ -254,10 +249,132 @@ class potOddsCPU(BasePokerPlayer):
                     
         # Return total outs
         return flush_outs + straight_outs + overcard_outs
-
+    
+    def extract_features(self, hole_cards, community_cards, pot, call_amount, round_state):
+        """
+        Extract numerical features from the current game state.
+        Returns a tuple that can be used as a key in the Q-table.
+        """
+        # Count outs as a measure of hand strength
+        outs = self.count_outs(hole_cards, community_cards)
+        
+        # Calculate pot odds
+        # Handle case where call_amount is a dictionary with min and max values
+        if isinstance(call_amount, dict) and 'min' in call_amount:
+            call_amount = call_amount['min']  # Use minimum call amount for pot odds calculation
+        
+        pot_odds = call_amount / (pot + call_amount) if pot + call_amount > 0 else 0
+        
+        # Calculate position (0 = small blind, 1 = big blind)
+        position = 0
+        if round_state.get('small_blind_pos') == 1:  # We're small blind
+            position = 0
+        elif round_state.get('big_blind_pos') == 1:  # We're big blind
+            position = 1
+            
+        # Calculate street (0 = preflop, 1 = flop, 2 = turn, 3 = river)
+        street_map = {'preflop': 0, 'flop': 1, 'turn': 2, 'river': 3}
+        street = street_map.get(round_state.get('street', 'preflop'), 0)
+        
+        # Calculate stack to pot ratio
+        stack_to_pot = self.stack / (pot + 1)  # Add 1 to avoid division by zero
+        
+        # Calculate opponent aggression (ratio of raises to calls)
+        opponent_aggression = 0
+        if self.opponent_actions:
+            raises = sum(1 for action in self.opponent_actions if action.get('action') == 'raise')
+            calls = sum(1 for action in self.opponent_actions if action.get('action') == 'call')
+            opponent_aggression = raises / (calls + 1)  # Add 1 to avoid division by zero
+            
+        # Discretize continuous values to reduce state space
+        outs_bucket = min(outs // 2, 10)  # 0-20 outs, bucketed into 11 categories
+        pot_odds_bucket = int(pot_odds * 10)  # 0-1 pot odds, bucketed into 10 categories
+        stack_to_pot_bucket = min(int(stack_to_pot), 10)  # 0-10+ stack to pot ratio
+        aggression_bucket = min(int(opponent_aggression * 2), 5)  # 0-2.5+ aggression, bucketed into 6 categories
+        
+        # Return a tuple of discretized features
+        return (outs_bucket, pot_odds_bucket, position, street, stack_to_pot_bucket, aggression_bucket)
+    
+    def get_action_from_q_table(self, state, valid_actions):
+        """
+        Get the best action from the Q-table based on the current state.
+        Uses epsilon-greedy strategy for exploration.
+        """
+        # Epsilon-greedy strategy
+        if random.random() < self.epsilon:
+            # Explore: choose a random action
+            action_idx = random.randint(0, len(valid_actions) - 1)
+            action = valid_actions[action_idx]['action']
+            amount = valid_actions[action_idx].get('amount', 0)
+            if isinstance(amount, dict):  # For raise actions
+                amount = amount.get('min', 0)
+            return action, amount
+        
+        # Exploit: choose the action with the highest Q-value
+        best_action_idx = 0
+        best_q_value = float('-inf')
+        
+        for i, action_dict in enumerate(valid_actions):
+            action = action_dict['action']
+            amount = action_dict.get('amount', 0)
+            if isinstance(amount, dict):  # For raise actions
+                amount = amount.get('min', 0)
+                
+            q_value = self.q_table[state][(action, amount)]
+            if q_value > best_q_value:
+                best_q_value = q_value
+                best_action_idx = i
+                
+        action = valid_actions[best_action_idx]['action']
+        amount = valid_actions[best_action_idx].get('amount', 0)
+        if isinstance(amount, dict):  # For raise actions
+            amount = amount.get('min', 0)
+            
+        return action, amount
+    
+    def update_q_value(self, state, action, reward, next_state):
+        """
+        Update the Q-value for the state-action pair using the Q-learning update rule.
+        """
+        # Get the maximum Q-value for the next state
+        next_max_q = max(self.q_table[next_state].values()) if self.q_table[next_state] else 0
+        
+        # Q-learning update rule
+        current_q = self.q_table[state][action]
+        new_q = current_q + self.learning_rate * (reward + self.discount_factor * next_max_q - current_q)
+        self.q_table[state][action] = new_q
+    
+    def calculate_reward(self, round_result, hand_info):
+        """
+        Calculate the reward for the current round based on the outcome.
+        """
+        # Check if we won
+        won = False
+        for winner in round_result:
+            if isinstance(winner, dict) and winner.get('name') == self.name:
+                won = True
+                break
+                
+        # Calculate reward based on stack change
+        initial_stack = self.stack - self.contribuition
+        stack_change = self.stack - initial_stack
+        
+        # Base reward is the stack change
+        reward = stack_change
+        
+        # Add bonus for winning
+        if won:
+            reward += 10
+            
+        # Add penalty for folding with a strong hand
+        if self.state == PlayerState.FOLDED and self.count_outs(self.hole_cards, self.community_cards) > 10:
+            reward -= 5
+            
+        return reward
+    
     def declare_action(self, valid_actions: List[Dict[str, Any]], hole_card: List[str], round_state: Dict[str, Any]) -> tuple[str, Union[int, float]]:
         """
-        Declare action based on pot odds vs equity calculation.
+        Declare action based on Q-learning.
         """
         # Convert hole cards from strings
         hole_cards = [parse_card_str(card_str) for card_str in hole_card]
@@ -265,29 +382,19 @@ class potOddsCPU(BasePokerPlayer):
         # Convert community cards from strings
         community_cards = [parse_card_str(card_str) for card_str in round_state['community_card']]
         
-        # Calculate equity based on outs
-        outs = self.count_outs(hole_cards, community_cards)
-        equity = min(outs * 4, 100) / 100  # Convert to decimal percentage
-        
         # Get the current pot and call amount
         pot = round_state['pot']['main']
         call_amount = valid_actions[1]['amount']  # Index 1 is always call
         
-        # Calculate pot odds
-        pot_odds = call_amount / (pot + call_amount)
+        # Extract features from the current state
+        state = self.extract_features(hole_cards, community_cards, pot, call_amount, round_state)
+        self.current_state = state
         
-        # Decision making based on pot odds vs equity
-        if equity >= pot_odds:  # Profitable to call/raise
-            # Try to raise if our equity is significantly better than pot odds
-            if len(valid_actions) > 2 and equity > pot_odds * 1.2:  # 20% better equity than needed
-                raise_action = valid_actions[2]
-                min_raise = raise_action['amount']['min']
-                max_raise = min(raise_action['amount']['max'], self.stack)
-                raise_amount = min(max_raise, min_raise * 2)  # Raise 2x minimum
-                return 'raise', raise_amount
-            return 'call', call_amount
-        else:
-            return 'fold', 0
+        # Get the best action from the Q-table
+        action, amount = self.get_action_from_q_table(state, valid_actions)
+        self.current_action = (action, amount)
+        
+        return action, amount
 
     def receive_game_start_message(self, game_info: Dict[str, Any]) -> None:
         """
@@ -300,6 +407,9 @@ class potOddsCPU(BasePokerPlayer):
         for seat in game_info['seats']:
             if seat['name'] == self.name:
                 break
+                
+        # Reset game history
+        self.game_history = []
 
     def receive_round_start_message(self, round_count: int, hole_card: List[str], seats: List[Dict[str, Any]]) -> None:
         """
@@ -314,6 +424,9 @@ class potOddsCPU(BasePokerPlayer):
         # Reset action histories for new round
         self.round_action_histories = [None] * 4
         self.action_histories = []
+        
+        # Reset current round history
+        self.current_round_history = []
 
     def receive_street_start_message(self, street: str, round_state: Dict[str, Any]) -> None:
         """
@@ -348,6 +461,22 @@ class potOddsCPU(BasePokerPlayer):
         
         # Update community cards
         self.community_cards = [parse_card_str(card_str) for card_str in round_state['community_card']]
+        
+        # Update Q-values for the previous state-action pair if we have one
+        if self.current_state and self.current_action:
+            # Extract features for the new state
+            hole_cards = self.hole_cards
+            community_cards = self.community_cards
+            pot = round_state['pot']['main']
+            call_amount = 0  # We don't know the call amount yet
+            
+            next_state = self.extract_features(hole_cards, community_cards, pot, call_amount, round_state)
+            
+            # Calculate immediate reward (0 for intermediate actions)
+            reward = 0
+            
+            # Update Q-value
+            self.update_q_value(self.current_state, self.current_action, reward, next_state)
 
     def receive_round_result_message(self, winners: List[Dict[str, Any]], hand_info: Dict[str, Any], round_state: Dict[str, Any]) -> None:
         """
@@ -364,3 +493,51 @@ class potOddsCPU(BasePokerPlayer):
             if seat.get('name') == self.name:
                 self.stack = seat['stack']
                 break
+                
+        # Calculate reward for the round
+        reward = self.calculate_reward(winners, hand_info)
+        
+        # Update Q-values for all state-action pairs in the round
+        for i, history in enumerate(self.current_round_history):
+            state = history['state']
+            action = history['action']
+            
+            # For the last action, use the final reward
+            # For earlier actions, use a discounted reward
+            if i == len(self.current_round_history) - 1:
+                final_reward = reward
+            else:
+                # Use a small negative reward for intermediate actions to encourage efficiency
+                final_reward = -0.1
+                
+            # Extract features for the next state (use the next state in history or a dummy state)
+            if i < len(self.current_round_history) - 1:
+                next_state = self.current_round_history[i + 1]['state']
+            else:
+                # For the last action, use a dummy terminal state
+                next_state = (-1, -1, -1, -1, -1, -1)
+                
+            # Update Q-value
+            self.update_q_value(state, action, final_reward, next_state)
+            
+        # Add the round history to the game history
+        self.game_history.append(self.current_round_history)
+        
+        # Save the model periodically
+        if self.model_path and len(self.game_history) % 10 == 0:
+            self.save_model(self.model_path)
+    
+    def save_model(self, path):
+        """
+        Save the Q-table to a file.
+        """
+        with open(path, 'wb') as f:
+            pickle.dump(dict(self.q_table), f)
+            
+    def load_model(self, path):
+        """
+        Load the Q-table from a file.
+        """
+        with open(path, 'rb') as f:
+            q_table_dict = pickle.load(f)
+            self.q_table = defaultdict(lambda: defaultdict(float), q_table_dict) 
