@@ -100,6 +100,9 @@ class Button:
             case "hard":
                 self.unpressed_sprite = self.get_sprite(82, 188)
                 self.pressed_sprite = self.get_sprite(82, 188)
+            case "back":
+                self.unpressed_sprite = self.get_sprite(134, 162)
+                self.pressed_sprite = self.get_sprite(147, 162)
 
 
     def get_sprite(self, x, y):

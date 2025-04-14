@@ -22,7 +22,6 @@ class Screen(Enum):
     GAME = 2
 
 
-
 difficulty = [Difficulty.EASY]
 gui_state = {
         "screen": Screen.HOME,
@@ -113,13 +112,13 @@ def change_to_main_menu(scale, engine):
 
     settings = Button(SPRITESHEET_PATH, (51 * scale, 113 * scale),
                       (scale, scale), 98, 22, "settings",
-                      callback=lambda: change_to_settings(scale))
+                      callback=lambda: change_to_settings(scale, engine))
 
     gui_state["buttons"].append(new_game)
     gui_state["buttons"].append(settings)
 
 
-def change_to_settings(scale):
+def change_to_settings(scale, engine):
     """
     Changes the GUI elements to the ones found in the settings screen
     """
@@ -137,6 +136,9 @@ def change_to_settings(scale):
     change_card = Button(SPRITESHEET_PATH, (25 * scale, 109 * scale),
                          (scale, scale), 67, 13, "change card", callback=lambda: toggle_card_type(scale, card_type))
 
+    back = Button(SPRITESHEET_PATH, (11 * scale, 12 * scale),
+                        (scale, scale), 13, 13, "back", callback=lambda: change_to_main_menu(scale, engine))
+
     card = GUI_Card(SPRITESHEET_PATH, (96 * scale, 109 * scale), (scale, scale), "A", "S")
     gui_state["cards"].append(card)
 
@@ -151,6 +153,7 @@ def change_to_settings(scale):
 
     gui_state["buttons"].append(difficulty_button)
     gui_state["buttons"].append(change_card)
+    gui_state["buttons"].append(back)
 
 
 def change_to_game(scale, engine):
@@ -228,6 +231,11 @@ def change_to_game(scale, engine):
         #button = Button(SPRITESHEET_PATH, button_positions[i],
                         #(scale, scale), 23, 9, button_names[i])
         #gui_state["buttons"].append(button)
+
+    # Back button
+    back = Button(SPRITESHEET_PATH, (1 * scale, 1 * scale),
+                        (scale, scale), 13, 13, "back", callback=lambda: change_to_main_menu(scale, engine))
+    gui_state["buttons"].append(back)
 
     # Create slider
     gui_state["sliders"].append(Slider(SPRITESHEET_PATH, (183 * scale, 101 * scale),
