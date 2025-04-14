@@ -6,6 +6,7 @@ from gui.util import change_to_main_menu, Screen, CardType, Difficulty, gui_stat
 from game_engine.engine import Engine 
 from game_engine.cpu.baselineCPU import baselineCPU
 
+
 # Connect Gui & Engine
 # Gain acess to current state of game, player action, and cpu action from engine
 engine = Engine(num_players=2, initial_stack=500, blind=10)

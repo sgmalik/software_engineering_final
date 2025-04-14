@@ -40,6 +40,7 @@ from game_engine.constants import Action, PlayerState
 #     }
 # }
 
+
 def parse_card_str(card_str: str) -> Card:
     """
     Helper function to parse card strings into Card objects.
@@ -54,21 +55,24 @@ def parse_card_str(card_str: str) -> Card:
     else:  # Handle '2H' format
         suit = card_str[1].upper()
         rank = card_str[0]
-    
+
     return Card(suit=suit, card_val=rank)
+
 
 class baselineCPU(BasePokerPlayer):
     """
     Basic CPU that always calls unless it has a very weak hand
     """
+
     def __init__(self, initial_stack):
         self.hole_cards: List[Card] = []
         self.stack = initial_stack
         self.state = PlayerState.ACTIVE
-        self.round_action_histories: List[Optional[List[Dict[str, Any]]]] = [None] * 4
+        self.round_action_histories: List[Optional[List[Dict[str, Any]]]] = [
+            None] * 4
         self.contribuition = 0
         self.action_histories: List[Dict[str, Any]] = []
-        
+
         # Game state tracking
         self.game_info: Optional[Dict[str, Any]] = None
         self.name = "cpu"  # Set name to "ai" for testing
@@ -77,8 +81,11 @@ class baselineCPU(BasePokerPlayer):
         self.street: Optional[str] = None
         self.community_cards: List[Card] = []
         self.opponent_actions: List[Dict[str, Any]] = []
-    
+
     def add_hole_card(self, cards: List[Card]):
+        """
+        add hole cards to player, only if they don't already have any
+        """
         if len(self.hole_cards) != 0:
             raise ValueError("Player already has hold cards")
         if len(cards) != 2:
@@ -88,35 +95,62 @@ class baselineCPU(BasePokerPlayer):
         self.hole_cards = cards
 
     def clear_hole_cards(self):
+        """
+        clear hole cards for player
+        """
         self.hole_cards = []
 
     def add_to_stack(self, amount):
+        """
+        add amount to player's stack
+        """
         self.stack += amount
-    
+
     def collect_bet(self, amount: float | int):
+        """
+        collect bet from player, adjusting stack and contribution
+        """
         if self.stack < amount:
             raise ValueError("Player cannot afford this bet")
         self.stack -= amount
         self.contribuition += amount
 
     def reset_contribuition(self):
+        """
+        reset player's contribution to zero
+        """
         self.contribuition = 0
 
     def is_active(self):
+        """
+        check if player is active, meaning they are still in the game
+        """
         return self.state == PlayerState.ACTIVE
 
     def is_folded(self):
+        """
+        check if player has folded, meaning they are no longer in the game
+        """
         return self.state == PlayerState.FOLDED
 
     def is_allin(self):
+        """
+        check if player is all in, meaning they have no chips left
+        """
         return self.state == PlayerState.ALLIN
 
     def is_waiting(self):
+        """
+        check if player is waiting for their turn
+        """
         return self.state == PlayerState.WAITING
 
     def is_winner(self):
+        """
+        return True if player is a winner, meaning they have won the round
+        """
         return self.state == PlayerState.WINNER
-    
+
     def add_action_history(
         self,
         action: Action,
@@ -130,7 +164,8 @@ class baselineCPU(BasePokerPlayer):
         """
         history = None
         if action == Action.FOLD:
-            history = {"action": action, "name": self.name, "stack": self.stack}
+            history = {"action": action,
+                       "name": self.name, "stack": self.stack}
         elif action == Action.CALL:
             pay_history = [
                 h
@@ -201,7 +236,7 @@ class baselineCPU(BasePokerPlayer):
         """
         if self.round_action_histories[street.value] is None:
             self.round_action_histories[street.value] = []
-        
+
         histories = cast(List[dict], self.round_action_histories[street.value])
         histories.extend(self.action_histories)
         self.action_histories = []
@@ -217,19 +252,21 @@ class baselineCPU(BasePokerPlayer):
         """
         # Convert hole cards from strings
         hole_cards = [parse_card_str(card_str) for card_str in hole_card]
-            
+
         # Convert community cards from strings
-        community_cards = [parse_card_str(card_str) for card_str in round_state['community_card']]
-        
+        community_cards = [parse_card_str(card_str)
+                           for card_str in round_state['community_card']]
+
         # Get the current pot and call amount
         pot = round_state['pot']['main']
         call_amount = valid_actions[1]['amount']  # Index 1 is always call
-        
+
         # Simple strategy - always call unless we have a very weak hand
         # Check if we have at least one high card (10 or better)
         high_cards = [10, 11, 12, 13, 14]
-        has_high_card = any(card.get_card_rank() in high_cards for card in hole_cards)
-        
+        has_high_card = any(card.get_card_rank()
+                            in high_cards for card in hole_cards)
+
         if valid_actions[3]['action'] == 'check' and call_amount == 0:
             return 'check', 0
         elif len([card for card in hole_cards if card.get_card_rank() in high_cards]) == 2 or len([card for card in hole_cards if card in community_cards]) > 0:
@@ -246,7 +283,7 @@ class baselineCPU(BasePokerPlayer):
         """
         self.game_info = game_info
         self.stack = game_info['rule']['initial_stack']
-        
+
         # Find our seat
         for seat in game_info['seats']:
             if seat['name'] == self.name:
@@ -261,7 +298,7 @@ class baselineCPU(BasePokerPlayer):
         self.seats = seats
         self.community_cards = []
         self.opponent_actions = []
-        
+
         # Reset action histories for new round
         self.round_action_histories = [None] * 4
         self.action_histories = []
@@ -271,8 +308,9 @@ class baselineCPU(BasePokerPlayer):
         Called at the start of each street.
         """
         self.street = street
-        self.community_cards = [parse_card_str(card_str) for card_str in round_state['community_card']]
-        
+        self.community_cards = [parse_card_str(
+            card_str) for card_str in round_state['community_card']]
+
         # Save action histories for the previous street if any
         if street == 'preflop':
             street_index = 0
@@ -284,7 +322,7 @@ class baselineCPU(BasePokerPlayer):
             street_index = 3
         else:
             return
-            
+
         if self.action_histories:
             self.round_action_histories[street_index-1] = self.action_histories
             self.action_histories = []
@@ -296,9 +334,10 @@ class baselineCPU(BasePokerPlayer):
         # Track opponent actions
         if new_action.get('player_name') != self.name:
             self.opponent_actions.append(new_action)
-        
+
         # Update community cards
-        self.community_cards = [parse_card_str(card_str) for card_str in round_state['community_card']]
+        self.community_cards = [parse_card_str(
+            card_str) for card_str in round_state['community_card']]
 
     def receive_round_result_message(self, winners: List[Dict[str, Any]], hand_info: Dict[str, Any], round_state: Dict[str, Any]) -> None:
         """

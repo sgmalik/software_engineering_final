@@ -46,7 +46,8 @@ gui_state = {
         "ply_distribution": [], # Being updated
         "cpu_distribution": [], # Being updated
         "pot_distribution": [], # NOT being updated currently
-        "previewed_bet": 0
+        "previewed_bet": 0,
+        "game_just_started": True
         }
 
 
@@ -164,7 +165,10 @@ def change_to_game(scale, engine):
     """
     Changes the GUI elements to the ones found in the game screen
     """
-    engine.start_next_round() # Start game
+    
+    engine.start_next_round()
+     # Start game
+    
 
     gui_state["screen"] = Screen.GAME
 
@@ -249,6 +253,10 @@ def change_to_game(scale, engine):
     gui_state["numtexts"].append(ply_val)
     pot_val = NumText(SPRITESHEET_PATH, (184, 40), (scale, scale), 0, label="pot")
     gui_state["numtexts"].append(pot_val)
+    
+
+    
+
 
 
 def update_game(scale, engine):
@@ -256,6 +264,7 @@ def update_game(scale, engine):
     Handles the updating of the game. Everything related to engine/gui
     compatibility will be in this function.
     """
+
     gui_state["cards"].clear()
     gui_state["chips"].clear()
 
@@ -355,9 +364,12 @@ def update_game(scale, engine):
     gui_state["numtexts"][2].set_number(gui_state["ply_stack"]) # Player balance
     gui_state["numtexts"][3].set_number(gui_state["pot_stack"]) # Pot
 
+    
+
     # Update to next phase of round depending on state
     if state["round_over"]:
-       
+        engine.player_action("sb")
+        engine.player_action("bb")
         engine.start_next_round()
         update_gui_state(engine)
 

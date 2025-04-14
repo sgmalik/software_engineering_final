@@ -2,19 +2,18 @@
 betting_manager is adapted from pypokerengine's RoundManager class,
 """
 from .constants import Action
-from .table import Table
 from .constants import PlayerState
 from .game_evaluator import GameEvaluator
 
 
-
-class BettingManager: 
+class BettingManager:
     """
     the purpose of betting manager, is to track pending_betters (who is still in the hand)
     as well as update table information based on player action
     """
+
     def __init__(self, table, blind):
-        
+
         self.table = table
         self.current_bet = 0
         self.blind = blind
@@ -31,7 +30,7 @@ class BettingManager:
         self.pending_betters = self.table.active_players()
         self.table.reset_contribution()
 
-    def apply_player_action(self, current_player, action: Action, raise_amount = None):
+    def apply_player_action(self, current_player, action: Action, raise_amount=None):
         """
         declare action for the current player
         """
@@ -44,9 +43,11 @@ class BettingManager:
             current_player.add_action_history(action, chip_amount=0)
         elif action == Action.RAISE:
             if raise_amount is None:
-                raise ValueError("Raise amount cannot be None for a raise action")
+                raise ValueError(
+                    "Raise amount cannot be None for a raise action")
             self._raise(current_player, raise_amount)
-            current_player.add_action_history(action, chip_amount=self.current_bet, add_amount=raise_amount)
+            current_player.add_action_history(
+                action, chip_amount=self.current_bet, add_amount=raise_amount)
         elif action == Action.FOLD:
             self._fold(current_player)
             current_player.add_action_history(action)
@@ -58,8 +59,7 @@ class BettingManager:
             self._blind(current_player, self.blind*2)
             current_player.add_action_history(action, bb_amount=self.blind*2)
         self.table.next_player()
-        
-        
+
     def _blind(self, current_player, blind):
         """
         blind player action
@@ -69,11 +69,9 @@ class BettingManager:
             current_player.collect_bet(all_in_amount)
             self.table.pot.add_to_pot(all_in_amount)
             current_player.state = PlayerState.ALLIN
-        else: 
+        else:
             current_player.collect_bet(blind)
             self.table.pot.add_to_pot(blind)
-       
-            
 
     def _fold(self, current_player):
         """
@@ -83,16 +81,17 @@ class BettingManager:
         # Remove from pending betters first before changing state
         if current_player in self.pending_betters:
             self.pending_betters.remove(current_player)
-            
+
         current_player.state = PlayerState.FOLDED
-        winner = [player for player in self.table.players if player.state != PlayerState.FOLDED]
+        winner = [
+            player for player in self.table.players if player.state != PlayerState.FOLDED]
         GameEvaluator.add_money_to_winners(self.table, winner)
 
     def _raise(self, current_player, raise_amount):
         """
         pay current bet, raise bet 
         """
-        
+
         call_amount = self.current_bet - current_player.contribuition
         print(f"call_amount for player {current_player.name}: {call_amount}")
         current_player.collect_bet(call_amount)
@@ -100,7 +99,7 @@ class BettingManager:
 
         if self._is_all_in(current_player, call_amount + raise_amount):
             all_in_amount = current_player.stack
-        
+
             self._raise_bet(all_in_amount)
             current_player.state = PlayerState.ALLIN
             self.table.pot.add_to_pot(all_in_amount)
@@ -113,17 +112,16 @@ class BettingManager:
             self.table.pot.add_to_pot(raise_amount)
             self._add_betters(current_player)
 
-       
     def _is_all_in(self, current_player, amount):
-        #if no money they are all in
+        # if no money they are all in
         return current_player.stack <= amount
-        
+
     def _call(self, current_player):
         """
         pay current bet
         """
         call_amount = self.current_bet - current_player.contribuition
-        #if you can't pay full raise all_in
+        # if you can't pay full raise all_in
         if self._is_all_in(current_player, call_amount):
             all_in_amount = current_player.stack
             current_player.collect_bet(all_in_amount)
@@ -133,7 +131,6 @@ class BettingManager:
             current_player.collect_bet(call_amount)
             self.table.pot.add_to_pot(call_amount)
         self._remove_better(current_player)
-    
 
     def _check(self, current_player):
         """
@@ -179,5 +176,5 @@ class BettingManager:
         # If player has folded, they can't raise
         if current_player.state == PlayerState.FOLDED:
             return 0
-            
+
         return current_player.stack - (self.current_bet - current_player.contribuition)

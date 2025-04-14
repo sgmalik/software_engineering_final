@@ -40,6 +40,7 @@ from typing import List, Union, Dict, Any, Optional, cast
 #     }
 # }
 
+
 def parse_card_str(card_str: str) -> Card:
     """
     Helper function to parse card strings into Card objects.
@@ -54,21 +55,24 @@ def parse_card_str(card_str: str) -> Card:
     else:  # Handle '2H' format
         suit = card_str[1].upper()
         rank = card_str[0]
-    
+
     return Card(suit=suit, card_val=rank)
+
 
 class equityCPU(BasePokerPlayer):
     """
     CPU that makes decisions based on calculating equity from counting outs
     """
+
     def __init__(self, initial_stack):
         self.hole_cards: List[Card] = []
         self.stack = initial_stack
         self.state = PlayerState.ACTIVE
-        self.round_action_histories: List[Optional[List[Dict[str, Any]]]] = [None] * 4
+        self.round_action_histories: List[Optional[List[Dict[str, Any]]]] = [
+            None] * 4
         self.contribuition = 0
         self.action_histories: List[Dict[str, Any]] = []
-        
+
         # Game state tracking
         self.game_info: Optional[Dict[str, Any]] = None
         self.name = "cpu"  # Set name to "ai" for testing
@@ -77,7 +81,7 @@ class equityCPU(BasePokerPlayer):
         self.street: Optional[str] = None
         self.community_cards: List[Card] = []
         self.opponent_actions: List[Dict[str, Any]] = []
-    
+
     def add_hole_card(self, cards: List[Card]):
         if len(self.hole_cards) != 0:
             raise ValueError("Player already has hold cards")
@@ -92,7 +96,7 @@ class equityCPU(BasePokerPlayer):
 
     def add_to_stack(self, amount):
         self.stack += amount
-    
+
     def collect_bet(self, amount: float | int):
         if self.stack < amount:
             raise ValueError("Player cannot afford this bet")
@@ -116,7 +120,7 @@ class equityCPU(BasePokerPlayer):
 
     def is_winner(self):
         return self.state == PlayerState.WINNER
-    
+
     def add_action_history(
         self,
         action: Action,
@@ -130,7 +134,8 @@ class equityCPU(BasePokerPlayer):
         """
         history = None
         if action == Action.FOLD:
-            history = {"action": action, "name": self.name, "stack": self.stack}
+            history = {"action": action,
+                       "name": self.name, "stack": self.stack}
         elif action == Action.CALL:
             pay_history = [
                 h
@@ -201,7 +206,7 @@ class equityCPU(BasePokerPlayer):
         """
         if self.round_action_histories[street.value] is None:
             self.round_action_histories[street.value] = []
-        
+
         histories = cast(List[dict], self.round_action_histories[street.value])
         histories.extend(self.action_histories)
         self.action_histories = []
@@ -217,69 +222,73 @@ class equityCPU(BasePokerPlayer):
         """
         # Initialize counters for suits and ranks
         suits = {'H': 0, 'D': 0, 'C': 0, 'S': 0}
-        ranks = {2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0}
-        
+        ranks = {2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0,
+                 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0}
+
         # Count occurrences of each suit and rank
         for card in hole_cards:
             suits[card.suit] += 1
             rank = card.get_card_rank()
             ranks[rank] += 1
-            
+
         for card in community_cards:
             suits[card.suit] += 1
             rank = card.get_card_rank()
             ranks[rank] += 1
-            
+
         # Check for flush draw
         flush_outs = 0
         for suit, count in suits.items():
             if count == 4:
                 flush_outs = 9  # 9 cards of the same suit remaining
-                
+
         # Check for straight draw
         straight_outs = 0
         for i in range(2, 11):
             if ranks[i] > 0 and ranks[i+1] > 0 and ranks[i+2] > 0 and ranks[i+3] > 0:
                 straight_outs = 8  # 8 cards to complete the straight
-                
+
         # Check for overcards
         overcard_outs = 0
         if len(hole_cards) == 2:
-            hole_ranks = [int(card.card_val) if card.card_val.isdigit() else {'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}[card.card_val] for card in hole_cards]
+            hole_ranks = [int(card.card_val) if card.card_val.isdigit() else {
+                'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}[card.card_val] for card in hole_cards]
             max_hole_rank = max(hole_ranks)
             for rank in range(max_hole_rank + 1, 15):
                 if ranks[rank] == 0:
                     overcard_outs += 1
-                    
+
         # Return total outs
         return flush_outs + straight_outs + overcard_outs
 
     def declare_action(self, valid_actions: List[Dict[str, Any]], hole_card: List[str], round_state: Dict[str, Any]) -> tuple[str, Union[int, float]]:
         """
         Declare action based on current game state and calculated equity.
-        
+
         Args:
             valid_actions (list): List of valid action dictionaries
             hole_card (list): List of hole cards as strings
             round_state (dict): Current state of the round
-            
+
         Returns:
             tuple: (action, amount)
         """
         # Convert hole cards from strings
         hole_cards = [parse_card_str(card_str) for card_str in hole_card]
-            
+
         # Convert community cards from strings
-        community_cards = [parse_card_str(card_str) for card_str in round_state['community_card']]
-        
+        community_cards = [parse_card_str(card_str)
+                           for card_str in round_state['community_card']]
+
         # Calculate equity based on outs
-        equity = self.count_outs(hole_cards, community_cards) * 4  # Each out is roughly 4% equity
+        # Each out is roughly 4% equity
+        equity = self.count_outs(hole_cards, community_cards) * 4
         equity = min(equity, 100)  # Cap at 100%
-        
+
         # Get the current pot and call amount
         pot = round_state['pot']['main']
         call_amount = valid_actions[1]['amount']  # Index 1 is always call
-        
+
         # Decision making based on equity
         if equity > 50:  # Strong hand
             # Try to raise if possible
@@ -287,7 +296,8 @@ class equityCPU(BasePokerPlayer):
                 raise_action = valid_actions[2]
                 min_raise = raise_action['amount']['min']
                 max_raise = min(raise_action['amount']['max'], self.stack)
-                raise_amount = min(max_raise, min_raise * 2)  # Raise 2x minimum
+                raise_amount = min(max_raise, min_raise *
+                                   2)  # Raise 2x minimum
                 return 'raise', raise_amount
             return 'call', call_amount
         elif equity > 25:  # Medium hand
@@ -301,7 +311,7 @@ class equityCPU(BasePokerPlayer):
         """
         self.game_info = game_info
         self.stack = game_info['rule']['initial_stack']
-        
+
         # Find our seat
         for seat in game_info['seats']:
             if seat['name'] == self.name:
@@ -316,7 +326,7 @@ class equityCPU(BasePokerPlayer):
         self.seats = seats
         self.community_cards = []
         self.opponent_actions = []
-        
+
         # Reset action histories for new round
         self.round_action_histories = [None] * 4
         self.action_histories = []
@@ -326,8 +336,9 @@ class equityCPU(BasePokerPlayer):
         Called at the start of each street.
         """
         self.street = street
-        self.community_cards = [parse_card_str(card_str) for card_str in round_state['community_card']]
-        
+        self.community_cards = [parse_card_str(
+            card_str) for card_str in round_state['community_card']]
+
         # Save action histories for the previous street if any
         if street == 'preflop':
             street_index = 0
@@ -339,7 +350,7 @@ class equityCPU(BasePokerPlayer):
             street_index = 3
         else:
             return
-            
+
         if self.action_histories:
             self.round_action_histories[street_index-1] = self.action_histories
             self.action_histories = []
@@ -351,9 +362,10 @@ class equityCPU(BasePokerPlayer):
         # Track opponent actions
         if new_action.get('player_name') != self.name:
             self.opponent_actions.append(new_action)
-        
+
         # Update community cards
-        self.community_cards = [parse_card_str(card_str) for card_str in round_state['community_card']]
+        self.community_cards = [parse_card_str(
+            card_str) for card_str in round_state['community_card']]
 
     def receive_round_result_message(self, winners: List[Dict[str, Any]], hand_info: Dict[str, Any], round_state: Dict[str, Any]) -> None:
         """
