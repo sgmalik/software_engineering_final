@@ -61,6 +61,10 @@ Python 3.10+
 Pygame
 Pypokerengine
 pip
+Tensorflow
+keras
+pandas
+numpy
 ```
 ### Steps to run game on local machine
 1. Clone the Repository on local machine
@@ -69,8 +73,10 @@ git clone https://github.com/sgmalik/software_engineering_final.git
 ```
 pip install-r requirements.txt
 ```
-3. Run Poker Showdown
+3. Run Poker Showdown within the `src` folder
+```bash
 python main.py
+```
 
 Notes on Foulder Structure
 * main.py is the entry point to the game
@@ -119,4 +125,3 @@ software_engineering_final/
 | **Conor McDevitt**  | Focused heavily on the game engine and connection with the GUI. Helped architect game flow, connect user actions to game logic, and ensure consistent game state transitions. |
 | **James Bouchat**   | Created the visual assets and spritesheet used in the GUI. Designed the look and feel of the interface and built the foundational and advanced structure of the graphical user interface. |
 | **Nathan Fritz**  | Contributed to GUI development and maintained overall project coordination through bug fixes and deliverable submissions. |
-
