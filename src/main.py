@@ -2,7 +2,7 @@
 
 import sys
 import pygame
-from gui.util import change_to_main_menu, Screen, CardType, Difficulty, gui_state, update_game, update_slider_info, difficulty
+from gui.util import change_to_main_menu, Screen, gui_state, update_game, update_slider_info, difficulty
 from game_engine.engine import Engine 
 from game_engine.cpu.baselineCPU import baselineCPU
 
@@ -57,9 +57,15 @@ while RUNNING:
         for numtext in gui_state["numtexts"]:
             numtext.handle_event(event)
     
-    if(gui_state["screen"] == Screen.GAME):
+    if gui_state["screen"] == Screen.GAME:
         update_slider_info()
         update_game(SCALE, engine)
+
+        # Toggle button interactivity based on player's turn
+        is_players_turn = engine.current_state_of_game()["players_turn"]
+
+        for button in gui_state["buttons"]:
+            button.clickable = is_players_turn
 
     # Make sure only one screen is drawn at a time
     screen.fill((0, 0, 0))  # Clear screen before drawing

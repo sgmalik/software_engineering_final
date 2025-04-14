@@ -22,6 +22,7 @@ class Button:
         :param callback: Function to execute when the button is clicked.
                         FUNCTION MUST BE PASSED AS A LAMBDA FUNCTION
         """
+        self.clickable = True
         self.spritesheet = pygame.image.load(spritesheet_path).convert_alpha()
         self.position = position
         self.scale = scale
@@ -127,11 +128,14 @@ class Button:
 
         :param event: The Pygame event to handle.
         """
+        if not self.clickable:
+            return
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.rect.collidepoint(event.pos):
                 # IF BUTTON IS CLICKED, DO WHATEVER WE NEED TO DO HERE
                 self.current_sprite = self.pressed_sprite
+                print("CLICKED")
                 if self.callback:
                     self.callback() # Call provided function when clicked
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
