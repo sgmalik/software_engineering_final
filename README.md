@@ -128,6 +128,7 @@ A user of Poker Showdown will be welcomed to a retro, pixel-styled GUI showing a
 ✅ Pot distribution with edge-case handling (all-in, partial calls)  
 ✅ Chip graphics update based on actual stack  
 ✅ Visual state transitions between menu, settings, and gameplay
+
 Starting Board: <img width="398" alt="image" src="https://github.com/user-attachments/assets/a9d95b67-a283-4407-b56c-6637c3ab70c1" />
 ---
 
@@ -140,8 +141,18 @@ Python 3.10+
 Pygame
 pip
 
-### Installation
-1. Clone the Respositroy on local machine
+1. Clone the Repository on local machine
+git clone https://github.com/sgmalik/software_engineering_final.git
+2. Install Dependencies listed above (use pip)
+pip install pygame
+3. Run Poker Showdown
+python main.py
+
+Notes on Foulder Structure
+* main.py is the entry point to the game
+* All assets (images, spritesheets) must remain in the /assets folder to run game
+* All game logic lives in the game_engine/ directory
+* All GUI components live in the gui/ directory
 
 
 
