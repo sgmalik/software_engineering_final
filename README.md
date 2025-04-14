@@ -141,6 +141,7 @@ Python 3.10+
 Pygame
 pip
 
+### Steps to run game on local machine
 1. Clone the Repository on local machine
 git clone https://github.com/sgmalik/software_engineering_final.git
 2. Install Dependencies listed above (use pip)
@@ -154,6 +155,6 @@ Notes on Foulder Structure
 * All game logic lives in the game_engine/ directory
 * All GUI components live in the gui/ directory
 
-
+# Project Structure 
 
 
