@@ -69,6 +69,7 @@ The agent considers three possible actions:
 - Fold (giving up the hand)
 - Call (matching the current bet)
 - Raise (increasing the bet)
+- Check (if the action is not a bet)
 
 Each action is associated with a Q-value that represents its expected value in the current state. The agent chooses the action with the highest expected value (unless it's exploring).
 
@@ -291,8 +292,8 @@ The MLCPU learns through a cycle of observation, action, reward, and update:
 │  Observe State  │────▶│  Select Action  │────▶│  Receive Reward │
 │                 │     │                 │     │                 │
 └─────────────────┘     └─────────────────┘     └────────┬────────┘
-                                                        │
-                                                        ▼
+                                                         │
+                                                         ▼
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │                 │     │                 │     │                 │
 │  Save Model     │◀────│  Update Q-Values│◀────│  Next State     │
@@ -455,13 +456,13 @@ The MLCPU's learning follows a typical reinforcement learning curve:
 ```
      Performance
          │
-         │      Advanced Phase
+         │     Advanced Phase
          │          │
          │          │
          │     Middle Phase
          │          │
          │          │
-         │ Initial Phase
+         │     Initial Phase
          │          │
          │          │
          └──────────┴─────────────────▶
@@ -486,9 +487,7 @@ The MLCPU's learning follows a typical reinforcement learning curve:
 
 3. **Reward Structure**
    - Implement multi-objective rewards (e.g., balance chip EV and tournament survival)
-   - Add tournament-specific rewards (e.g., higher rewards for finishing in the money)
    - Consider long-term strategy (e.g., building a table image)
-   - **Example**: Adding a reward component based on the agent's final tournament position
 
 4. **Training Improvements**
    - Implement experience replay (storing and replaying past experiences)
