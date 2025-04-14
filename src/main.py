@@ -2,7 +2,7 @@
 
 import sys
 import pygame
-from gui.util import change_to_main_menu, Screen, CardType, Difficulty, gui_state, update_game, update_slider_info
+from gui.util import change_to_main_menu, Screen, CardType, Difficulty, gui_state, update_game, update_slider_info, difficulty
 from game_engine.engine import Engine 
 from game_engine.cpu.baselineCPU import baselineCPU
 
@@ -32,8 +32,8 @@ game_background = pygame.transform.scale(pygame.image.load(
 # Initialize GUI elements
 change_to_main_menu(SCALE, engine)
 
-# # Set initial CPU difficulty
-# engine.set_cpu_difficulty(gui_state["difficulty"][0])
+# Set initial CPU difficulty
+engine.set_cpu_difficulty(difficulty[0])
 
 RUNNING = True
 while RUNNING:

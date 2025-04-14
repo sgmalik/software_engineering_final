@@ -4,6 +4,8 @@ import pygame
 SPRITESHEET_PATH = "../assets/poker-spritesheet.png"
 
 TEXT_COORDS = {
+    "sb": (82, 31, 25, 5),
+    "bb": (107, 31, 25, 5),
     "check": (132, 31, 19, 5),
     "call": (151, 31, 15, 5),
     "fold": (166, 31, 15, 5),
@@ -15,7 +17,7 @@ class SpriteText:
     def __init__(self, text_type, position, scale):
         self.spritesheet = pygame.image.load(SPRITESHEET_PATH).convert_alpha()
         self.text_type = text_type
-        self.position = (position[0] * scale, position[1] * scale)
+        self.position = position
         self.scale = scale
         self.image = self.load_image()
 
