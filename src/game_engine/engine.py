@@ -6,6 +6,12 @@ keeps track of state. As well as how the game is initialzied.
 from .dealer import Dealer
 from .constants import Action, PlayerState
 from typing import Optional, Dict, Any
+from .cpu.baselineCPU import baselineCPU
+from .cpu.equityCPU import equityCPU
+from .cpu.potOddsCPU import potOddsCPU
+from .cpu.expectedValueCPU import expectedValueCPU
+from .cpu.mlCPU import MLCPU
+import os
 
 class Engine():
     """
@@ -47,6 +53,12 @@ It needs to return information that the GUI needs
                 'initial_stack': self.initial_stack
             }
             self.game_info['seats'].append(seat_info)
+            
+        # Create directory for ML model if it doesn't exist
+        self.ml_model_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'models')
+        if not os.path.exists(self.ml_model_dir):
+            os.makedirs(self.ml_model_dir)
+        self.ml_model_path = os.path.join(self.ml_model_dir, 'ml_cpu_model.pkl')
 
     def set_cpu_player(self, cpu_player):
         """
@@ -63,13 +75,6 @@ It needs to return information that the GUI needs
         # Set the name of the CPU player in the table
         self.dealer.table.players[1].name = cpu_player.__class__.__name__
         
-        # Update the game_info seats with the CPU player's name
-        self.game_info['seats'][1]['name'] = cpu_player.__class__.__name__
-        
-        # Send game start message to CPU
-        self.cpu_player.receive_game_start_message(self.game_info)
-
-
         # Update the game_info seats with the CPU player's name
         self.game_info['seats'][1]['name'] = cpu_player.__class__.__name__
         

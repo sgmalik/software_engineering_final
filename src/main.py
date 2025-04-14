@@ -10,7 +10,6 @@ from game_engine.engine import Engine
 engine = Engine(num_players=2, initial_stack=500, blind=10)
 #engine.start_next_round()
 
-
 # Initialize Pygame
 pygame.init()
 SCALE = 4
@@ -29,6 +28,9 @@ game_background = pygame.transform.scale(pygame.image.load(
 
 # Initialize GUI elements
 change_to_main_menu(SCALE, engine)
+
+# # Set initial CPU difficulty
+# engine.set_cpu_difficulty(gui_state["difficulty"][0])
 
 RUNNING = True
 while RUNNING:
