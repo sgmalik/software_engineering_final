@@ -88,10 +88,8 @@
 - [Getting Started](#getting-started)
 - [Project Structure](#project-structure)
 - [Technologies Used](#technologies-used)
-- [Screenshots](#screenshots)
-- [Known Issues](#known-issues)
+- [Game Images](#game-images)
 - [Team Members](#team-members)
-- [License](#license)
 
 ---
 
@@ -140,7 +138,7 @@ Poker Showdown is a game that runs on Python: a high-level, object-oriented, gen
 Python 3.10+
 Pygame
 pip
-
+```
 ### Steps to run game on local machine
 1. Clone the Repository on local machine
 git clone https://github.com/sgmalik/software_engineering_final.git
@@ -155,6 +153,27 @@ Notes on Foulder Structure
 * All game logic lives in the game_engine/ directory
 * All GUI components live in the gui/ directory
 
-# Project Structure 
+## Project Structure 
+The high-level project structure for Poker Showdown can be seen below. Critical components are highlighted. To properly run the game, the user must have this structure.
+
+software_engineering_final/
+├── assets/               # Spritesheet and image assets
+├── src/                  # Source code: Holds Gui and Game logic code 
+  ├── main.py             # Main python file to run program 
+  ├── game_engine/        # Core game logic (engine, betting, player, pot)
+  ├── gui/                # GUI classes: buttons, sliders, numtext, etc.
+  ├── model/              # .pkl file for CPU AI model
+└── README.md             # You're here!
+
+## Technologies Used 
+* Python 3.10
+* Pygame for graphics and event handling
+* Object-oriented design
+* State-based GUI architecture
+* PyPokerEngine for inspiration of betting model 
+
+## Game Images 
+<img width="399" alt="image" src="https://github.com/user-attachments/assets/0e587389-6df2-4ba6-a715-43e59485436b" />
+<img width="398" alt="image" src="https://github.com/user-attachments/assets/a9d95b67-a283-4407-b56c-6637c3ab70c1" />
 
 
