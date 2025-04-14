@@ -10,6 +10,7 @@ from .constants import PlayerState
 from .player import Player
 from .betting_manager import BettingManager
 from .game_evaluator import GameEvaluator
+import pygame
 
 
 class Dealer:
@@ -71,9 +72,11 @@ class Dealer:
         self.table.deal_hole_cards()
 
         # blinds
+        pygame.time.delay(1000)
         self.betting_manager.apply_player_action(
             self.table.current_player, Action.SMALL_BLIND)
 
+        pygame.time.delay(1000)
         self.betting_manager.apply_player_action(
             self.table.current_player, Action.BIG_BLIND)
 
