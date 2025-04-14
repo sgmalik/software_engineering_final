@@ -51,7 +51,7 @@ class MLCPU(BasePokerPlayer):
         self.learning_rate = learning_rate
         self.discount_factor = discount_factor
         self.epsilon = epsilon  # Exploration rate
-        self.model_path = model_path
+        self.model_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "models", "ml_cpu_model.pkl")
         
         # Q-table: maps state-action pairs to Q-values
         self.q_table = defaultdict(lambda: defaultdict(float))
@@ -531,6 +531,8 @@ class MLCPU(BasePokerPlayer):
         """
         Save the Q-table to a file.
         """
+        # Ensure the directory exists
+        os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
         with open(path, 'wb') as f:
             pickle.dump(dict(self.q_table), f)
             
@@ -541,3 +543,220 @@ class MLCPU(BasePokerPlayer):
         with open(path, 'rb') as f:
             q_table_dict = pickle.load(f)
             self.q_table = defaultdict(lambda: defaultdict(float), q_table_dict) 
+            
+    def train_model(self, num_rounds=100, opponent_strategy="random"):
+        """
+        Train the model by simulating multiple rounds of poker.
+        
+        Args:
+            num_rounds: Number of rounds to simulate for training
+            opponent_strategy: Strategy for the opponent ("random", "aggressive", "passive")
+            
+        Returns:
+            The trained model
+        """
+        print(f"Training MLCPU model for {num_rounds} rounds...")
+        
+        # Save original state
+        original_stack = self.stack
+        original_epsilon = self.epsilon
+        
+        # Increase exploration during training
+        self.epsilon = 0.3
+        
+        # Create a simulated opponent
+        from game_engine.cpu.baselineCPU import baselineCPU
+        opponent = baselineCPU(original_stack)
+        
+        # Simulate rounds
+        completed_rounds = 0
+        for round_num in range(num_rounds):
+            # Reset for new round
+            self.stack = original_stack
+            opponent.stack = original_stack
+            self.hole_cards = []
+            opponent.hole_cards = []
+            self.community_cards = []
+            self.opponent_actions = []
+            self.current_round_history = []
+            
+            # Deal hole cards
+            from game_engine.deck import Deck
+            deck = Deck()
+            self.hole_cards = deck.draw_cards(2)
+            opponent.hole_cards = deck.draw_cards(2)
+            
+            # Simulate each street
+            streets = ["preflop", "flop", "turn", "river"]
+            pot = 0
+            
+            for street in streets:
+                # Create round state
+                round_state = {
+                    "street": street,
+                    "small_blind_pos": 0,
+                    "big_blind_pos": 1,
+                    "community_card": [str(card) for card in self.community_cards],
+                    "pot": {"main": pot},
+                    "seats": [
+                        {"name": "player", "stack": 1000, "state": "participating"},
+                        {"name": self.name, "stack": self.stack, "state": "participating"}
+                    ]
+                }
+                
+                # Deal community cards based on street
+                if street == "flop":
+                    self.community_cards.extend(deck.draw_cards(3))
+                elif street in ["turn", "river"]:
+                    self.community_cards.extend(deck.draw_cards(1))
+                
+                # Update round state with new community cards
+                round_state["community_card"] = [str(card) for card in self.community_cards]
+                
+                # Simulate betting rounds
+                valid_actions = [
+                    {"action": "fold", "amount": 0},
+                    {"action": "call", "amount": 10},
+                    {"action": "raise", "amount": {"min": 20, "max": self.stack}},
+                    {"action": "check", "amount": 0}
+                ]
+                
+                # CPU acts
+                action, amount = self.declare_action(valid_actions, [str(card) for card in self.hole_cards], round_state)
+                
+                # Record action in history
+                self.current_round_history.append({
+                    "state": self.current_state,
+                    "action": self.current_action,
+                    "reward": 0  # Will be updated at the end of the round
+                })
+                
+                # Opponent acts based on strategy
+                opponent_action = "call"
+                opponent_amount = 10
+                
+                if opponent_strategy == "random":
+                    opponent_action = random.choice(["fold", "call", "raise"])
+                    if opponent_action == "raise":
+                        opponent_amount = random.randint(20, min(100, opponent.stack))
+                elif opponent_strategy == "aggressive":
+                    if random.random() < 0.7:  # 70% chance to raise
+                        opponent_action = "raise"
+                        opponent_amount = random.randint(20, min(100, opponent.stack))
+                elif opponent_strategy == "passive":
+                    if random.random() < 0.7:  # 70% chance to call
+                        opponent_action = "call"
+                    else:
+                        opponent_action = "fold"
+                
+                # Update pot and stacks based on actions
+                if action == "fold":
+                    self.state = PlayerState.FOLDED
+                elif action == "call":
+                    self.collect_bet(amount)
+                    pot += amount
+                elif action == "raise":
+                    self.collect_bet(amount)
+                    pot += amount
+                
+                if opponent_action == "fold":
+                    opponent.state = PlayerState.FOLDED
+                elif opponent_action == "call":
+                    opponent.collect_bet(opponent_amount)
+                    pot += opponent_amount
+                elif opponent_action == "raise":
+                    opponent.collect_bet(opponent_amount)
+                    pot += opponent_amount
+                
+                # Record opponent action
+                self.opponent_actions.append({
+                    "player_name": "player",
+                    "action": opponent_action,
+                    "amount": opponent_amount
+                })
+                
+                # Check if round is over (someone folded)
+                if self.state == PlayerState.FOLDED or opponent.state == PlayerState.FOLDED:
+                    break
+            
+            # Determine winner and update Q-values
+            if self.state == PlayerState.FOLDED:
+                # Opponent won
+                opponent.add_to_stack(pot)
+                self.state = PlayerState.ACTIVE  # Reset state
+                reward = -pot
+            elif opponent.state == PlayerState.FOLDED:
+                # CPU won
+                self.add_to_stack(pot)
+                self.state = PlayerState.ACTIVE  # Reset state
+                reward = pot
+            else:
+                # Showdown - evaluate hands
+                from game_engine.hand_evaluator import HandEvaluator
+                cpu_hand = HandEvaluator.hand_eval(self.hole_cards, self.community_cards)
+                opponent_hand = HandEvaluator.hand_eval(opponent.hole_cards, self.community_cards)
+                
+                if cpu_hand["hand_rank"] > opponent_hand["hand_rank"]:
+                    # CPU won
+                    self.add_to_stack(pot)
+                    reward = pot
+                elif cpu_hand["hand_rank"] < opponent_hand["hand_rank"]:
+                    # Opponent won
+                    opponent.add_to_stack(pot)
+                    reward = -pot
+                else:
+                    # Split pot
+                    self.add_to_stack(pot // 2)
+                    opponent.add_to_stack(pot // 2)
+                    reward = 0
+            
+            # Update Q-values for all state-action pairs in the round
+            for i, history in enumerate(self.current_round_history):
+                state = history['state']
+                action = history['action']
+                
+                # For the last action, use the final reward
+                # For earlier actions, use a discounted reward
+                if i == len(self.current_round_history) - 1:
+                    final_reward = reward
+                else:
+                    # Use a small negative reward for intermediate actions to encourage efficiency
+                    final_reward = -0.1
+                    
+                # Extract features for the next state (use the next state in history or a dummy state)
+                if i < len(self.current_round_history) - 1:
+                    next_state = self.current_round_history[i + 1]['state']
+                else:
+                    # For the last action, use a dummy terminal state
+                    next_state = (-1, -1, -1, -1, -1, -1)
+                    
+                # Update Q-value
+                self.update_q_value(state, action, final_reward, next_state)
+            
+            # Add the round history to the game history
+            self.game_history.append(self.current_round_history)
+            
+            # Increment completed rounds counter
+            completed_rounds += 1
+            
+            # Save the model periodically
+            if self.model_path and completed_rounds % 10 == 0:
+                self.save_model(self.model_path)
+                
+            # Print progress
+            if completed_rounds % 10 == 0 or completed_rounds == num_rounds:
+                print(f"Completed {completed_rounds} training rounds")
+        
+        # Restore original epsilon
+        self.epsilon = original_epsilon
+        
+        # Save the final model
+        if self.model_path:
+            # Ensure the directory exists
+            os.makedirs(os.path.dirname(os.path.abspath(self.model_path)), exist_ok=True)
+            print(f"Saving model to {self.model_path}")
+            self.save_model(self.model_path)
+            print(f"Model saved to {self.model_path}")
+            
+        print(f"Training complete. Completed {completed_rounds} rounds.")
+        return self 
