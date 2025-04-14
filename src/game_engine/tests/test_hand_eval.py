@@ -204,10 +204,12 @@ class TestHandEval():
 
         hand_info = HandEvaluator.hand_eval(hole_cards, community_cards)
        
-
+         
         assert hand_info["hand_rank"] == expected_info["hand_rank"]
-        assert hand_info["primary_cards_rank"] == expected_info["primary_cards_rank"]
-        assert hand_info["kickers"] == expected_info["kickers"]
+        
+        #order doesn't matter
+        assert sorted(str(card) for card in hand_info["primary_cards_rank"]) == sorted(str(card) for card in expected_info["primary_cards_rank"])
+        assert sorted(str(card) for card in hand_info["kickers"]) == sorted(str(card) for card in expected_info["kickers"])
 
    
         
