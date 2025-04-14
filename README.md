@@ -75,3 +75,52 @@
         - update the number of hands played if applicable, update the stacks, update the blinds, etc.
     
     **I imagine the logic for a lot of these functions will be necessary for both our actual player and the cpu, so what we could do is create a user player similar to the `console_player` class in the source code, and then just have the cpu inherit from the `BasePokerPlayer` class**
+
+# Poker Showdown: GUI + Game Engine Project
+
+> A full-featured Texas Hold’em Poker game featuring custom betting logic, AI opponent, and pixel-art GUI — built as part of a [your class/project/team].
+
+---
+
+##  Table of Contents
+- [About the Project](#about-the-project)
+- [Gameplay Features](#gameplay-features)
+- [Getting Started](#getting-started)
+- [Project Structure](#project-structure)
+- [Technologies Used](#technologies-used)
+- [Screenshots](#screenshots)
+- [Known Issues](#known-issues)
+- [Team Members](#team-members)
+- [License](#license)
+
+---
+
+##  About the Project
+
+Poker Showdown is a 1v1 Texas Hold’em poker simulation game with:
+- Dynamic chip-based betting
+- A working poker engine with full game state transitions
+- An AI opponent that reacts intelligently to player moves
+- Pixel-style GUI with smooth transitions and spritesheet-based rendering
+
+---
+
+##  Gameplay Features
+
+✅ Clickable betting buttons (`25%`, `50%`, `75%`, `All In`)  
+✅ Raise, Fold, Call, and Check logic  
+✅ Slider-based betting  
+✅ Card reveal at showdown  
+✅ CPU betting logic  
+✅ Pot distribution with edge-case handling (all-in, partial calls)  
+✅ Chip graphics update based on actual stack  
+✅ Visual state transitions between menu, settings, and gameplay
+
+---
+
+##  Getting Started
+
+###  Requirements
+```bash
+Python 3.10+
+Pygame
