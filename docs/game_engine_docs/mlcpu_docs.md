@@ -456,13 +456,13 @@ The MLCPU's learning follows a typical reinforcement learning curve:
 ```
      Performance
          │
-         │     Advanced Phase
+         │          Advanced Phase
          │          │
          │          │
-         │     Middle Phase
+         │      Middle Phase
          │          │
          │          │
-         │     Initial Phase
+         │  Initial Phase
          │          │
          │          │
          └──────────┴─────────────────▶
