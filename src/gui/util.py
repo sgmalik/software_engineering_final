@@ -477,7 +477,10 @@ def send_action(action, engine):
     Params: action: action player or CPU makes
             engine: game engine object
     """
-    engine.player_action(action)
+    try:
+        engine.player_action(action)
+    except ValueError as e:
+        print(f"Ignored invalid action: {e}")
 
 
 def slider_bet_callback(scale):
