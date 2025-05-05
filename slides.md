@@ -188,6 +188,7 @@ src/
   - Feature discussions
 - **Tools**
   - Trello: Task Organization 
+    - Dropped Eventually
   - Slack: Team Communication
 
 ---
