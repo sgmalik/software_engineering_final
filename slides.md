@@ -53,6 +53,7 @@ src/
   - Supports Texas Hold'em rules
   - Multiple CPU difficulty levels
   - Hand evaluation and game state management
+  ![Python_Image](image.png)
 
 ---
 
@@ -189,6 +190,7 @@ src/
 - **Process Challenges**
   - Documentation maintenance
   - Feature prioritization
+  - Unclear task seperation
 
 ---
 
