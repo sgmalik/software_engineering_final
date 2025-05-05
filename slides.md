@@ -197,7 +197,6 @@ src/
   - Regular communication
   - Clear task division
   - Comprehensive testing
-  ![img](image-1.png)
   - Async working worked well (slack)
   - Meetings were directed and quick 
 
