@@ -135,9 +135,7 @@ src/
 - **Misimplementation** 
   - Bet percentage in relation to user hands versus game pot
   - Doesn't clearly show big or large blind 
-  - User player always goes first at start of game 
-
-
+  - Can spam click a action button to crash the game 
 ---
 
 # Work Division
