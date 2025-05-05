@@ -9,9 +9,10 @@ size: 16:9
 # Heads Up Poker
 
 ## Software Engineering Final Project
+Surya Malik, Conor McDevitt, James Bouchat, Nathan Fritz
 
 ---
-
+# File Organization 
 ```
 src/
 ├── main.py
@@ -66,7 +67,6 @@ src/
   - Interactive betting controls
   - Real-time game state updates
  
-  <img src="image-2.png" alt="Pygame" style="width: 300px;">
 
 ---
 
@@ -101,8 +101,10 @@ src/
   - `NumText`: Number display
   - `SpriteText`: Text rendering
   - `Util`: Utility functions
-
+---
+# GUI Sprite Sheet and Board 
   ![Sprite Sheet](poker-spritesheet.png)
+  ![Board](poker-board.png)
 
 ---
 
@@ -115,22 +117,20 @@ src/
   4. Betting rounds
   5. Showdown
   6. Winner determination
-
-- **Features to Show**
+---
+- **Key Features**
   - Different CPU difficulties
   - Betting mechanics
   - Hand evaluation
   - Visual feedback
 
 ---
-# Known Bugs and Implementation Errors
-
+# Known Bugs and Misimplementation
 - **Bugs**
   - CPU turn not fully updating 
   - Spam click button causes crash
   - Changing difficulty does not start a new game 
 
-![Bug](image-1.png)
 
 - **Misimplementation** 
   - Bet percentage in relation to user hands versus game pot
@@ -146,6 +146,8 @@ src/
   - Components (buttons, stack, slider)
   - Implementing game logic from engine 
   - Testing GUI
+---
+# Work Division 
 
 - **Engine** (Conor/Surya)
   - Game engine core implementation
@@ -188,7 +190,6 @@ src/
   - Trello: Task Organization 
   - Slack: Team Communication
 
-![Slack](image-3.png)
 ---
 
 # What Worked Well
