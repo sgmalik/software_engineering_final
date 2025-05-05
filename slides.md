@@ -116,15 +116,15 @@ src/
 
 # Work Division
 
-- **GUI**
+- **GUI** (James/Nathan)
   - Game engine core implementation
   - CPU AI development
-  - Testing framework
+  - Testing GUI
 
-- **Engine**
+- **Engine** (Conor/Surya)
   - Game engine core implementation
   - CPU AI development
-  - Testing framework
+  - Testing (Pytest)
 
 ---
 
@@ -164,9 +164,9 @@ src/
 
 - **Technical Successes**
   - Clean architecture separation
-  - Modular CPU implementations
-  - Efficient hand evaluation
-  - Responsive GUI
+    - Good seperation between engine and GUI
+    - Modular CPU implementations
+  - Interactive GUI
 
 - **Process Successes**
   - Regular communication
@@ -189,6 +189,7 @@ src/
 - **Process Challenges**
   - Documentation maintenance
   - Feature prioritization
+  - Sprint #1: should start making features (even if small)
 
 ---
 
@@ -217,6 +218,7 @@ src/
 
 - **Process Improvements**
   - Automated testing
+    - e2e testing? 
   - Performance monitoring
   - User feedback system
 
