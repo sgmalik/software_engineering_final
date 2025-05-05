@@ -3,6 +3,7 @@ marp: false
 title: "Heads Up Poker"
 paginate: true
 theme: gaia
+size: 16:9
 ---
 
 # Heads Up Poker
@@ -64,7 +65,8 @@ src/
   - Visual card and chip representations
   - Interactive betting controls
   - Real-time game state updates
-  ![Pygame](image-2.png)
+ 
+  <img src="image-2.png" alt="Pygame" style="width: 300px;">
 
 ---
 
@@ -77,6 +79,10 @@ src/
   - `Player`: Base player class with action handling
   - `GameEvaluator`: Handles game evaluation and winner determination
   - `HandEvaluator`: Handles hand evaluation
+---
+
+# Code Overview Continued
+- **Game Engine Components**
   - `CPU`: Multiple AI implementations (Baseline, Equity, Pot Odds, ML)
   - `Deck`: Handles card deck management
   - `Pot`: Handles pot management
