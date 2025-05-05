@@ -176,7 +176,7 @@ src/
   ![img](image-1.png)
   - Async working worked well (slack)
   - Meetings were directed and quick 
-
+  
 
 ---
 
@@ -210,6 +210,8 @@ src/
   - More frequent reviews
   - Better task estimation
   - Enhanced communication
+  - Learning the rules of poker 
+    - Not fully understanding the rules lead to having to rewrite some features
 
 ---
 
