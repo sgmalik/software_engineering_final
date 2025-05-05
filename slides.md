@@ -137,8 +137,10 @@ src/
 # Work Division
 
 - **GUI** (James/Nathan)
-  - Game engine core implementation
-  - CPU AI development
+  - GUI sprites
+  - Main game loop
+  - Components (buttons, stack, slider)
+  - Implementing game logic from engine 
   - Testing GUI
 
 - **Engine** (Conor/Surya)
