@@ -101,7 +101,8 @@ src/
   - `NumText`: Number display
   - `SpriteText`: Text rendering
   - `Util`: Utility functions
-
+---
+# GUI Sprite Sheet 
   ![Sprite Sheet](poker-spritesheet.png)
 
 ---
@@ -130,7 +131,6 @@ src/
   - Spam click button causes crash
   - Changing difficulty does not start a new game 
 
-![Bug](image-1.png)
 
 - **Misimplementation** 
   - Bet percentage in relation to user hands versus game pot
@@ -148,6 +148,8 @@ src/
   - Components (buttons, stack, slider)
   - Implementing game logic from engine 
   - Testing GUI
+---
+# Work Division 
 
 - **Engine** (Conor/Surya)
   - Game engine core implementation
@@ -190,7 +192,6 @@ src/
   - Trello: Task Organization 
   - Slack: Team Communication
 
-![Slack](image-3.png)
 ---
 
 # What Worked Well
