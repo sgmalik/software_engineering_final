@@ -133,10 +133,10 @@ def change_to_settings(scale, engine):
 
     difficulty_button = Button(SPRITESHEET_PATH, (25 * scale, 83 * scale),
                         (scale, scale), 67, 13, "difficulty",
-                               callback=lambda: toggle_difficulty(scale, difficulty))
+                               callback=lambda: toggle_difficulty(scale, difficulty, engine))
     change_card = Button(SPRITESHEET_PATH, (25 * scale, 109 * scale),
                          (scale, scale), 67, 13, "change card",
-                         callback=lambda: toggle_card_type(scale, card_type))
+                         callback=lambda: toggle_card_type(scale, card_type, engine))
 
     back = Button(SPRITESHEET_PATH, (11 * scale, 12 * scale),
                         (scale, scale), 13, 13, "back",
@@ -477,7 +477,10 @@ def send_action(action, engine):
     Params: action: action player or CPU makes
             engine: game engine object
     """
-    engine.player_action(action)
+    try:
+        engine.player_action(action)
+    except ValueError as e:
+        print(f"Ignored invalid action: {e}")
 
 
 def slider_bet_callback(scale):
@@ -491,24 +494,24 @@ def slider_bet_callback(scale):
     bet_percentage(scale, percent)
 
 
-def toggle_card_type(scale, card_type):
+def toggle_card_type(scale, card_type, engine):
     enum_type = type(card_type[0])
     members = list(enum_type)
     index = members.index(card_type[0])
     next_index = (index + 1) % len(members)
     card_type[0] = members[next_index]
 
-    change_to_settings(scale)
+    change_to_settings(scale, engine)
 
 
-def toggle_difficulty(scale, difficulty):
+def toggle_difficulty(scale, difficulty, engine):
     enum_type = type(difficulty[0])
     members = list(enum_type)
     index = members.index(difficulty[0])
     next_index = (index + 1) % len(members)
     difficulty[0] = members[next_index]
 
-    change_to_settings(scale)
+    change_to_settings(scale, engine)
 
 
 def get_last_cpu_action(action_histories):
