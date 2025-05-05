@@ -164,8 +164,6 @@ def change_to_game(scale, engine):
     """
     Changes the GUI elements to the ones found in the game screen
     """
-    engine.start_next_round() # Start game
-
     gui_state["screen"] = Screen.GAME
 
     gui_state["buttons"].clear()
@@ -174,6 +172,12 @@ def change_to_game(scale, engine):
     gui_state["chips"].clear()
     gui_state["numtexts"].clear()
     gui_state["spritetexts"].clear()
+
+    # Set CPU difficulty before starting the game
+    engine.set_cpu_difficulty(difficulty[0])
+
+    # Start a new round
+    engine.start_next_round()
 
     # Create buttons
     button_names = ["check", "call", "fold", "raise", "all in", "75%", "50%", "25%"]
@@ -269,7 +273,20 @@ def update_game(scale, engine):
     # Engine updating
     state = engine.current_state_of_game()
 
-    # Update spritetexts
+    # Determine whose turn it is and the amount to call
+    is_players_turn = state["players_turn"]
+    current_player = state["players"][0] if is_players_turn else state["players"][1]
+    turn_name = "PLAYER" if is_players_turn else "CPU"
+    amount_to_call = current_player["amount_to_call"]
+
+    # Display current player to act
+    turn_text = f"{turn_name} TURN: CALL ${amount_to_call}"
+    gui_state["spritetexts"].append(SpriteText(turn_text, (120 * scale, 2 * scale), scale))
+
+    # Display last action
+    last_action_text = get_last_action(state["action_histories"])
+    gui_state["spritetexts"].append(SpriteText(last_action_text, (120 * scale, 15 * scale), scale))
+
     action = get_last_cpu_action(state["action_histories"])
     cpu_action = SpriteText(action, (162 * scale, 17 * scale), scale)
     gui_state["spritetexts"].append(cpu_action)
@@ -384,20 +401,34 @@ def update_game(scale, engine):
 
     # Update to next phase of round depending on state
     if state["round_over"]:
+        print("\nRound is over, transitioning to next round...")
+        pygame.time.wait(2000)  # Wait 2 seconds before starting next round
         engine.start_next_round()
         update_gui_state(engine)
+        pygame.time.wait(1000)  # Wait 1 second after starting new round
+        return  # Exit the function to prevent further state changes
 
     elif state["betting_over"]:
+        print("\nBetting is over, moving to next street...")
+        pygame.time.wait(1500)  # Wait 1.5 seconds before next street
         engine.start_next_street()
         update_gui_state(engine)
+        pygame.time.wait(1000)  # Wait 1 second after street transition
+        return  # Exit the function to prevent further state changes
 
     elif not state["players_turn"]:
-        pygame.time.wait(1500)
+        print("\nCPU's turn to act...")
+        pygame.time.wait(1500)  # Wait 1.5 seconds before CPU action
         engine.cpu_action()
         update_gui_state(engine)
+        pygame.time.wait(1000)  # Wait 1 second after CPU action
+        return  # Exit the function to prevent further state changes
 
     elif state["game_over"]:
+        print("\nGame is over, returning to main menu...")
+        pygame.time.wait(2000)  # Wait 2 seconds before returning to menu
         change_to_main_menu(scale, engine)
+        return  # Exit the function to prevent further state changes
 
 
 def update_gui_state(engine):
@@ -419,7 +450,6 @@ def update_slider_info():
         if getattr(num, "label", "") == "bid_amount":
             num.set_number(bid_amount)
 
-
 def bet_percentage(scale, percent, engine):
     """
     Handles betting logic triggered by the 25%, 50%, 75%, and All In buttons.
@@ -429,7 +459,7 @@ def bet_percentage(scale, percent, engine):
 
     Parameters:
         percent (float): Fraction of the player's balance to bet (e.g., 0.25).
-        player_balance (list[int]): Player’s current balance.
+        player_balance (list[int]): Player's current balance.
         pot_total (list[int]): Total value in the pot.
         chips (list): The master list of chip sprites on screen.
         scale (int): The global screen scaling factor.
@@ -523,6 +553,9 @@ def toggle_difficulty(scale, difficulty, engine):
     index = members.index(difficulty[0])
     next_index = (index + 1) % len(members)
     difficulty[0] = members[next_index]
+    
+    # Update the CPU difficulty in the engine
+    engine.set_cpu_difficulty(difficulty[0])
 
     change_to_settings(scale, engine)
 
@@ -539,3 +572,18 @@ def get_last_cpu_action(action_histories):
 
     return "NA"  # No CPU action found
 
+
+def get_last_action(action_histories):
+    for street in ["river", "turn", "flop", "preflop"]:
+        actions = action_histories.get(street, [])
+        if actions:
+            last = actions[-1]
+            name = last.get("name", "Unknown")
+            action = last.get("action", "NA")
+            amount = last.get("amount", 0)
+            # Only show amount for call/raise
+            if action in ["call", "raise"] and amount:
+                return f"LAST ACTION: {name.upper()} {action}ed ${amount}"
+            else:
+                return f"LAST ACTION: {name.upper()} {action}"
+    return "LAST ACTION: None"

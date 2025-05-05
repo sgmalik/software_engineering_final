@@ -7,6 +7,7 @@ import pickle
 import os
 import random
 from collections import defaultdict
+import time
 
 def parse_card_str(card_str: str) -> Card:
     """
@@ -51,14 +52,18 @@ class MLCPU(BasePokerPlayer):
         self.learning_rate = learning_rate
         self.discount_factor = discount_factor
         self.epsilon = epsilon  # Exploration rate
-        self.model_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "models", "ml_cpu_model.pkl")
+        
+        # Use the provided model path or default to the project's models directory
+        if model_path is None:
+            model_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "models", "ml_cpu_model.pkl")
+        self.model_path = model_path
         
         # Q-table: maps state-action pairs to Q-values
         self.q_table = defaultdict(lambda: defaultdict(float))
         
         # Load pre-trained model if available
-        if model_path and os.path.exists(model_path):
-            self.load_model(model_path)
+        if os.path.exists(self.model_path):
+            self.load_model(self.model_path)
         
         # Track current state and action for updating Q-values
         self.current_state = None
@@ -286,6 +291,11 @@ class MLCPU(BasePokerPlayer):
             calls = sum(1 for action in self.opponent_actions if action.get('action') == 'call')
             opponent_aggression = raises / (calls + 1)  # Add 1 to avoid division by zero
             
+        # Evaluate hand strength
+        from game_engine.hand_evaluator import HandEvaluator
+        hand_strength = HandEvaluator.hand_eval(hole_cards, community_cards)
+        hand_rank = hand_strength['hand_rank']
+        
         # Discretize continuous values to reduce state space
         outs_bucket = min(outs // 2, 10)  # 0-20 outs, bucketed into 11 categories
         pot_odds_bucket = int(pot_odds * 10)  # 0-1 pot odds, bucketed into 10 categories
@@ -293,7 +303,7 @@ class MLCPU(BasePokerPlayer):
         aggression_bucket = min(int(opponent_aggression * 2), 5)  # 0-2.5+ aggression, bucketed into 6 categories
         
         # Return a tuple of discretized features
-        return (outs_bucket, pot_odds_bucket, position, street, stack_to_pot_bucket, aggression_bucket)
+        return (outs_bucket, pot_odds_bucket, position, street, stack_to_pot_bucket, aggression_bucket, hand_rank)
     
     def get_action_from_q_table(self, state, valid_actions):
         """
@@ -321,6 +331,7 @@ class MLCPU(BasePokerPlayer):
                 amount = amount.get('min', 0)
                 
             q_value = self.q_table[state][(action, amount)]
+            
             if q_value > best_q_value:
                 best_q_value = q_value
                 best_action_idx = i
@@ -376,6 +387,7 @@ class MLCPU(BasePokerPlayer):
         """
         Declare action based on Q-learning.
         """
+        
         # Convert hole cards from strings
         hole_cards = [parse_card_str(card_str) for card_str in hole_card]
             
@@ -386,6 +398,36 @@ class MLCPU(BasePokerPlayer):
         pot = round_state['pot']['main']
         call_amount = valid_actions[1]['amount']  # Index 1 is always call
         
+        # Count high cards
+        high_cards = [10, 11, 12, 13, 14]
+        num_high_cards = len([card for card in hole_cards if card.get_card_rank() in high_cards])
+        
+        # Preflop logic
+        if round_state['street'] == 'preflop':
+            if valid_actions[3]['action'] == 'check' and call_amount == 0:
+                if num_high_cards >= 1:
+                    if len(valid_actions) > 2:  # Raise is available
+                        raise_action = valid_actions[2]
+                        min_raise = raise_action['amount']['min']
+                        max_raise = min(raise_action['amount']['max'], self.stack)
+                        raise_amount = min(max_raise, min_raise * 2)  # Raise 2x minimum
+                        return 'raise', raise_amount
+                return 'check', 0
+            elif num_high_cards >= 2:
+                if len(valid_actions) > 2:  # Raise is available
+                    raise_action = valid_actions[2]
+                    min_raise = raise_action['amount']['min']
+                    max_raise = min(raise_action['amount']['max'], self.stack)
+                    raise_amount = min(max_raise, min_raise * 2)  # Raise 2x minimum
+                    return 'raise', raise_amount
+            elif num_high_cards >= 1 and call_amount < 0.10 * self.stack:
+                return 'call', call_amount
+            elif call_amount == 0:
+                return 'check', 0
+            # Add extra delay before folding to make it more natural
+            time.sleep(1.0)
+            return 'fold', 0
+        
         # Extract features from the current state
         state = self.extract_features(hole_cards, community_cards, pot, call_amount, round_state)
         self.current_state = state
@@ -393,6 +435,25 @@ class MLCPU(BasePokerPlayer):
         # Get the best action from the Q-table
         action, amount = self.get_action_from_q_table(state, valid_actions)
         self.current_action = (action, amount)
+        
+        # If facing a check (call_amount is 0), decide between check and raise
+        if call_amount == 0:
+            if action == 'raise':
+                return action, amount
+            # If we have a strong hand, raise
+            if state[0] >= 3 or num_high_cards >= 2:  # Good number of outs or strong high cards
+                if len(valid_actions) > 2:  # Raise is available
+                    raise_action = valid_actions[2]
+                    min_raise = raise_action['amount']['min']
+                    max_raise = min(raise_action['amount']['max'], self.stack)
+                    raise_amount = min(max_raise, min_raise * 2)  # Raise 2x minimum
+                    return 'raise', raise_amount
+            time.sleep(0.5)
+            return 'check', 0
+        
+        # Add extra delay before folding to make it more natural
+        if action == 'fold':
+            time.sleep(1.0)
         
         return action, amount
 

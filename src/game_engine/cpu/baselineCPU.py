@@ -3,6 +3,7 @@ from game_engine.deck import Card
 from game_engine.constants import Action, PlayerState, Street
 from typing import List, Union, Dict, Any, Optional, cast
 from game_engine.constants import Action, PlayerState
+import time
 # assunuing that round_state is a dictionary with the following structure:
 
 # {
@@ -215,6 +216,9 @@ class baselineCPU(BasePokerPlayer):
         Declare action based on current game state.
         Always calls unless it has a very weak hand.
         """
+        # Add a small delay to make the action more natural
+        time.sleep(1.5)  # 1.5 second delay
+        
         # Convert hole cards from strings
         hole_cards = [parse_card_str(card_str) for card_str in hole_card]
             

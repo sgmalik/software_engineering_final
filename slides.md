@@ -1,5 +1,5 @@
 ---
-marp: false
+marp: true
 title: "Heads Up Poker"
 paginate: true
 theme: gaia
@@ -12,7 +12,7 @@ size: 16:9
 Surya Malik, Conor McDevitt, James Bouchat, Nathan Fritz
 
 ---
-# File Organization 
+
 ```
 src/
 ├── main.py
@@ -220,13 +220,14 @@ src/
     - Making code more scalable cost time
   - Edge case handling
 
+---
 
+# Challenges Faced Continued
 - **Process Challenges**
   - Documentation maintenance
   - Feature prioritization
   - Sprint #1: should start making features (even if small)
   - Unclear task seperation
-  ![Challenges](image-5.png)
 
 ---
 
@@ -237,6 +238,10 @@ src/
   - More comprehensive testing
   - Performance optimization
   - Test's could be more "DRY"
+
+---
+
+# Lessons Learned Continued
 
 - **Process Improvements**
   - More frequent reviews

@@ -3,14 +3,11 @@
 import sys
 import pygame
 from gui.util import change_to_main_menu, Screen, gui_state, update_game, update_slider_info, difficulty
-from game_engine.cpu.baselineCPU import baselineCPU
 from game_engine.engine import Engine 
 
 # Connect Gui & Engine
 # Gain acess to current state of game, player action, and cpu action from engine
 engine = Engine(num_players=2, initial_stack=500, blind=10)
-cpu = baselineCPU(500)
-engine.set_cpu_player(cpu_player=cpu)
 
 # Initialize Pygame
 pygame.init()

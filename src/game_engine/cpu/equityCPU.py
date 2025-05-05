@@ -2,6 +2,7 @@ from game_engine.constants import Action, PlayerState, Street
 from pypokerengine.players import BasePokerPlayer
 from game_engine.deck import Card
 from typing import List, Union, Dict, Any, Optional, cast
+import time
 
 # assuming that round_state is a dictionary with the following structure:
 
@@ -257,32 +258,40 @@ class equityCPU(BasePokerPlayer):
     def declare_action(self, valid_actions: List[Dict[str, Any]], hole_card: List[str], round_state: Dict[str, Any]) -> tuple[str, Union[int, float]]:
         """
         Declare action based on current game state and calculated equity.
-        
-        Args:
-            valid_actions (list): List of valid action dictionaries
-            hole_card (list): List of hole cards as strings
-            round_state (dict): Current state of the round
-            
-        Returns:
-            tuple: (action, amount)
         """
+        
         # Convert hole cards from strings
         hole_cards = [parse_card_str(card_str) for card_str in hole_card]
             
         # Convert community cards from strings
         community_cards = [parse_card_str(card_str) for card_str in round_state['community_card']]
         
-        # Calculate equity based on outs
-        equity = self.count_outs(hole_cards, community_cards) * 4  # Each out is roughly 4% equity
-        equity = min(equity, 100)  # Cap at 100%
-        
         # Get the current pot and call amount
         pot = round_state['pot']['main']
         call_amount = valid_actions[1]['amount']  # Index 1 is always call
         
-        # Decision making based on equity
-        if equity > 50:  # Strong hand
-            # Try to raise if possible
+        # Calculate equity
+        equity = self.count_outs(hole_cards, community_cards) * 4  # Each out is roughly 4% equity
+        equity = min(equity, 100)  # Cap at 100%
+        
+        # Count high cards
+        high_cards = [10, 11, 12, 13, 14]
+        num_high_cards = len([card for card in hole_cards if card.get_card_rank() in high_cards])
+        
+        # If facing a check (call_amount is 0)
+        if call_amount == 0:
+            # If we have a decent hand, raise
+            if equity > 20 or num_high_cards >= 1:
+                if len(valid_actions) > 2:  # Raise is available
+                    raise_action = valid_actions[2]
+                    min_raise = raise_action['amount']['min']
+                    max_raise = min(raise_action['amount']['max'], self.stack)
+                    raise_amount = min(max_raise, min_raise * 2)  # Raise 2x minimum
+                    return 'raise', raise_amount
+            return 'check', 0
+        
+        # When facing a bet
+        if equity > 30 or num_high_cards >= 2:  # Strong hand
             if len(valid_actions) > 2:  # Raise is available
                 raise_action = valid_actions[2]
                 min_raise = raise_action['amount']['min']
@@ -290,9 +299,11 @@ class equityCPU(BasePokerPlayer):
                 raise_amount = min(max_raise, min_raise * 2)  # Raise 2x minimum
                 return 'raise', raise_amount
             return 'call', call_amount
-        elif equity > 25:  # Medium hand
+        elif equity > 15 or num_high_cards >= 1:  # Medium hand
             return 'call', call_amount
         else:  # Weak hand
+            # Add extra delay before folding to make it more natural
+            time.sleep(0.5)
             return 'fold', 0
 
     def receive_game_start_message(self, game_info: Dict[str, Any]) -> None:

@@ -7,6 +7,7 @@ from pypokerengine.players import BasePokerPlayer
 from game_engine.deck import Card
 from enum import Enum
 from game_engine.constants import Action, PlayerState, Street
+import time
 
 # assunuing that round_state is a dictionary with the following structure:
 
@@ -268,6 +269,9 @@ class expectedValueCPU(BasePokerPlayer):
         """
         Declare action based on expected value calculation.
         """
+        # Add a small delay to make the action more natural
+        time.sleep(1.5)  # 1.5 second delay
+        
         # Convert hole cards from strings
         hole_cards = [parse_card_str(card_str) for card_str in hole_card]
             

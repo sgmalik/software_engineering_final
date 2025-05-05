@@ -65,13 +65,11 @@ It needs to return information that the GUI needs
             }
             self.game_info['seats'].append(seat_info)
             
-        # Create directory for ML model if it doesn't exist
-        self.ml_model_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'models')
-        if not os.path.exists(self.ml_model_dir):
-            os.makedirs(self.ml_model_dir)
-            
         # Define the path for the ML model file
-        self.ml_model_path = os.path.join(self.ml_model_dir, 'ml_cpu_model.pkl')
+        self.ml_model_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "models", "ml_cpu_model.pkl")
+        
+        # Create directory for ML model if it doesn't exist
+        os.makedirs(os.path.dirname(self.ml_model_path), exist_ok=True)
 
     def set_cpu_player(self, cpu_player):
         """
@@ -103,12 +101,17 @@ It needs to return information that the GUI needs
         """
         if difficulty == Difficulty.EASY:
             self.cpu_player = baselineCPU(self.initial_stack)
+            print("cpu player set to baselineCPU")
+            self.set_cpu_player(self.cpu_player)
         elif difficulty == Difficulty.MEDIUM:
             self.cpu_player = equityCPU(self.initial_stack)
+            print("cpu player set to equityCPU")
+            self.set_cpu_player(self.cpu_player)
         elif difficulty == Difficulty.HARD:
             # Initialize MLCPU with the model path
             self.cpu_player = MLCPU(self.initial_stack, model_path=self.ml_model_path)
-            
+            print("cpu player set to MLCPU")
+            self.set_cpu_player(self.cpu_player)
             # Try to load existing model
             if os.path.exists(self.ml_model_path):
                 print(f"Loading model from {self.ml_model_path}")
@@ -136,12 +139,16 @@ It needs to return information that the GUI needs
         players = []
         for player in self.dealer.table.players:
             max_bet = self.dealer.betting_manager.get_max_raise(player)
+            amount_to_call = self.dealer.betting_manager.current_bet - getattr(player, 'contribuition', 0)
+            if amount_to_call < 0:
+                amount_to_call = 0
             players.append({
                 "name": player.name,
                 "stack": player.stack,
                 "hole_cards": [str(card) for card in player.hole_cards],
                 "state": player.state.value,
-                "max_bet": max_bet
+                "max_bet": max_bet,
+                "amount_to_call": amount_to_call
             })
    
         # Create action histories structure
@@ -292,6 +299,13 @@ It needs to return information that the GUI needs
         (so call this when river is done)
         """
         print("starting next round")
+        
+        # Update CPU player with the results of the previous round first
+        self.update_cpu_player_with_round_result()
+        
+        # Then set up the next round
+        self.dealer.set_up_next_round()
+        
         # Send round start message to CPU if one is set
         if self.cpu_player is not None:
             # Get hole cards for CPU player
@@ -315,11 +329,9 @@ It needs to return information that the GUI needs
                 seats=seats
             )
         
-        # Update CPU player with the results of the previous round
-        self.update_cpu_player_with_round_result()
-        self.dealer.set_up_next_round()
+        # Start the street after everything is set up
         self.dealer.start_street()
-    
+
     def player_action(self, action: str, raise_amount: Optional[int] = None):
         """
         function that will be called when its the players turn
@@ -356,6 +368,8 @@ It needs to return information that the GUI needs
         """
         function that will be called when its the cpu's turn
         """
+        print("\nCPU's turn to act...")
+        
         # Build the round_state dictionary for the CPU
         round_state = self.build_round_state()
         
@@ -390,6 +404,7 @@ It needs to return information that the GUI needs
         action_enum = Action(action)
         
         # Apply the action
+        print(f"CPU is applying action: {action_enum} with amount: {amount}")
         self.dealer.apply_action(action_enum, int(amount) if action == "raise" else None)
         
         # Save action histories for all players after the action
