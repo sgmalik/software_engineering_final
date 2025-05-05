@@ -1,5 +1,5 @@
 ---
-marp: true
+marp: false
 title: "Heads Up Poker"
 paginate: true
 theme: gaia
@@ -172,6 +172,7 @@ src/
   - Regular communication
   - Clear task division
   - Comprehensive testing
+  - Async working worked well 
 
 ---
 
@@ -180,8 +181,10 @@ src/
 - **Technical Challenges**
   - ML CPU training stability
   - GUI performance optimization
-  - State management complexity
+  - Engine code more complex then it needed to be for 1v1
+    - Making code more scalable cost time
   - Edge case handling
+
 
 - **Process Challenges**
   - Documentation maintenance
@@ -195,6 +198,7 @@ src/
   - Better error handling
   - More comprehensive testing
   - Performance optimization
+  - Test's could be more "DRY"
 
 - **Process Improvements**
   - More frequent reviews
@@ -209,6 +213,7 @@ src/
   - Multiplayer support
   - Tournament mode
   - Advanced AI strategies
+  - Visually show hand (highlight cards), when player wins a hand  
 
 - **Process Improvements**
   - Automated testing
