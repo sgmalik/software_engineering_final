@@ -143,8 +143,10 @@ src/
 # Work Division
 
 - **GUI** (James/Nathan)
-  - Game engine core implementation
-  - CPU AI development
+  - GUI sprites
+  - Main game loop
+  - Components (buttons, stack, slider)
+  - Implementing game logic from engine 
   - Testing GUI
 
 - **Engine** (Conor/Surya)
@@ -205,7 +207,7 @@ src/
   - Comprehensive testing
   - Async working worked well (slack)
   - Meetings were directed and quick 
-
+  
 
 ---
 
@@ -240,6 +242,8 @@ src/
   - More frequent reviews
   - Better task estimation
   - Enhanced communication
+  - Learning the rules of poker 
+    - Not fully understanding the rules lead to having to rewrite some features
 
 ---
 
