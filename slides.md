@@ -240,6 +240,8 @@ src/
   - More frequent reviews
   - Better task estimation
   - Enhanced communication
+  - Followed Linter 
+    - Fix code duplication 
   - Learning the rules of poker 
     - Not fully understanding the rules lead to having to rewrite some features
 
