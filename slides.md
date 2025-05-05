@@ -64,6 +64,7 @@ src/
   - Visual card and chip representations
   - Interactive betting controls
   - Real-time game state updates
+  ![Pygame](image-2.png)
 
 ---
 
@@ -95,6 +96,8 @@ src/
   - `SpriteText`: Text rendering
   - `Util`: Utility functions
 
+  ![Sprite Sheet](poker-spritesheet.png)
+
 ---
 
 # Live Demo
@@ -112,6 +115,22 @@ src/
   - Betting mechanics
   - Hand evaluation
   - Visual feedback
+
+---
+# Known Bugs and Implementation Errors
+
+- **Bugs**
+  - CPU turn not fully updating 
+  - Spam click button causes crash
+  - Changing difficulty does not start a new game 
+
+![Bug](image-1.png)
+
+- **Misimplementation** 
+  - Bet percentage in relation to user hands versus game pot
+  - Doesn't clearly show big or large blind 
+  - User player always goes first at start of game 
+
 
 ---
 
@@ -136,6 +155,7 @@ src/
   - Documentation
   - Bug fixing
   - Testing
+  - Communicating 
 
 ---
 
@@ -158,7 +178,11 @@ src/
 - **Collaboration**
   - Code review process
   - Feature discussions
+- **Tools**
+  - Trello: Task Organization 
+  - Slack: Team Communication
 
+![Slack](image-3.png)
 ---
 
 # What Worked Well
@@ -173,7 +197,6 @@ src/
   - Regular communication
   - Clear task division
   - Comprehensive testing
-  ![img](image-1.png)
   - Async working worked well (slack)
   - Meetings were directed and quick 
   
@@ -195,6 +218,7 @@ src/
   - Feature prioritization
   - Sprint #1: should start making features (even if small)
   - Unclear task seperation
+  ![Challenges](image-5.png)
 
 ---
 
