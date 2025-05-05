@@ -302,6 +302,19 @@ def update_game(scale, engine):
                                 (111 * scale, 59 * scale),
                                 (131 * scale, 59 * scale))
     
+    # Update deck cards
+    deck_card = GUI_Card(SPRITESHEET_PATH, (20 * scale, 60 * scale), (scale, scale),
+                         "AS", False)
+    gui_state["cards"].append(deck_card)
+    
+    deck_card = GUI_Card(SPRITESHEET_PATH, (20 * scale, 58 * scale), (scale, scale),
+                         "AS", False)
+    gui_state["cards"].append(deck_card)
+    
+    deck_card = GUI_Card(SPRITESHEET_PATH, (20 * scale, 56 * scale), (scale, scale),
+                         "AS", False)
+    gui_state["cards"].append(deck_card)
+
     # Update player chips
     ply_value = state["players"][0]["stack"]
     gui_state["ply_distribution"] = get_proper_chip_distribution(ply_value)
